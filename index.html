@@ -582,15 +582,211 @@
     .week-table .plan-cell { min-width: 0; }
   }
   @media print {
-    .toolbar, .todo-add, .plan-pick-btn, .modal-backdrop { display: none !important; }
+    .toolbar, .todo-add, .plan-pick-btn, .modal-backdrop, #login-overlay, #user-bar { display: none !important; }
     body { background: #fff; }
     section, .kgi-hero, .kpi-card { break-inside: avoid; }
     .kgi-hero { color: #000 !important; background: #ede9fe !important; box-shadow: none; }
     .kgi-target-input, .kgi-current-input { color: #000; }
   }
+
+  /* ===== ログイン画面 ===== */
+  #login-overlay {
+    position: fixed; inset: 0;
+    background: linear-gradient(135deg, #1e3a8a, #2563eb, #6d28d9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+  #login-overlay.hidden { display: none; }
+  .login-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px 28px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+    text-align: center;
+  }
+  .login-box h2 { margin: 0 0 8px; font-size: 24px; }
+  .login-box .lead { color: var(--muted); font-size: 13px; margin-bottom: 22px; }
+  .login-box input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+  .login-box input:focus { outline: none; border-color: var(--accent); }
+  .login-box button {
+    width: 100%;
+    padding: 12px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .login-box button:hover { background: #1d4ed8; }
+  .login-box button:disabled { opacity: 0.6; cursor: not-allowed; }
+  .login-msg {
+    margin-top: 14px;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    display: none;
+  }
+  .login-msg.show { display: block; }
+  .login-msg.success { background: #d1fae5; color: #065f46; }
+  .login-msg.error { background: #fee2e2; color: #991b1b; }
+  .login-help {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 16px;
+    line-height: 1.5;
+  }
+
+  /* ===== ユーザーバー ===== */
+  #user-bar {
+    position: sticky;
+    top: 0;
+    z-index: 25;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    padding: 6px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  #user-bar .info {
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  #user-bar .badge {
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 11px;
+  }
+  #user-bar .badge.admin {
+    background: #fef3c7;
+    color: #b45309;
+  }
+  #user-bar button {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    color: var(--text);
+  }
+  #user-bar button:hover { background: var(--panel-2); }
+  #user-bar .actions { display: flex; gap: 6px; }
+  #user-bar .sync-status {
+    color: var(--success);
+    font-size: 11px;
+  }
+  #user-bar .sync-status.saving { color: var(--warn); }
+  #user-bar .sync-status.error { color: var(--danger); }
+
+  /* ===== Admin Modal ===== */
+  #admin-modal .modal { max-width: 700px; }
+  .admin-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .admin-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .admin-row:hover { background: var(--panel-2); border-color: var(--accent); }
+  .admin-row .email { font-weight: 600; font-size: 13px; }
+  .admin-row .meta { color: var(--muted); font-size: 11px; }
+  .admin-row.self { background: var(--accent-soft); }
+
+  /* ===== Read-only banner (admin viewing another user) ===== */
+  #ro-banner {
+    display: none;
+    background: linear-gradient(90deg, #fef3c7, #fde68a);
+    border-bottom: 2px solid #d97706;
+    padding: 8px 16px;
+    font-size: 13px;
+    color: #92400e;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 26;
+  }
+  #ro-banner.show { display: block; }
+  #ro-banner button {
+    margin-left: 12px;
+    background: #d97706;
+    color: #fff;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  body.readonly input,
+  body.readonly textarea,
+  body.readonly select { pointer-events: none; opacity: 0.85; }
+  body.readonly button:not(#ro-banner button):not(.modal-close):not(#picker-done) { pointer-events: none; opacity: 0.5; }
 </style>
 </head>
 <body>
+<!-- ログイン画面 -->
+<div id="login-overlay">
+  <div class="login-box">
+    <h2>🎯 ゴールマネジメント</h2>
+    <p class="lead">メールアドレスにログインリンクをお送りします</p>
+    <input id="login-email" type="email" placeholder="your@email.com" autocomplete="email" />
+    <button id="login-send">ログインリンクを送信</button>
+    <div class="login-msg" id="login-msg"></div>
+    <p class="login-help">※ パスワード不要。届いたメールのリンクをクリックするとログインできます。<br>
+    複数の端末（PC・スマホ）で同じメールでログインすればデータが同期されます。</p>
+  </div>
+</div>
+
+<!-- 管理者が他人を閲覧中の警告バナー -->
+<div id="ro-banner">
+  📖 <span id="ro-email"></span> さんのデータを閲覧中（読み取り専用）
+  <button id="ro-back">自分のデータに戻る</button>
+</div>
+
+<!-- ユーザーバー -->
+<div id="user-bar" style="display:none;">
+  <div class="info">
+    <span id="ub-email">—</span>
+    <span class="badge" id="ub-badge" style="display:none;">管理者</span>
+    <span class="sync-status" id="ub-sync">✅ 同期済み</span>
+  </div>
+  <div class="actions">
+    <button id="ub-admin" style="display:none;">👥 受講生一覧</button>
+    <button id="ub-logout">ログアウト</button>
+  </div>
+</div>
+
 <header>
   <h1>🎯 ゴールマネジメント</h1>
   <p><span id="header-period">2026年4-6月</span> ／ 年間目標からGOALを考える</p>
@@ -711,6 +907,22 @@
   </section>
 </main>
 
+<!-- Admin Modal -->
+<div class="modal-backdrop" id="admin-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>👥 受講生一覧</h3>
+      <button class="modal-close" id="admin-close">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="admin-list" id="admin-list">読み込み中...</div>
+    </div>
+    <div class="modal-foot">
+      <button id="admin-done">閉じる</button>
+    </div>
+  </div>
+</div>
+
 <!-- Picker Modal -->
 <div class="modal-backdrop" id="picker">
   <div class="modal">
@@ -725,7 +937,32 @@
   </div>
 </div>
 
-<script>
+<script type="module">
+  // ===== Firebase Setup =====
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
+  import {
+    getAuth, isSignInWithEmailLink, sendSignInLinkToEmail,
+    signInWithEmailLink, onAuthStateChanged, signOut
+  } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
+  import {
+    getFirestore, doc, setDoc, getDoc, onSnapshot, collection, getDocs
+  } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCMBW4GQj6lmLtOxcUqAu70qXmejr1_wJA",
+    authDomain: "goal-management-c56c6.firebaseapp.com",
+    projectId: "goal-management-c56c6",
+    storageBucket: "goal-management-c56c6.firebasestorage.app",
+    messagingSenderId: "425857773351",
+    appId: "1:425857773351:web:2940aff79f5cba34660302",
+    measurementId: "G-5VY71JXSKE"
+  };
+  const ADMIN_EMAIL = 'kida916@gmail.com';
+
+  const fbApp = initializeApp(firebaseConfig);
+  const auth = getAuth(fbApp);
+  const db = getFirestore(fbApp);
+
   const STORAGE_KEY = 'goal-mgmt-h1-v3';
   const KPI_KEYS = ['kgi', 'kpi1', 'kpi2', 'kpi3'];
   const KPI_LABELS = { kgi: 'KGI', kpi1: 'KPI①', kpi2: 'KPI②', kpi3: 'KPI③' };
@@ -850,7 +1087,10 @@
     } catch {}
     return defaultState();
   }
-  function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    saveToCloud();
+  }
 
   let state = load();
   const $ = (id) => document.getElementById(id);
@@ -1191,7 +1431,344 @@
   });
   $('print-btn').addEventListener('click', () => window.print());
 
-  renderAll();
+  // ========================================
+  // ===== Firebase Auth + Firestore Sync =====
+  // ========================================
+
+  let currentUser = null;
+  let viewingUid = null;       // who's data we're displaying (own uid or another for admin)
+  let isReadOnly = false;
+  let firestoreUnsub = null;
+  let cloudSaveTimer = null;
+  let suppressCloudSave = false;
+
+  function setSyncStatus(text, cls = '') {
+    const el = $('ub-sync');
+    if (!el) return;
+    el.textContent = text;
+    el.className = 'sync-status' + (cls ? ' ' + cls : '');
+  }
+
+  function showLogin(msg, cls) {
+    $('login-overlay').classList.remove('hidden');
+    $('user-bar').style.display = 'none';
+    if (msg) {
+      const m = $('login-msg');
+      m.textContent = msg;
+      m.className = 'login-msg show ' + (cls || '');
+    }
+  }
+
+  function hideLogin() {
+    $('login-overlay').classList.add('hidden');
+    $('user-bar').style.display = 'flex';
+  }
+
+  async function sendLoginLink() {
+    const email = $('login-email').value.trim();
+    if (!email || !/.+@.+\..+/.test(email)) {
+      const m = $('login-msg');
+      m.textContent = '正しいメールアドレスを入力してください';
+      m.className = 'login-msg show error';
+      return;
+    }
+    const btn = $('login-send');
+    btn.disabled = true;
+    btn.textContent = '送信中...';
+    try {
+      const url = window.location.origin + window.location.pathname;
+      await sendSignInLinkToEmail(auth, email, { url, handleCodeInApp: true });
+      window.localStorage.setItem('emailForSignIn', email);
+      const m = $('login-msg');
+      m.textContent = `📩 ${email} にログインリンクを送信しました。メールをご確認ください。`;
+      m.className = 'login-msg show success';
+    } catch (err) {
+      const m = $('login-msg');
+      m.textContent = 'エラー: ' + (err.message || err);
+      m.className = 'login-msg show error';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'ログインリンクを送信';
+    }
+  }
+
+  $('login-send').addEventListener('click', sendLoginLink);
+  $('login-email').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') sendLoginLink();
+  });
+
+  async function tryCompleteEmailLink() {
+    if (!isSignInWithEmailLink(auth, window.location.href)) return false;
+    let email = window.localStorage.getItem('emailForSignIn');
+    if (!email) email = window.prompt('ログインに使ったメールアドレスを再入力してください');
+    if (!email) return false;
+    try {
+      await signInWithEmailLink(auth, email, window.location.href);
+      window.localStorage.removeItem('emailForSignIn');
+      // clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return true;
+    } catch (err) {
+      showLogin('ログインに失敗しました: ' + (err.message || err), 'error');
+      return false;
+    }
+  }
+
+  function userBarUpdate(user) {
+    $('ub-email').textContent = user.email || '(unknown)';
+    const isAdmin = user.email === ADMIN_EMAIL;
+    $('ub-badge').style.display = isAdmin ? 'inline-block' : 'none';
+    $('ub-badge').className = 'badge ' + (isAdmin ? 'admin' : '');
+    $('ub-admin').style.display = isAdmin ? 'inline-block' : 'none';
+  }
+
+  // ===== Cloud sync =====
+  function sanitizeForFirestore(s) {
+    return JSON.parse(JSON.stringify(s));
+  }
+
+  async function loadFromCloud(uid) {
+    setSyncStatus('☁️ 読み込み中...', 'saving');
+    try {
+      const ref = doc(db, 'users', uid);
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        const data = snap.data();
+        state = {
+          ...defaultState(), ...data,
+          goals: { ...defaultState().goals, ...(data.goals || {}) },
+          todos: { ...defaultState().todos, ...(data.todos || {}) },
+          weeks: Array.isArray(data.weeks) && data.weeks.length ? data.weeks : defaultState().weeks,
+          results: { ...defaultState().results, ...(data.results || {}) },
+        };
+        // normalize todos / weeks
+        [1,2,3].forEach(k => {
+          state.todos[k] = (state.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done }));
+        });
+        state.weeks = state.weeks.map((w, i) => ({
+          week: w.week || DEFAULT_WEEKS[i] || `週${i+1}`,
+          planTodoIds: w.planTodoIds || [],
+          planNote: w.planNote ?? (w.plan || ''),
+          done: w.done || '',
+          review: w.review || '',
+        }));
+        suppressCloudSave = true;
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+        suppressCloudSave = false;
+      } else if (currentUser && uid === currentUser.uid) {
+        // first sign-in: upload current local state
+        await setDoc(ref, {
+          ...sanitizeForFirestore(state),
+          _email: currentUser.email,
+          _updatedAt: Date.now(),
+        });
+      }
+      setSyncStatus('✅ 同期済み');
+    } catch (err) {
+      console.error('loadFromCloud error', err);
+      setSyncStatus('⚠️ 同期エラー', 'error');
+    }
+  }
+
+  function setupCloudSubscription(uid) {
+    if (firestoreUnsub) { firestoreUnsub(); firestoreUnsub = null; }
+    const ref = doc(db, 'users', uid);
+    firestoreUnsub = onSnapshot(ref, (snap) => {
+      if (snap.metadata.hasPendingWrites) return;
+      if (!snap.exists()) return;
+      const data = snap.data();
+      // Update only if different (avoid loops)
+      const newState = {
+        ...defaultState(), ...data,
+        goals: { ...defaultState().goals, ...(data.goals || {}) },
+        todos: { ...defaultState().todos, ...(data.todos || {}) },
+        weeks: Array.isArray(data.weeks) && data.weeks.length ? data.weeks : defaultState().weeks,
+        results: { ...defaultState().results, ...(data.results || {}) },
+      };
+      [1,2,3].forEach(k => {
+        newState.todos[k] = (newState.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done }));
+      });
+      newState.weeks = newState.weeks.map((w, i) => ({
+        week: w.week || DEFAULT_WEEKS[i] || `週${i+1}`,
+        planTodoIds: w.planTodoIds || [],
+        planNote: w.planNote ?? (w.plan || ''),
+        done: w.done || '',
+        review: w.review || '',
+      }));
+      // Only re-render if focus is not on an input (to avoid disrupting typing)
+      const active = document.activeElement;
+      const isTyping = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
+      state = newState;
+      if (!isTyping) {
+        suppressCloudSave = true;
+        renderAll();
+        suppressCloudSave = false;
+      }
+    }, (err) => {
+      console.error('snapshot error', err);
+      setSyncStatus('⚠️ 同期エラー', 'error');
+    });
+  }
+
+  function saveToCloud() {
+    if (!currentUser || isReadOnly || suppressCloudSave) return;
+    if (!viewingUid || viewingUid !== currentUser.uid) return;
+    setSyncStatus('💾 保存中...', 'saving');
+    if (cloudSaveTimer) clearTimeout(cloudSaveTimer);
+    cloudSaveTimer = setTimeout(async () => {
+      try {
+        const ref = doc(db, 'users', currentUser.uid);
+        await setDoc(ref, {
+          ...sanitizeForFirestore(state),
+          _email: currentUser.email,
+          _updatedAt: Date.now(),
+        });
+        setSyncStatus('✅ 同期済み');
+      } catch (err) {
+        console.error('saveToCloud error', err);
+        setSyncStatus('⚠️ 同期エラー', 'error');
+      }
+    }, 800);
+  }
+
+  // ===== Admin =====
+  $('ub-admin').addEventListener('click', async () => {
+    $('admin-modal').classList.add('show');
+    $('admin-list').textContent = '読み込み中...';
+    try {
+      const snap = await getDocs(collection(db, 'users'));
+      const rows = [];
+      snap.forEach(d => {
+        const data = d.data();
+        rows.push({
+          uid: d.id,
+          email: data._email || '(unknown)',
+          updatedAt: data._updatedAt || 0,
+        });
+      });
+      rows.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+      if (!rows.length) {
+        $('admin-list').innerHTML = '<div class="pick-empty">受講生がまだいません</div>';
+        return;
+      }
+      $('admin-list').innerHTML = rows.map(r => {
+        const isSelf = r.uid === currentUser.uid;
+        const dt = r.updatedAt ? new Date(r.updatedAt).toLocaleString('ja-JP') : '—';
+        return `
+          <div class="admin-row ${isSelf ? 'self' : ''}" data-uid="${r.uid}" data-email="${escAttr(r.email)}">
+            <div>
+              <div class="email">${esc(r.email)} ${isSelf ? '（あなた）' : ''}</div>
+              <div class="meta">UID: ${r.uid.slice(0,8)}…</div>
+            </div>
+            <div class="meta">最終更新: ${dt}</div>
+          </div>
+        `;
+      }).join('');
+    } catch (err) {
+      $('admin-list').innerHTML = '<div class="pick-empty">読み込みエラー: ' + esc(err.message || String(err)) + '</div>';
+    }
+  });
+
+  $('admin-list').addEventListener('click', async (e) => {
+    const row = e.target.closest('.admin-row');
+    if (!row) return;
+    const uid = row.dataset.uid;
+    const email = row.dataset.email;
+    $('admin-modal').classList.remove('show');
+    if (uid === currentUser.uid) {
+      // viewing self - normal mode
+      enterOwnMode();
+    } else {
+      enterReadOnlyMode(uid, email);
+    }
+  });
+
+  $('admin-close').addEventListener('click', () => $('admin-modal').classList.remove('show'));
+  $('admin-done').addEventListener('click', () => $('admin-modal').classList.remove('show'));
+
+  async function enterReadOnlyMode(uid, email) {
+    isReadOnly = true;
+    viewingUid = uid;
+    document.body.classList.add('readonly');
+    $('ro-email').textContent = email;
+    $('ro-banner').classList.add('show');
+    if (firestoreUnsub) { firestoreUnsub(); firestoreUnsub = null; }
+    try {
+      const snap = await getDoc(doc(db, 'users', uid));
+      if (snap.exists()) {
+        const data = snap.data();
+        state = {
+          ...defaultState(), ...data,
+          goals: { ...defaultState().goals, ...(data.goals || {}) },
+          todos: { ...defaultState().todos, ...(data.todos || {}) },
+          weeks: Array.isArray(data.weeks) && data.weeks.length ? data.weeks : defaultState().weeks,
+          results: { ...defaultState().results, ...(data.results || {}) },
+        };
+        [1,2,3].forEach(k => {
+          state.todos[k] = (state.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done }));
+        });
+        state.weeks = state.weeks.map((w, i) => ({
+          week: w.week || DEFAULT_WEEKS[i] || `週${i+1}`,
+          planTodoIds: w.planTodoIds || [],
+          planNote: w.planNote ?? (w.plan || ''),
+          done: w.done || '',
+          review: w.review || '',
+        }));
+        renderAll();
+      }
+    } catch (err) {
+      alert('データ取得エラー: ' + (err.message || err));
+      enterOwnMode();
+    }
+  }
+
+  function enterOwnMode() {
+    if (!currentUser) return;
+    isReadOnly = false;
+    viewingUid = currentUser.uid;
+    document.body.classList.remove('readonly');
+    $('ro-banner').classList.remove('show');
+    // Reload own data
+    state = load();
+    renderAll();
+    setupCloudSubscription(currentUser.uid);
+    loadFromCloud(currentUser.uid);
+  }
+
+  $('ro-back').addEventListener('click', enterOwnMode);
+
+  // ===== Logout =====
+  $('ub-logout').addEventListener('click', async () => {
+    if (!confirm('ログアウトしますか？\n（このブラウザのデータも消えます。次回ログイン時にクラウドから復元されます）')) return;
+    try {
+      if (firestoreUnsub) firestoreUnsub();
+      await signOut(auth);
+      // clear local cache so next user doesn't see prior data
+      localStorage.removeItem(STORAGE_KEY);
+      location.reload();
+    } catch (err) {
+      alert('ログアウトエラー: ' + (err.message || err));
+    }
+  });
+
+  // ===== Init =====
+  (async () => {
+    await tryCompleteEmailLink();
+    onAuthStateChanged(auth, async (user) => {
+      currentUser = user;
+      if (user) {
+        viewingUid = user.uid;
+        userBarUpdate(user);
+        hideLogin();
+        await loadFromCloud(user.uid);
+        renderAll();
+        setupCloudSubscription(user.uid);
+      } else {
+        viewingUid = null;
+        showLogin();
+      }
+    });
+  })();
 </script>
 </body>
 </html>
