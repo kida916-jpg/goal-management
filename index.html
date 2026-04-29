@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ゴールマネジメント</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --panel: #ffffff;
+    --panel-2: #f8fafc;
+    --text: #0f172a;
+    --muted: #64748b;
+    --accent: #2563eb;
+    --accent-soft: #dbeafe;
+    --success: #16a34a;
+    --warn: #d97706;
+    --danger: #dc2626;
+    --border: #e2e8f0;
+    --kgi: #7c3aed;
+    --kgi-soft: #ede9fe;
+    --kpi1: #0ea5e9;
+    --kpi1-soft: #e0f2fe;
+    --kpi2: #10b981;
+    --kpi2-soft: #d1fae5;
+    --kpi3: #f59e0b;
+    --kpi3-soft: #fef3c7;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+  }
+  header {
+    padding: 20px;
+    background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    color: #fff;
+    text-align: center;
+  }
+  header h1 { margin: 0; font-size: 22px; letter-spacing: 0.05em; }
+  header p { margin: 4px 0 0; font-size: 12px; opacity: 0.85; }
+  .toolbar {
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 20px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+  .toolbar input { padding: 6px 10px; }
+  .toolbar button {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--text);
+  }
+  .toolbar button:hover { background: var(--accent-soft); border-color: var(--accent); }
+  .toolbar button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  main { max-width: 1100px; margin: 0 auto; padding: 20px; }
+  section {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .sec-head {
+    padding: 14px 18px;
+    background: var(--panel-2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .sec-head h2 { margin: 0; font-size: 15px; font-weight: 700; }
+  .sec-head .sub { color: var(--muted); font-size: 12px; }
+  .sec-body { padding: 16px 18px; }
+  textarea, input[type="text"], input[type="number"] {
+    font: inherit; color: var(--text);
+  }
+  textarea:focus, input:focus { outline: none; }
+
+  /* ===== KGI Hero ===== */
+  .kgi-hero {
+    background: linear-gradient(135deg, #6d28d9 0%, #9333ea 50%, #c026d3 100%);
+    border-radius: 14px;
+    padding: 22px 24px;
+    color: #fff;
+    margin-bottom: 16px;
+    box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+    position: relative;
+  }
+  .kgi-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle at top right, rgba(255,255,255,0.15), transparent 60%);
+    border-radius: 14px;
+    pointer-events: none;
+  }
+  .kgi-label {
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    opacity: 0.85;
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+  .kgi-target-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .kgi-target-wrap .icon { font-size: 30px; }
+  .kgi-target-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 2px dashed rgba(255,255,255,0.4);
+    color: #fff;
+    font-size: 26px;
+    font-weight: 800;
+    padding: 4px 2px;
+    line-height: 1.3;
+  }
+  .kgi-target-input::placeholder { color: rgba(255,255,255,0.55); font-weight: 600; }
+  .kgi-target-input:focus { border-bottom-color: #fff; }
+  .kgi-current-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 10px 14px;
+    backdrop-filter: blur(4px);
+  }
+  .kgi-current-wrap .clabel {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    opacity: 0.85;
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+  .kgi-current-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    padding: 2px;
+    resize: vertical;
+    min-height: 22px;
+    font-family: inherit;
+  }
+  .kgi-current-input::placeholder { color: rgba(255,255,255,0.6); }
+
+  /* ===== KPI Cards ===== */
+  .kpi-card {
+    border: 2px solid;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    background: var(--panel);
+  }
+  .kpi-card[data-kpi="1"] { border-color: var(--kpi1); }
+  .kpi-card[data-kpi="2"] { border-color: var(--kpi2); }
+  .kpi-card[data-kpi="3"] { border-color: var(--kpi3); }
+  .kpi-card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    color: #fff;
+    font-weight: 700;
+  }
+  .kpi-card[data-kpi="1"] .kpi-card-head { background: var(--kpi1); }
+  .kpi-card[data-kpi="2"] .kpi-card-head { background: var(--kpi2); }
+  .kpi-card[data-kpi="3"] .kpi-card-head { background: var(--kpi3); }
+  .kpi-num {
+    background: rgba(255,255,255,0.25);
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  .kpi-target-input2 {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed rgba(255,255,255,0.5);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 2px 4px;
+  }
+  .kpi-target-input2::placeholder { color: rgba(255,255,255,0.7); font-weight: 500; }
+  .kpi-target-input2:focus { border-bottom-color: #fff; outline: none; }
+  .kpi-card-body { padding: 12px 14px; }
+  .kpi-row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 10px;
+    align-items: stretch;
+    margin-bottom: 8px;
+  }
+  .kpi-row:last-child { margin-bottom: 0; }
+  .kpi-row > .lbl {
+    background: var(--panel-2);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+  }
+  .kpi-card[data-kpi="1"] .kpi-row > .lbl { background: var(--kpi1-soft); color: var(--kpi1); }
+  .kpi-card[data-kpi="2"] .kpi-row > .lbl { background: var(--kpi2-soft); color: var(--kpi2); }
+  .kpi-card[data-kpi="3"] .kpi-row > .lbl { background: var(--kpi3-soft); color: var(--kpi3); }
+  .kpi-row textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 8px;
+    background: #fff;
+    resize: vertical;
+    min-height: 36px;
+    font-family: inherit;
+  }
+  .kpi-row textarea:focus { border-color: var(--accent); }
+  .kpi-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  /* ===== Todo ===== */
+  .todo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .todo-col {
+    border: 2px solid;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .todo-col[data-kpi="1"] { border-color: var(--kpi1); }
+  .todo-col[data-kpi="2"] { border-color: var(--kpi2); }
+  .todo-col[data-kpi="3"] { border-color: var(--kpi3); }
+  .todo-col-head {
+    padding: 10px 12px;
+    color: #fff;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .todo-col[data-kpi="1"] .todo-col-head { background: var(--kpi1); }
+  .todo-col[data-kpi="2"] .todo-col-head { background: var(--kpi2); }
+  .todo-col[data-kpi="3"] .todo-col-head { background: var(--kpi3); }
+  .todo-col-head .num {
+    font-weight: 800;
+    font-size: 13px;
+    margin-right: 6px;
+  }
+  .todo-col-head .name {
+    font-weight: 600;
+    word-break: break-word;
+  }
+  .todo-col-head .name:empty::before {
+    content: '（KPIの目標を入力してください）';
+    opacity: 0.7;
+    font-weight: 400;
+  }
+  .todo-list { padding: 6px; max-height: 420px; overflow-y: auto; flex: 1; }
+  .todo-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+    border-radius: 4px;
+  }
+  .todo-item:hover { background: var(--panel-2); }
+  .todo-item input[type="checkbox"] { flex-shrink: 0; cursor: pointer; }
+  .todo-item input[type="text"] {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 4px;
+    font-size: 13px;
+  }
+  .todo-item input[type="text"]:focus {
+    outline: 1px solid var(--accent);
+    background: #fff;
+    border-radius: 4px;
+  }
+  .todo-item.done input[type="text"] {
+    text-decoration: line-through;
+    color: var(--muted);
+  }
+  .todo-add {
+    width: calc(100% - 12px);
+    margin: 4px 6px 8px;
+    border: 1px dashed var(--border);
+    background: transparent;
+    padding: 6px;
+    color: var(--muted);
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  .todo-add:hover { color: var(--accent); border-color: var(--accent); }
+  .todo-progress {
+    padding: 6px 10px;
+    background: var(--panel-2);
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ===== 週次 ===== */
+  .week-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .week-table th, .week-table td {
+    border: 1px solid var(--border);
+    padding: 8px;
+    vertical-align: top;
+    text-align: left;
+  }
+  .week-table th {
+    background: var(--panel-2);
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .week-table .week-label {
+    width: 110px;
+    background: var(--panel-2);
+    font-weight: 600;
+    font-size: 12px;
+  }
+  .week-table .plan-cell { min-width: 240px; }
+  .plan-chips {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+  .plan-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    border-left: 3px solid;
+    background: var(--panel-2);
+  }
+  .plan-chip[data-kpi="1"] { border-color: var(--kpi1); background: var(--kpi1-soft); }
+  .plan-chip[data-kpi="2"] { border-color: var(--kpi2); background: var(--kpi2-soft); }
+  .plan-chip[data-kpi="3"] { border-color: var(--kpi3); background: var(--kpi3-soft); }
+  .plan-chip.done .chip-text { text-decoration: line-through; opacity: 0.6; }
+  .plan-chip .chip-num {
+    font-weight: 700;
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+  .plan-chip[data-kpi="1"] .chip-num { color: var(--kpi1); }
+  .plan-chip[data-kpi="2"] .chip-num { color: var(--kpi2); }
+  .plan-chip[data-kpi="3"] .chip-num { color: var(--kpi3); }
+  .plan-chip .chip-text { flex: 1; word-break: break-word; }
+  .plan-chip .chip-x {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0 4px;
+    font-size: 14px;
+  }
+  .plan-chip .chip-x:hover { color: var(--danger); }
+  .plan-pick-btn {
+    width: 100%;
+    border: 1px dashed var(--border);
+    background: transparent;
+    padding: 6px;
+    color: var(--muted);
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-bottom: 6px;
+  }
+  .plan-pick-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .week-table textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 6px;
+    background: #fff;
+    resize: vertical;
+    min-height: 50px;
+    font-family: inherit;
+  }
+  .week-table textarea.note {
+    min-height: 40px;
+    font-size: 12px;
+  }
+  .week-table textarea:focus { border-color: var(--accent); }
+
+  /* ===== Modal ===== */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+  .modal-backdrop.show { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 560px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  }
+  .modal-head {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .modal-head h3 { margin: 0; font-size: 15px; }
+  .modal-close {
+    background: transparent;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--muted);
+    padding: 0 4px;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal-body { padding: 14px 18px; overflow-y: auto; flex: 1; }
+  .pick-group { margin-bottom: 16px; }
+  .pick-group:last-child { margin-bottom: 0; }
+  .pick-group-head {
+    font-weight: 700;
+    font-size: 13px;
+    padding: 6px 10px;
+    color: #fff;
+    border-radius: 6px;
+    margin-bottom: 6px;
+  }
+  .pick-group[data-kpi="1"] .pick-group-head { background: var(--kpi1); }
+  .pick-group[data-kpi="2"] .pick-group-head { background: var(--kpi2); }
+  .pick-group[data-kpi="3"] .pick-group-head { background: var(--kpi3); }
+  .pick-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .pick-item:hover { background: var(--panel-2); }
+  .pick-item input { cursor: pointer; }
+  .pick-empty {
+    color: var(--muted);
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+  .modal-foot {
+    padding: 10px 18px;
+    border-top: 1px solid var(--border);
+    text-align: right;
+  }
+  .modal-foot button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font: inherit;
+  }
+
+  /* ===== 結果 ===== */
+  .result-table { width: 100%; border-collapse: collapse; }
+  .result-table th, .result-table td {
+    border: 1px solid var(--border);
+    padding: 8px;
+    text-align: center;
+  }
+  .result-table th {
+    background: var(--panel-2);
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .result-table .label-cell { text-align: left; font-weight: 600; }
+  .result-table input {
+    width: 90px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 6px;
+    text-align: right;
+  }
+  .result-table input:focus { border-color: var(--accent); }
+  .calc { font-weight: 700; }
+  .calc-good { color: var(--success); }
+  .calc-mid { color: var(--warn); }
+  .calc-bad { color: var(--danger); }
+  .note { color: var(--muted); font-size: 11px; margin: 6px 0 0; }
+
+  @media (max-width: 720px) {
+    .todo-grid { grid-template-columns: 1fr; }
+    .kpi-grid-2 { grid-template-columns: 1fr; }
+    .kpi-row { grid-template-columns: 70px 1fr; }
+    main { padding: 12px; }
+  }
+  @media print {
+    .toolbar, .todo-add, .plan-pick-btn, .modal-backdrop { display: none !important; }
+    body { background: #fff; }
+    section, .kgi-hero, .kpi-card { break-inside: avoid; }
+    .kgi-hero { color: #000 !important; background: #ede9fe !important; box-shadow: none; }
+    .kgi-target-input, .kgi-current-input { color: #000; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>🎯 ゴールマネジメント</h1>
+  <p><span id="header-period">2026年4-6月</span> ／ 年間目標からGOALを考える</p>
+</header>
+
+<div class="toolbar">
+  <input type="text" id="period" placeholder="期間（例: 2026年4-6月）" />
+  <button id="export-btn">📥 JSONエクスポート</button>
+  <button id="import-btn">📤 JSONインポート</button>
+  <input type="file" id="import-file" accept="application/json" hidden />
+  <button id="reset-btn">🗑 全リセット</button>
+  <button id="print-btn" class="primary">🖨 印刷</button>
+</div>
+
+<main>
+  <!-- 年間目標 -->
+  <section>
+    <div class="sec-head">
+      <h2>📌 年間目標</h2>
+      <span class="sub">※具体的な質問のみFB（全体のFBはなし）／未来戦略の年間目標からGOALを考える</span>
+    </div>
+    <div class="sec-body">
+      <!-- KGI Hero -->
+      <div class="kgi-hero">
+        <div class="kgi-label">⭐ KGI — KEY GOAL INDICATOR</div>
+        <div class="kgi-target-wrap">
+          <span class="icon">🏆</span>
+          <input class="kgi-target-input" data-goal="kgi" data-field="target" placeholder="達成したい最重要目標を入力" />
+        </div>
+        <div class="kgi-current-wrap">
+          <span class="clabel">現状</span>
+          <textarea class="kgi-current-input" data-goal="kgi" data-field="current" placeholder="今の状態・数値"></textarea>
+        </div>
+      </div>
+
+      <!-- KPI Cards -->
+      <div id="kpi-cards"></div>
+    </div>
+  </section>
+
+  <!-- Todo -->
+  <section>
+    <div class="sec-head">
+      <h2>✅ KPIをTodoに落とし込む</h2>
+      <span class="sub" id="todo-summary">—</span>
+    </div>
+    <div class="sec-body">
+      <div class="todo-grid">
+        <div class="todo-col" data-kpi="1">
+          <div class="todo-col-head">
+            <div><span class="num">KPI①</span></div>
+            <div class="name" id="kpi1-name"></div>
+          </div>
+          <div class="todo-list" id="todo-1"></div>
+          <button class="todo-add" data-kpi="1" data-act="add">＋ Todo追加</button>
+          <div class="todo-progress" id="todo-1-prog">0 / 0 完了</div>
+        </div>
+        <div class="todo-col" data-kpi="2">
+          <div class="todo-col-head">
+            <div><span class="num">KPI②</span></div>
+            <div class="name" id="kpi2-name"></div>
+          </div>
+          <div class="todo-list" id="todo-2"></div>
+          <button class="todo-add" data-kpi="2" data-act="add">＋ Todo追加</button>
+          <div class="todo-progress" id="todo-2-prog">0 / 0 完了</div>
+        </div>
+        <div class="todo-col" data-kpi="3">
+          <div class="todo-col-head">
+            <div><span class="num">KPI③</span></div>
+            <div class="name" id="kpi3-name"></div>
+          </div>
+          <div class="todo-list" id="todo-3"></div>
+          <button class="todo-add" data-kpi="3" data-act="add">＋ Todo追加</button>
+          <div class="todo-progress" id="todo-3-prog">0 / 0 完了</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 週次 -->
+  <section>
+    <div class="sec-head">
+      <h2>🗓 週次行動目標</h2>
+      <span class="sub">「+ Todoから選ぶ」でTodoを紐付け／自由メモも追加可能</span>
+    </div>
+    <div class="sec-body" style="overflow-x:auto;">
+      <table class="week-table">
+        <thead>
+          <tr>
+            <th class="week-label">年 / 月 / 週</th>
+            <th>アクションプラン（計画）</th>
+            <th>実際実行できたこと</th>
+            <th>振り返り（できた／できなかった理由・改善案・気付き）</th>
+          </tr>
+        </thead>
+        <tbody id="week-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 結果 -->
+  <section>
+    <div class="sec-head">
+      <h2>📊 結果</h2>
+      <span class="sub">※半角の数字で記入</span>
+    </div>
+    <div class="sec-body">
+      <table class="result-table">
+        <thead>
+          <tr>
+            <th></th><th>内容</th><th>現状</th><th>目標</th><th>実績</th><th>達成率</th><th>成長率</th>
+          </tr>
+        </thead>
+        <tbody id="result-body"></tbody>
+      </table>
+      <p class="note">達成率 = 実績 ÷ 目標 ／ 成長率 = 実績 ÷ 現状</p>
+    </div>
+  </section>
+</main>
+
+<!-- Picker Modal -->
+<div class="modal-backdrop" id="picker">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="picker-title">Todoを選択</h3>
+      <button class="modal-close" id="picker-close">×</button>
+    </div>
+    <div class="modal-body" id="picker-body"></div>
+    <div class="modal-foot">
+      <button id="picker-done">完了</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'goal-mgmt-h1-v3';
+  const KPI_KEYS = ['kgi', 'kpi1', 'kpi2', 'kpi3'];
+  const KPI_LABELS = { kgi: 'KGI', kpi1: 'KPI①', kpi2: 'KPI②', kpi3: 'KPI③' };
+
+  function parsePeriod(s) {
+    if (!s) return null;
+    const t = String(s);
+    // Range form: "2026年4-6月" / "2026年4月-6月" / "2026年4月〜6月" / "2026年4月から6月"
+    let m = t.match(/(\d{4})\s*年\s*(\d{1,2})\s*月?\s*[-－〜～~ー]+\s*(\d{1,2})\s*月/);
+    if (!m) m = t.match(/(\d{4})\s*年\s*(\d{1,2})\s*月?\s*から\s*(\d{1,2})\s*月/);
+    if (m) {
+      const year = +m[1], start = +m[2], end = +m[3];
+      if (start >= 1 && start <= 12 && end >= start && end <= 12) {
+        const months = []; for (let i = start; i <= end; i++) months.push(i);
+        return { year, months };
+      }
+    }
+    // Single month: "2026年4月"
+    const m2 = t.match(/(\d{4})\s*年\s*(\d{1,2})\s*月/);
+    if (m2) {
+      const mo = +m2[2];
+      if (mo >= 1 && mo <= 12) return { year: +m2[1], months: [mo] };
+    }
+    return null;
+  }
+
+  function generateWeekLabels(year, months) {
+    const labels = [];
+    for (const mo of months) {
+      for (let w = 1; w <= 4; w++) labels.push(`${year}年${mo}月${w}週`);
+    }
+    return labels;
+  }
+
+  const DEFAULT_WEEKS = generateWeekLabels(2026, [4,5,6]);
+
+  const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+  const defaultState = () => ({
+    period: '2026年4-6月',
+    goals: {
+      kgi:  { target: '', current: '' },
+      kpi1: { target: '', current: '', issue: '', solution: '' },
+      kpi2: { target: '', current: '', issue: '', solution: '' },
+      kpi3: { target: '', current: '', issue: '', solution: '' },
+    },
+    todos: { 1: [], 2: [], 3: [] },
+    weeks: DEFAULT_WEEKS.map(w => ({ week: w, planTodoIds: [], planNote: '', done: '', review: '' })),
+    results: {
+      kgi:  { name: '', current: '', target: '', actual: '' },
+      kpi1: { name: '', current: '', target: '', actual: '' },
+      kpi2: { name: '', current: '', target: '', actual: '' },
+      kpi3: { name: '', current: '', target: '', actual: '' },
+    },
+  });
+
+  function migrateOld() {
+    // try old v2 storage
+    try {
+      const old = JSON.parse(localStorage.getItem('goal-mgmt-h1-v2'));
+      if (!old) return null;
+      const d = defaultState();
+      d.period = old.period || d.period;
+      if (old.goals) {
+        d.goals.kgi = { target: old.goals.kgi?.target || '', current: old.goals.kgi?.current || '' };
+        ['kpi1','kpi2','kpi3'].forEach(k => {
+          d.goals[k] = {
+            target: old.goals[k]?.target || '',
+            current: old.goals[k]?.current || '',
+            issue: old.goals[k]?.issue || '',
+            solution: old.goals[k]?.solution || '',
+          };
+        });
+      }
+      if (old.todos) {
+        [1,2,3].forEach(k => {
+          d.todos[k] = (old.todos[k] || []).map(t => ({ id: newId(), text: t.text || '', done: !!t.done }));
+        });
+      }
+      if (old.weeks) {
+        d.weeks = DEFAULT_WEEKS.map((w, i) => ({
+          week: w,
+          planTodoIds: [],
+          planNote: old.weeks[i]?.plan || '',
+          done: old.weeks[i]?.done || '',
+          review: old.weeks[i]?.review || '',
+        }));
+      }
+      if (old.results) d.results = { ...d.results, ...old.results };
+      return d;
+    } catch { return null; }
+  }
+
+  function load() {
+    try {
+      const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (s) {
+        const d = defaultState();
+        const merged = {
+          ...d, ...s,
+          goals: { ...d.goals, ...(s.goals || {}) },
+          todos: { ...d.todos, ...(s.todos || {}) },
+          weeks: Array.isArray(s.weeks) && s.weeks.length > 0 ? s.weeks : d.weeks,
+          results: { ...d.results, ...(s.results || {}) },
+        };
+        // ensure todo ids
+        [1,2,3].forEach(k => {
+          merged.todos[k] = (merged.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done }));
+        });
+        // ensure week shape
+        merged.weeks = merged.weeks.map((w, i) => ({
+          week: w.week || DEFAULT_WEEKS[i] || `週${i+1}`,
+          planTodoIds: w.planTodoIds || [],
+          planNote: w.planNote ?? (w.plan || ''),
+          done: w.done || '',
+          review: w.review || '',
+        }));
+        return merged;
+      }
+      const migrated = migrateOld();
+      if (migrated) return migrated;
+    } catch {}
+    return defaultState();
+  }
+  function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+  let state = load();
+  const $ = (id) => document.getElementById(id);
+
+  function findTodoById(id) {
+    for (const k of [1,2,3]) {
+      const t = state.todos[k].find(x => x.id === id);
+      if (t) return { todo: t, kpi: k };
+    }
+    return null;
+  }
+
+  // ===== render KPI cards =====
+  function renderKpiCards() {
+    const html = [1,2,3].map(n => {
+      const k = 'kpi' + n;
+      const g = state.goals[k];
+      return `
+      <div class="kpi-card" data-kpi="${n}">
+        <div class="kpi-card-head">
+          <span class="kpi-num">KPI${['①','②','③'][n-1]}</span>
+          <input class="kpi-target-input2" data-goal="${k}" data-field="target" value="${escAttr(g.target)}" placeholder="KPI${n}の目標を入力（Todo列にも反映されます）" />
+        </div>
+        <div class="kpi-card-body">
+          <div class="kpi-row">
+            <div class="lbl">現状</div>
+            <textarea data-goal="${k}" data-field="current" placeholder="今の数値・状態">${esc(g.current)}</textarea>
+          </div>
+          <div class="kpi-row">
+            <div class="lbl">課題</div>
+            <textarea data-goal="${k}" data-field="issue" placeholder="目標達成を阻む課題">${esc(g.issue)}</textarea>
+          </div>
+          <div class="kpi-row">
+            <div class="lbl">解決策</div>
+            <textarea data-goal="${k}" data-field="solution" placeholder="課題を解決する方法・アクション">${esc(g.solution)}</textarea>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    $('kpi-cards').innerHTML = html;
+    updateKpiNames();
+  }
+
+  function updateKpiNames() {
+    [1,2,3].forEach(n => {
+      const target = state.goals['kpi' + n].target || '';
+      $(`kpi${n}-name`).textContent = target;
+    });
+  }
+
+  // ===== Todos =====
+  function renderTodos() {
+    let totalDone = 0, totalAll = 0;
+    [1,2,3].forEach(k => {
+      const list = state.todos[k] || [];
+      const done = list.filter(t => t.done).length;
+      totalDone += done; totalAll += list.length;
+      $(`todo-${k}`).innerHTML = list.map((t, i) => `
+        <div class="todo-item ${t.done ? 'done' : ''}">
+          <input type="checkbox" data-id="${t.id}" data-act="check" ${t.done ? 'checked' : ''} />
+          <input type="text" data-id="${t.id}" data-act="text" value="${escAttr(t.text)}" placeholder="Todoを入力" />
+          <button data-id="${t.id}" data-act="del" title="削除"
+            style="border:none;background:transparent;cursor:pointer;color:var(--muted);font-size:14px;">×</button>
+        </div>
+      `).join('');
+      $(`todo-${k}-prog`).textContent = `${done} / ${list.length} 完了`;
+    });
+    $('todo-summary').textContent = totalAll ? `全体 ${totalDone} / ${totalAll} 完了` : '—';
+  }
+
+  // ===== Weeks =====
+  function renderWeeks() {
+    const html = state.weeks.map((w, wi) => {
+      const chips = (w.planTodoIds || []).map(id => {
+        const found = findTodoById(id);
+        if (!found) return '';
+        const { todo, kpi } = found;
+        return `
+          <div class="plan-chip ${todo.done ? 'done' : ''}" data-kpi="${kpi}">
+            <span class="chip-num">KPI${['①','②','③'][kpi-1]}</span>
+            <span class="chip-text">${esc(todo.text || '(未入力)')}</span>
+            <button class="chip-x" data-week="${wi}" data-todoid="${todo.id}" data-act="unpick" title="外す">×</button>
+          </div>
+        `;
+      }).join('');
+      return `
+        <tr>
+          <td class="week-label">${esc(w.week)}</td>
+          <td class="plan-cell">
+            <div class="plan-chips">${chips}</div>
+            <button class="plan-pick-btn" data-week="${wi}" data-act="pick">＋ Todoから選ぶ</button>
+            <textarea class="note" data-week="${wi}" data-field="planNote" placeholder="自由メモ（任意）">${esc(w.planNote)}</textarea>
+          </td>
+          <td><textarea data-week="${wi}" data-field="done" placeholder="実際にできたこと">${esc(w.done)}</textarea></td>
+          <td><textarea data-week="${wi}" data-field="review" placeholder="振り返り">${esc(w.review)}</textarea></td>
+        </tr>
+      `;
+    }).join('');
+    $('week-body').innerHTML = html;
+  }
+
+  // ===== Results =====
+  function calcAch(r) {
+    const tgt = parseFloat(r.target), act = parseFloat(r.actual);
+    return (!isNaN(act) && !isNaN(tgt) && tgt !== 0) ? (act / tgt * 100) : null;
+  }
+  function calcGrw(r) {
+    const cur = parseFloat(r.current), act = parseFloat(r.actual);
+    return (!isNaN(act) && !isNaN(cur) && cur !== 0) ? (act / cur * 100) : null;
+  }
+  function calcCls(v) {
+    return v === null ? '' : (v >= 100 ? 'calc-good' : v >= 70 ? 'calc-mid' : 'calc-bad');
+  }
+  function calcFmt(v) { return v === null ? '—' : v.toFixed(1) + '%'; }
+
+  // Update only the calc cells for a row (preserves input focus while typing).
+  function updateResultCalcs(k) {
+    const idx = KPI_KEYS.indexOf(k);
+    if (idx < 0) return;
+    const row = document.querySelectorAll('#result-body tr')[idx];
+    if (!row) return;
+    const r = state.results[k];
+    const ach = calcAch(r), grw = calcGrw(r);
+    const cells = row.querySelectorAll('.calc');
+    if (cells[0]) { cells[0].textContent = calcFmt(ach); cells[0].className = 'calc ' + calcCls(ach); }
+    if (cells[1]) { cells[1].textContent = calcFmt(grw); cells[1].className = 'calc ' + calcCls(grw); }
+  }
+
+  function renderResults() {
+    const rows = KPI_KEYS.map(k => {
+      const r = state.results[k];
+      const goalTarget = state.goals[k]?.target || '';
+      const ach = calcAch(r), grw = calcGrw(r);
+      const contentDisplay = goalTarget
+        ? esc(goalTarget)
+        : '<span style="color:var(--muted);font-size:12px;">（年間目標で入力）</span>';
+      return `
+        <tr>
+          <td class="label-cell" style="color:var(--${k});">${KPI_LABELS[k]}</td>
+          <td class="content-cell" style="text-align:left;">${contentDisplay}</td>
+          <td><input type="text" inputmode="decimal" data-result="${k}" data-field="current" value="${escAttr(r.current)}" placeholder="0" /></td>
+          <td><input type="text" inputmode="decimal" data-result="${k}" data-field="target" value="${escAttr(r.target)}" placeholder="0" /></td>
+          <td><input type="text" inputmode="decimal" data-result="${k}" data-field="actual" value="${escAttr(r.actual)}" placeholder="0" /></td>
+          <td class="calc ${calcCls(ach)}">${calcFmt(ach)}</td>
+          <td class="calc ${calcCls(grw)}">${calcFmt(grw)}</td>
+        </tr>
+      `;
+    }).join('');
+    $('result-body').innerHTML = rows;
+  }
+
+  function esc(s) {
+    return String(s ?? '').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  }
+  function escAttr(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function updateHeaderPeriod() {
+    $('header-period').textContent = state.period || '期間未設定';
+  }
+
+  // Regenerate week labels from period input. Returns true if labels changed.
+  function syncWeeksWithPeriod() {
+    const parsed = parsePeriod(state.period);
+    if (!parsed) return false;
+    const labels = generateWeekLabels(parsed.year, parsed.months);
+    const newCount = labels.length;
+    let changed = false;
+    // grow
+    while (state.weeks.length < newCount) {
+      state.weeks.push({ week: '', planTodoIds: [], planNote: '', done: '', review: '' });
+      changed = true;
+    }
+    // shrink only if extra rows are empty
+    if (state.weeks.length > newCount) {
+      const extras = state.weeks.slice(newCount);
+      const hasData = extras.some(w => (w.planTodoIds && w.planTodoIds.length) || w.planNote || w.done || w.review);
+      if (!hasData) {
+        state.weeks = state.weeks.slice(0, newCount);
+        changed = true;
+      }
+    }
+    // relabel within parsed range
+    for (let i = 0; i < Math.min(state.weeks.length, newCount); i++) {
+      if (state.weeks[i].week !== labels[i]) {
+        state.weeks[i].week = labels[i];
+        changed = true;
+      }
+    }
+    return changed;
+  }
+
+  function renderAll() {
+    $('period').value = state.period || '';
+    updateHeaderPeriod();
+    renderKpiCards();
+    renderTodos();
+    renderWeeks();
+    renderResults();
+  }
+
+  // ===== Events =====
+  document.addEventListener('input', (e) => {
+    const t = e.target;
+    if (t.dataset.goal) {
+      state.goals[t.dataset.goal][t.dataset.field] = t.value;
+      save();
+      if (t.dataset.field === 'target') {
+        if (t.dataset.goal !== 'kgi') updateKpiNames();
+        renderWeeks();
+        renderResults();
+      }
+    } else if (t.dataset.week !== undefined && t.dataset.field) {
+      const i = +t.dataset.week;
+      state.weeks[i][t.dataset.field] = t.value;
+      save();
+    } else if (t.dataset.result) {
+      state.results[t.dataset.result][t.dataset.field] = t.value;
+      save();
+      updateResultCalcs(t.dataset.result);
+    } else if (t.dataset.act === 'text' && t.dataset.id) {
+      const f = findTodoById(t.dataset.id);
+      if (f) { f.todo.text = t.value; save(); renderWeeks(); }
+    } else if (t.id === 'period') {
+      state.period = t.value;
+      updateHeaderPeriod();
+      if (syncWeeksWithPeriod()) renderWeeks();
+      save();
+    }
+  });
+
+  document.addEventListener('change', (e) => {
+    const t = e.target;
+    if (t.dataset.act === 'check' && t.dataset.id) {
+      const f = findTodoById(t.dataset.id);
+      if (f) { f.todo.done = t.checked; save(); renderTodos(); renderWeeks(); }
+    } else if (t.dataset.act === 'pick-check') {
+      const id = t.dataset.id;
+      const wi = +t.dataset.week;
+      const list = state.weeks[wi].planTodoIds;
+      if (t.checked && !list.includes(id)) list.push(id);
+      else if (!t.checked) state.weeks[wi].planTodoIds = list.filter(x => x !== id);
+      save();
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t.dataset.act === 'add' && t.dataset.kpi) {
+      const k = +t.dataset.kpi;
+      state.todos[k].push({ id: newId(), text: '', done: false });
+      save(); renderTodos();
+      setTimeout(() => {
+        const items = document.querySelectorAll(`#todo-${k} input[type="text"]`);
+        if (items.length) items[items.length - 1].focus();
+      }, 10);
+    } else if (t.dataset.act === 'del' && t.dataset.id) {
+      const id = t.dataset.id;
+      [1,2,3].forEach(k => { state.todos[k] = state.todos[k].filter(x => x.id !== id); });
+      // also remove from weekly references
+      state.weeks.forEach(w => { w.planTodoIds = (w.planTodoIds || []).filter(x => x !== id); });
+      save(); renderTodos(); renderWeeks();
+    } else if (t.dataset.act === 'pick') {
+      openPicker(+t.dataset.week);
+    } else if (t.dataset.act === 'unpick') {
+      const wi = +t.dataset.week;
+      const id = t.dataset.todoid;
+      state.weeks[wi].planTodoIds = state.weeks[wi].planTodoIds.filter(x => x !== id);
+      save(); renderWeeks();
+    }
+  });
+
+  // ===== Picker Modal =====
+  let pickerWeek = -1;
+  function openPicker(wi) {
+    pickerWeek = wi;
+    const w = state.weeks[wi];
+    $('picker-title').textContent = `${w.week} の Todo を選ぶ`;
+    const html = [1,2,3].map(k => {
+      const targetName = state.goals['kpi'+k].target || '(目標未入力)';
+      const list = state.todos[k] || [];
+      const items = list.length ? list.map(t => `
+        <label class="pick-item">
+          <input type="checkbox" data-act="pick-check" data-week="${wi}" data-id="${t.id}" ${w.planTodoIds.includes(t.id) ? 'checked' : ''} />
+          <span>${esc(t.text || '(未入力)')}</span>
+        </label>
+      `).join('') : '<div class="pick-empty">Todoがありません</div>';
+      return `
+        <div class="pick-group" data-kpi="${k}">
+          <div class="pick-group-head">KPI${['①','②','③'][k-1]}: ${esc(targetName)}</div>
+          ${items}
+        </div>
+      `;
+    }).join('');
+    $('picker-body').innerHTML = html;
+    $('picker').classList.add('show');
+  }
+  function closePicker() {
+    $('picker').classList.remove('show');
+    renderWeeks();
+  }
+  $('picker-close').addEventListener('click', closePicker);
+  $('picker-done').addEventListener('click', closePicker);
+  $('picker').addEventListener('click', (e) => {
+    if (e.target.id === 'picker') closePicker();
+  });
+
+  // ===== Toolbar =====
+  $('export-btn').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `goal-management-${state.period || 'export'}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+  $('import-btn').addEventListener('click', () => $('import-file').click());
+  $('import-file').addEventListener('change', (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const s = JSON.parse(r.result);
+        state = { ...defaultState(), ...s };
+        save(); renderAll();
+        alert('インポートしました');
+      } catch { alert('JSONの読み込みに失敗しました'); }
+    };
+    r.readAsText(f);
+  });
+  $('reset-btn').addEventListener('click', () => {
+    if (confirm('すべての入力内容を削除します。よろしいですか？')) {
+      state = defaultState(); save(); renderAll();
+    }
+  });
+  $('print-btn').addEventListener('click', () => window.print());
+
+  renderAll();
+</script>
+</body>
+</html>
