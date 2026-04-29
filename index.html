@@ -537,6 +537,49 @@
     .kpi-grid-2 { grid-template-columns: 1fr; }
     .kpi-row { grid-template-columns: 70px 1fr; }
     main { padding: 12px; }
+
+    /* 週次テーブルをカード型に変換 */
+    .week-table thead { display: none; }
+    .week-table, .week-table tbody, .week-table tr, .week-table td {
+      display: block;
+      width: 100%;
+    }
+    .week-table tr {
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px;
+      background: var(--panel-2);
+    }
+    .week-table td {
+      border: none;
+      padding: 8px 0;
+    }
+    .week-table .week-label {
+      width: auto;
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: #fff;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      text-align: center;
+      font-size: 13px;
+    }
+    .week-table td[data-label]::before {
+      content: attr(data-label);
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 4px;
+      letter-spacing: 0.05em;
+    }
+    .week-table textarea {
+      min-height: 80px;
+      font-size: 14px;
+      padding: 8px 10px;
+    }
+    .week-table .plan-cell { min-width: 0; }
   }
   @media print {
     .toolbar, .todo-add, .plan-pick-btn, .modal-backdrop { display: none !important; }
@@ -896,13 +939,13 @@
       return `
         <tr>
           <td class="week-label">${esc(w.week)}</td>
-          <td class="plan-cell">
+          <td class="plan-cell" data-label="📋 アクションプラン（計画）">
             <div class="plan-chips">${chips}</div>
             <button class="plan-pick-btn" data-week="${wi}" data-act="pick">＋ Todoから選ぶ</button>
             <textarea class="note" data-week="${wi}" data-field="planNote" placeholder="自由メモ（任意）">${esc(w.planNote)}</textarea>
           </td>
-          <td><textarea data-week="${wi}" data-field="done" placeholder="実際にできたこと">${esc(w.done)}</textarea></td>
-          <td><textarea data-week="${wi}" data-field="review" placeholder="振り返り">${esc(w.review)}</textarea></td>
+          <td data-label="✅ 実際実行できたこと"><textarea data-week="${wi}" data-field="done" placeholder="実際にできたこと">${esc(w.done)}</textarea></td>
+          <td data-label="💭 振り返り（理由・改善案・気付き）"><textarea data-week="${wi}" data-field="review" placeholder="振り返り">${esc(w.review)}</textarea></td>
         </tr>
       `;
     }).join('');
