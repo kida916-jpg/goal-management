@@ -126,6 +126,7 @@
   .kgi-target-wrap .icon { font-size: 30px; }
   .kgi-target-input {
     flex: 1;
+    min-width: 0;
     background: transparent;
     border: none;
     border-bottom: 2px dashed rgba(255,255,255,0.4);
@@ -134,6 +135,11 @@
     font-weight: 800;
     padding: 4px 2px;
     line-height: 1.3;
+    width: 100%;
+    font-family: inherit;
+    resize: none;
+    overflow: hidden;
+    word-break: break-word;
   }
   .kgi-target-input::placeholder { color: rgba(255,255,255,0.55); font-weight: 600; }
   .kgi-target-input:focus { border-bottom-color: #fff; }
@@ -197,6 +203,7 @@
   }
   .kpi-target-input2 {
     flex: 1;
+    min-width: 0;
     background: transparent;
     border: none;
     border-bottom: 1px dashed rgba(255,255,255,0.5);
@@ -204,6 +211,12 @@
     font-size: 16px;
     font-weight: 700;
     padding: 2px 4px;
+    width: 100%;
+    font-family: inherit;
+    resize: none;
+    overflow: hidden;
+    line-height: 1.4;
+    word-break: break-word;
   }
   .kpi-target-input2::placeholder { color: rgba(255,255,255,0.7); font-weight: 500; }
   .kpi-target-input2:focus { border-bottom-color: #fff; outline: none; }
@@ -295,19 +308,29 @@
   }
   .todo-item:hover { background: var(--panel-2); }
   .todo-item input[type="checkbox"] { flex-shrink: 0; cursor: pointer; }
-  .todo-item input[type="text"] {
+  .todo-item input[type="text"],
+  .todo-item textarea.todo-text {
     flex: 1;
+    min-width: 0;
     border: none;
     background: transparent;
     padding: 4px;
     font-size: 13px;
+    font-family: inherit;
+    resize: none;
+    overflow: hidden;
+    line-height: 1.4;
+    word-break: break-word;
+    color: var(--text);
   }
-  .todo-item input[type="text"]:focus {
+  .todo-item input[type="text"]:focus,
+  .todo-item textarea.todo-text:focus {
     outline: 1px solid var(--accent);
     background: #fff;
     border-radius: 4px;
   }
-  .todo-item.done input[type="text"] {
+  .todo-item.done input[type="text"],
+  .todo-item.done textarea.todo-text {
     text-decoration: line-through;
     color: var(--muted);
   }
@@ -332,7 +355,126 @@
     border-top: 1px solid var(--border);
   }
 
-  /* ===== 週次 ===== */
+  /* ===== 週次（アコーディオン式） ===== */
+  .week-controls {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .week-ctrl-btn {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--text);
+  }
+  .week-ctrl-btn:hover { background: var(--accent-soft); border-color: var(--accent); }
+  .weeks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .week-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--panel);
+    overflow: hidden;
+  }
+  .week-card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    background: var(--panel-2);
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .week-card-head:hover { background: var(--accent-soft); }
+  .week-card.open .week-card-head {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    color: #fff;
+  }
+  .week-card.open .week-card-head:hover {
+    background: linear-gradient(135deg, #1e40af, #1d4ed8);
+  }
+  .week-card-toggle {
+    font-size: 10px;
+    color: var(--muted);
+    transition: transform 0.2s;
+    display: inline-block;
+    width: 12px;
+  }
+  .week-card.open .week-card-toggle {
+    transform: rotate(90deg);
+    color: rgba(255,255,255,0.85);
+  }
+  .week-card-title {
+    font-weight: 700;
+    font-size: 14px;
+    flex: 1;
+  }
+  .week-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    flex-shrink: 0;
+  }
+  .week-card.open .week-dot { background: #fde047; }
+  .week-card-summary {
+    color: var(--muted);
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+  .week-card.open .week-card-summary { color: rgba(255,255,255,0.8); }
+  .week-card-body {
+    padding: 14px;
+    border-top: 1px solid var(--border);
+    display: none;
+    background: #fff;
+  }
+  .week-card.open .week-card-body { display: block; }
+  .week-field { margin-bottom: 14px; }
+  .week-field:last-child { margin-bottom: 0; }
+  .week-field-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.03em;
+  }
+  .week-field textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    background: #fff;
+    resize: none;
+    overflow: hidden;
+    min-height: 60px;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .week-field textarea.note { min-height: 50px; font-size: 13px; }
+  .week-field textarea:focus { border-color: var(--accent); outline: none; }
+
+  /* Auto-resize textareas everywhere */
+  textarea.autosize {
+    resize: none;
+    overflow: hidden;
+  }
+  /* Make all KPI/Goal textareas auto-grow too */
+  .kpi-row textarea, .cell-input {
+    resize: none;
+    overflow: hidden;
+  }
+
+  /* Legacy week-table (unused; kept just in case) */
   .week-table { width: 100%; border-collapse: collapse; font-size: 13px; }
   .week-table th, .week-table td {
     border: 1px solid var(--border);
@@ -538,34 +680,62 @@
     .kpi-row { grid-template-columns: 70px 1fr; }
     main { padding: 12px; }
 
-    /* 週次テーブルをカード型に変換 */
-    .week-table thead { display: none; }
-    .week-table, .week-table tbody, .week-table tr, .week-table td {
+    /* KGI ヒーロー: スマホでは小さめのフォント */
+    .kgi-hero { padding: 18px 16px; }
+    .kgi-label { font-size: 10px; letter-spacing: 0.18em; }
+    .kgi-target-wrap { gap: 8px; }
+    .kgi-target-wrap .icon { font-size: 22px; }
+    .kgi-target-input { font-size: 18px; font-weight: 700; }
+    .kgi-current-wrap { padding: 8px 10px; }
+    .kgi-current-wrap .clabel { font-size: 10px; letter-spacing: 0.15em; }
+    .kgi-current-input { font-size: 13px; }
+
+    /* KPI カードヘッダ: スマホでフォント縮小＋折り返し可 */
+    .kpi-card-head { padding: 10px 12px; gap: 8px; }
+    .kpi-num { font-size: 11px; padding: 2px 8px; }
+    .kpi-target-input2 { font-size: 14px; }
+
+    /* セクションヘッダの折り返し対応 */
+    .sec-head { flex-wrap: wrap; padding: 12px 14px; }
+    .sec-head .sub { font-size: 11px; }
+
+    /* 結果テーブルをスマホでカード型に */
+    .result-table thead { display: none; }
+    .result-table, .result-table tbody, .result-table tr, .result-table td {
       display: block;
       width: 100%;
     }
-    .week-table tr {
+    .result-table tr {
       margin-bottom: 14px;
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 8px;
+      padding: 10px;
       background: var(--panel-2);
     }
-    .week-table td {
+    .result-table td {
       border: none;
-      padding: 8px 0;
+      padding: 6px 0;
+      text-align: left;
     }
-    .week-table .week-label {
-      width: auto;
+    .result-table .label-cell {
       background: linear-gradient(135deg, #1e3a8a, #2563eb);
-      color: #fff;
+      color: #fff !important;
       border-radius: 6px;
       padding: 8px 12px;
       margin-bottom: 8px;
       text-align: center;
-      font-size: 13px;
+      font-size: 14px;
+      font-weight: 700;
     }
-    .week-table td[data-label]::before {
+    .result-table .content-cell {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .result-table td[data-label]:not(.label-cell)::before {
       content: attr(data-label);
       display: block;
       font-size: 11px;
@@ -574,12 +744,22 @@
       margin-bottom: 4px;
       letter-spacing: 0.05em;
     }
-    .week-table textarea {
-      min-height: 80px;
-      font-size: 14px;
+    .result-table input {
+      width: 100%;
+      text-align: left;
       padding: 8px 10px;
+      font-size: 14px;
     }
-    .week-table .plan-cell { min-width: 0; }
+    .result-table .calc {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 16px;
+      text-align: center;
+      margin-top: 4px;
+    }
+    /* Treat consecutive 達成率/成長率 visually grouped */
   }
   @media print {
     .toolbar, .todo-add, .plan-pick-btn, .modal-backdrop, #login-overlay, #user-bar { display: none !important; }
@@ -814,7 +994,7 @@
         <div class="kgi-label">⭐ KGI — KEY GOAL INDICATOR</div>
         <div class="kgi-target-wrap">
           <span class="icon">🏆</span>
-          <input class="kgi-target-input" data-goal="kgi" data-field="target" placeholder="達成したい最重要目標を入力" />
+          <textarea class="kgi-target-input autosize" data-goal="kgi" data-field="target" placeholder="達成したい最重要目標を入力" rows="1"></textarea>
         </div>
         <div class="kgi-current-wrap">
           <span class="clabel">現状</span>
@@ -872,18 +1052,12 @@
       <h2>🗓 週次行動目標</h2>
       <span class="sub">「+ Todoから選ぶ」でTodoを紐付け／自由メモも追加可能</span>
     </div>
-    <div class="sec-body" style="overflow-x:auto;">
-      <table class="week-table">
-        <thead>
-          <tr>
-            <th class="week-label">年 / 月 / 週</th>
-            <th>アクションプラン（計画）</th>
-            <th>実際実行できたこと</th>
-            <th>振り返り（できた／できなかった理由・改善案・気付き）</th>
-          </tr>
-        </thead>
-        <tbody id="week-body"></tbody>
-      </table>
+    <div class="sec-body">
+      <div class="week-controls">
+        <button class="week-ctrl-btn" id="week-expand-all">全て開く</button>
+        <button class="week-ctrl-btn" id="week-collapse-all">全て閉じる</button>
+      </div>
+      <div class="weeks-list" id="week-body"></div>
     </div>
   </section>
 
@@ -1112,7 +1286,7 @@
       <div class="kpi-card" data-kpi="${n}">
         <div class="kpi-card-head">
           <span class="kpi-num">KPI${['①','②','③'][n-1]}</span>
-          <input class="kpi-target-input2" data-goal="${k}" data-field="target" value="${escAttr(g.target)}" placeholder="KPI${n}の目標を入力（Todo列にも反映されます）" />
+          <textarea class="kpi-target-input2 autosize" data-goal="${k}" data-field="target" placeholder="KPI${n}の目標を入力" rows="1">${esc(g.target)}</textarea>
         </div>
         <div class="kpi-card-body">
           <div class="kpi-row">
@@ -1151,7 +1325,7 @@
       $(`todo-${k}`).innerHTML = list.map((t, i) => `
         <div class="todo-item ${t.done ? 'done' : ''}">
           <input type="checkbox" data-id="${t.id}" data-act="check" ${t.done ? 'checked' : ''} />
-          <input type="text" data-id="${t.id}" data-act="text" value="${escAttr(t.text)}" placeholder="Todoを入力" />
+          <textarea class="autosize todo-text" data-id="${t.id}" data-act="text" placeholder="Todoを入力" rows="1">${esc(t.text)}</textarea>
           <button data-id="${t.id}" data-act="del" title="削除"
             style="border:none;background:transparent;cursor:pointer;color:var(--muted);font-size:14px;">×</button>
         </div>
@@ -1162,6 +1336,14 @@
   }
 
   // ===== Weeks =====
+  // Track which weeks are open (in-memory only)
+  const openWeeks = new Set();
+
+  function weekHasContent(w) {
+    return (w.planTodoIds && w.planTodoIds.length > 0) ||
+           !!w.planNote || !!w.done || !!w.review;
+  }
+
   function renderWeeks() {
     const html = state.weeks.map((w, wi) => {
       const chips = (w.planTodoIds || []).map(id => {
@@ -1176,20 +1358,43 @@
           </div>
         `;
       }).join('');
+      const isOpen = openWeeks.has(wi);
+      const todoCount = (w.planTodoIds || []).length;
+      const summaryParts = [];
+      if (todoCount) summaryParts.push(`Todo ${todoCount}`);
+      if (w.done) summaryParts.push('実行済');
+      if (w.review) summaryParts.push('振り返り済');
+      const summary = summaryParts.length ? summaryParts.join(' · ') : '未記入';
+      const dot = weekHasContent(w) ? '<span class="week-dot"></span>' : '';
       return `
-        <tr>
-          <td class="week-label">${esc(w.week)}</td>
-          <td class="plan-cell" data-label="📋 アクションプラン（計画）">
-            <div class="plan-chips">${chips}</div>
-            <button class="plan-pick-btn" data-week="${wi}" data-act="pick">＋ Todoから選ぶ</button>
-            <textarea class="note" data-week="${wi}" data-field="planNote" placeholder="自由メモ（任意）">${esc(w.planNote)}</textarea>
-          </td>
-          <td data-label="✅ 実際実行できたこと"><textarea data-week="${wi}" data-field="done" placeholder="実際にできたこと">${esc(w.done)}</textarea></td>
-          <td data-label="💭 振り返り（理由・改善案・気付き）"><textarea data-week="${wi}" data-field="review" placeholder="振り返り">${esc(w.review)}</textarea></td>
-        </tr>
+        <div class="week-card ${isOpen ? 'open' : ''}" data-wi="${wi}">
+          <div class="week-card-head" data-act="toggle-week">
+            <span class="week-card-toggle">▶</span>
+            <span class="week-card-title">${esc(w.week)}</span>
+            ${dot}
+            <span class="week-card-summary">${esc(summary)}</span>
+          </div>
+          <div class="week-card-body">
+            <div class="week-field">
+              <div class="week-field-label">📋 アクションプラン（計画）</div>
+              <div class="plan-chips">${chips}</div>
+              <button class="plan-pick-btn" data-week="${wi}" data-act="pick">＋ Todoから選ぶ</button>
+              <textarea class="note autosize" data-week="${wi}" data-field="planNote" placeholder="自由メモ（任意）">${esc(w.planNote)}</textarea>
+            </div>
+            <div class="week-field">
+              <div class="week-field-label">✅ 実際実行できたこと</div>
+              <textarea class="autosize" data-week="${wi}" data-field="done" placeholder="実際にできたこと">${esc(w.done)}</textarea>
+            </div>
+            <div class="week-field">
+              <div class="week-field-label">💭 振り返り（理由・改善案・気付き）</div>
+              <textarea class="autosize" data-week="${wi}" data-field="review" placeholder="振り返り">${esc(w.review)}</textarea>
+            </div>
+          </div>
+        </div>
       `;
     }).join('');
     $('week-body').innerHTML = html;
+    autoResizeAll();
   }
 
   // ===== Results =====
@@ -1230,12 +1435,12 @@
       return `
         <tr>
           <td class="label-cell" style="color:var(--${k});">${KPI_LABELS[k]}</td>
-          <td class="content-cell" style="text-align:left;">${contentDisplay}</td>
-          <td><input type="text" inputmode="decimal" data-result="${k}" data-field="current" value="${escAttr(r.current)}" placeholder="0" /></td>
-          <td><input type="text" inputmode="decimal" data-result="${k}" data-field="target" value="${escAttr(r.target)}" placeholder="0" /></td>
-          <td><input type="text" inputmode="decimal" data-result="${k}" data-field="actual" value="${escAttr(r.actual)}" placeholder="0" /></td>
-          <td class="calc ${calcCls(ach)}">${calcFmt(ach)}</td>
-          <td class="calc ${calcCls(grw)}">${calcFmt(grw)}</td>
+          <td class="content-cell" data-label="📌 内容" style="text-align:left;">${contentDisplay}</td>
+          <td data-label="現状"><input type="text" inputmode="decimal" data-result="${k}" data-field="current" value="${escAttr(r.current)}" placeholder="0" /></td>
+          <td data-label="目標"><input type="text" inputmode="decimal" data-result="${k}" data-field="target" value="${escAttr(r.target)}" placeholder="0" /></td>
+          <td data-label="実績"><input type="text" inputmode="decimal" data-result="${k}" data-field="actual" value="${escAttr(r.actual)}" placeholder="0" /></td>
+          <td class="calc ${calcCls(ach)}" data-label="達成率">${calcFmt(ach)}</td>
+          <td class="calc ${calcCls(grw)}" data-label="成長率">${calcFmt(grw)}</td>
         </tr>
       `;
     }).join('');
@@ -1287,15 +1492,32 @@
   function renderAll() {
     $('period').value = state.period || '';
     updateHeaderPeriod();
+    // KGI hero (in static HTML, not generated by renderKpiCards)
+    const kgiT = document.querySelector('[data-goal="kgi"][data-field="target"]');
+    const kgiC = document.querySelector('[data-goal="kgi"][data-field="current"]');
+    if (kgiT) kgiT.value = state.goals.kgi.target || '';
+    if (kgiC) kgiC.value = state.goals.kgi.current || '';
     renderKpiCards();
     renderTodos();
     renderWeeks();
     renderResults();
+    autoResizeAll();
+  }
+
+  // Auto-resize textareas to fit content
+  function autoResize(el) {
+    if (!el || el.tagName !== 'TEXTAREA') return;
+    el.style.height = 'auto';
+    el.style.height = (el.scrollHeight + 2) + 'px';
+  }
+  function autoResizeAll() {
+    document.querySelectorAll('textarea').forEach(autoResize);
   }
 
   // ===== Events =====
   document.addEventListener('input', (e) => {
     const t = e.target;
+    if (t.tagName === 'TEXTAREA') autoResize(t);
     if (t.dataset.goal) {
       state.goals[t.dataset.goal][t.dataset.field] = t.value;
       save();
@@ -1345,7 +1567,7 @@
       state.todos[k].push({ id: newId(), text: '', done: false });
       save(); renderTodos();
       setTimeout(() => {
-        const items = document.querySelectorAll(`#todo-${k} input[type="text"]`);
+        const items = document.querySelectorAll(`#todo-${k} textarea.todo-text`);
         if (items.length) items[items.length - 1].focus();
       }, 10);
     } else if (t.dataset.act === 'del' && t.dataset.id) {
@@ -1361,7 +1583,32 @@
       const id = t.dataset.todoid;
       state.weeks[wi].planTodoIds = state.weeks[wi].planTodoIds.filter(x => x !== id);
       save(); renderWeeks();
+    } else {
+      // Accordion: click on week-card-head toggles open/close
+      const head = e.target.closest('.week-card-head');
+      if (head) {
+        const card = head.parentElement;
+        const wi = +card.dataset.wi;
+        if (openWeeks.has(wi)) openWeeks.delete(wi);
+        else openWeeks.add(wi);
+        card.classList.toggle('open');
+        // resize textareas inside if just opened
+        if (card.classList.contains('open')) {
+          card.querySelectorAll('textarea').forEach(autoResize);
+        }
+      }
     }
+  });
+
+  // Expand / collapse all weeks
+  $('week-expand-all').addEventListener('click', () => {
+    state.weeks.forEach((_, i) => openWeeks.add(i));
+    document.querySelectorAll('.week-card').forEach(c => c.classList.add('open'));
+    document.querySelectorAll('.week-card textarea').forEach(autoResize);
+  });
+  $('week-collapse-all').addEventListener('click', () => {
+    openWeeks.clear();
+    document.querySelectorAll('.week-card').forEach(c => c.classList.remove('open'));
   });
 
   // ===== Picker Modal =====
@@ -1752,6 +1999,10 @@
   });
 
   // ===== Init =====
+  // Render once with cached/local state so content appears immediately
+  // (login overlay covers it visually if not signed in)
+  renderAll();
+
   (async () => {
     await tryCompleteEmailLink();
     onAuthStateChanged(auth, async (user) => {
