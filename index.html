@@ -813,6 +813,31 @@
   }
   .login-box button:hover { background: #1d4ed8; }
   .login-box button:disabled { opacity: 0.6; cursor: not-allowed; }
+  .login-box button.btn-google {
+    background: #fff;
+    color: #1f2937;
+    border: 1px solid #d1d5db;
+    margin-bottom: 4px;
+  }
+  .login-box button.btn-google:hover {
+    background: #f9fafb;
+    border-color: var(--accent);
+  }
+  .login-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 16px 0 12px;
+    color: var(--muted);
+    font-size: 11px;
+  }
+  .login-divider::before,
+  .login-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
   .login-msg {
     margin-top: 14px;
     padding: 10px;
@@ -939,12 +964,22 @@
 <div id="login-overlay">
   <div class="login-box">
     <h2>🎯 ゴールマネジメント</h2>
-    <p class="lead">メールアドレスにログインリンクをお送りします</p>
-    <input id="login-email" type="email" placeholder="your@email.com" autocomplete="email" />
-    <button id="login-send">ログインリンクを送信</button>
+    <p class="lead">ログイン方法を選んでください</p>
+    <button id="login-google" class="btn-google">
+      <svg width="18" height="18" viewBox="0 0 18 18" style="vertical-align:middle;margin-right:8px;">
+        <path fill="#4285F4" d="M17.64 9.205c0-.639-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
+        <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
+        <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
+        <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+      </svg>
+      Googleでログイン
+    </button>
+    <div class="login-divider"><span>または</span></div>
+    <input id="login-email" type="email" placeholder="メールアドレスを入力" autocomplete="email" />
+    <button id="login-send">メールアドレスだけで開始</button>
     <div class="login-msg" id="login-msg"></div>
-    <p class="login-help">※ パスワード不要。届いたメールのリンクをクリックするとログインできます。<br>
-    複数の端末（PC・スマホ）で同じメールでログインすればデータが同期されます。</p>
+    <p class="login-help">※ Googleログインは認証付き（推奨）。メールアドレス入力は確認なしで即開始できます。<br>
+    入力した情報はこのブラウザに保存され、次回から自動で開きます。複数の端末で同じ方法でログインすれば同期されます。</p>
   </div>
 </div>
 
@@ -963,7 +998,7 @@
   </div>
   <div class="actions">
     <button id="ub-admin" style="display:none;">👥 受講生一覧</button>
-    <button id="ub-logout">ログアウト</button>
+    <button id="ub-logout">メアド変更</button>
   </div>
 </div>
 
@@ -1115,8 +1150,8 @@
   // ===== Firebase Setup =====
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
   import {
-    getAuth, isSignInWithEmailLink, sendSignInLinkToEmail,
-    signInWithEmailLink, onAuthStateChanged, signOut
+    getAuth, signInAnonymously, onAuthStateChanged,
+    GoogleAuthProvider, signInWithPopup, signOut
   } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
   import {
     getFirestore, doc, setDoc, getDoc, onSnapshot, collection, getDocs
@@ -1132,10 +1167,16 @@
     measurementId: "G-5VY71JXSKE"
   };
   const ADMIN_EMAIL = 'kida916@gmail.com';
+  const EMAIL_KEY = 'goal-mgmt-email';  // saved email in localStorage
 
   const fbApp = initializeApp(firebaseConfig);
   const auth = getAuth(fbApp);
   const db = getFirestore(fbApp);
+
+  // Convert email to safe Firestore document ID
+  function emailToDocId(email) {
+    return email.trim().toLowerCase().replace(/[^a-z0-9@._-]/g, '_').replace(/\./g, '_');
+  }
 
   const STORAGE_KEY = 'goal-mgmt-h1-v3';
   const KPI_KEYS = ['kgi', 'kpi1', 'kpi2', 'kpi3'];
@@ -1682,8 +1723,10 @@
   // ===== Firebase Auth + Firestore Sync =====
   // ========================================
 
-  let currentUser = null;
-  let viewingUid = null;       // who's data we're displaying (own uid or another for admin)
+  let currentEmail = null;     // email of logged-in user
+  let currentDocId = null;     // doc ID derived from email (own data)
+  let viewingDocId = null;     // who's data we're displaying (own or another for admin)
+  let viewingEmail = null;
   let isReadOnly = false;
   let firestoreUnsub = null;
   let cloudSaveTimer = null;
@@ -1711,8 +1754,8 @@
     $('user-bar').style.display = 'flex';
   }
 
-  async function sendLoginLink() {
-    const email = $('login-email').value.trim();
+  async function loginWithEmail() {
+    const email = $('login-email').value.trim().toLowerCase();
     if (!email || !/.+@.+\..+/.test(email)) {
       const m = $('login-msg');
       m.textContent = '正しいメールアドレスを入力してください';
@@ -1721,52 +1764,73 @@
     }
     const btn = $('login-send');
     btn.disabled = true;
-    btn.textContent = '送信中...';
+    btn.textContent = 'ログイン中...';
     try {
-      const url = window.location.origin + window.location.pathname;
-      await sendSignInLinkToEmail(auth, email, { url, handleCodeInApp: true });
-      window.localStorage.setItem('emailForSignIn', email);
-      const m = $('login-msg');
-      m.textContent = `📩 ${email} にログインリンクを送信しました。メールをご確認ください。`;
-      m.className = 'login-msg show success';
+      // Ensure anonymous auth
+      if (!auth.currentUser) {
+        await signInAnonymously(auth);
+      }
+      // Save email for future auto-login
+      localStorage.setItem(EMAIL_KEY, email);
+      // Switch to this user's data
+      await switchToEmail(email);
     } catch (err) {
       const m = $('login-msg');
       m.textContent = 'エラー: ' + (err.message || err);
       m.className = 'login-msg show error';
-    } finally {
       btn.disabled = false;
-      btn.textContent = 'ログインリンクを送信';
+      btn.textContent = '開始する';
     }
   }
 
-  $('login-send').addEventListener('click', sendLoginLink);
+  $('login-send').addEventListener('click', loginWithEmail);
   $('login-email').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') sendLoginLink();
+    if (e.key === 'Enter') loginWithEmail();
   });
 
-  async function tryCompleteEmailLink() {
-    if (!isSignInWithEmailLink(auth, window.location.href)) return false;
-    let email = window.localStorage.getItem('emailForSignIn');
-    if (!email) email = window.prompt('ログインに使ったメールアドレスを再入力してください');
-    if (!email) return false;
+  async function loginWithGoogle() {
+    const btn = $('login-google');
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
     try {
-      await signInWithEmailLink(auth, email, window.location.href);
-      window.localStorage.removeItem('emailForSignIn');
-      // clean URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-      return true;
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const email = result.user.email;
+      if (!email) throw new Error('Googleアカウントからメールアドレスを取得できませんでした');
+      localStorage.setItem(EMAIL_KEY, email);
+      localStorage.setItem('goal-mgmt-google', '1');
+      await switchToEmail(email);
     } catch (err) {
-      showLogin('ログインに失敗しました: ' + (err.message || err), 'error');
-      return false;
+      const m = $('login-msg');
+      m.textContent = 'Googleログインエラー: ' + (err.message || err);
+      m.className = 'login-msg show error';
+      btn.disabled = false;
+      btn.style.opacity = '1';
     }
   }
+  $('login-google').addEventListener('click', loginWithGoogle);
 
-  function userBarUpdate(user) {
-    $('ub-email').textContent = user.email || '(unknown)';
-    const isAdmin = user.email === ADMIN_EMAIL;
+  function userBarUpdate(email) {
+    $('ub-email').textContent = email || '(unknown)';
+    const isAdmin = email === ADMIN_EMAIL;
     $('ub-badge').style.display = isAdmin ? 'inline-block' : 'none';
     $('ub-badge').className = 'badge ' + (isAdmin ? 'admin' : '');
     $('ub-admin').style.display = isAdmin ? 'inline-block' : 'none';
+  }
+
+  async function switchToEmail(email) {
+    currentEmail = email;
+    currentDocId = emailToDocId(email);
+    viewingEmail = email;
+    viewingDocId = currentDocId;
+    isReadOnly = false;
+    document.body.classList.remove('readonly');
+    $('ro-banner').classList.remove('show');
+    userBarUpdate(email);
+    hideLogin();
+    await loadFromCloud(currentDocId);
+    renderAll();
+    setupCloudSubscription(currentDocId);
   }
 
   // ===== Cloud sync =====
@@ -1774,10 +1838,10 @@
     return JSON.parse(JSON.stringify(s));
   }
 
-  async function loadFromCloud(uid) {
+  async function loadFromCloud(docId) {
     setSyncStatus('☁️ 読み込み中...', 'saving');
     try {
-      const ref = doc(db, 'users', uid);
+      const ref = doc(db, 'users', docId);
       const snap = await getDoc(ref);
       if (snap.exists()) {
         const data = snap.data();
@@ -1802,11 +1866,12 @@
         suppressCloudSave = true;
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
         suppressCloudSave = false;
-      } else if (currentUser && uid === currentUser.uid) {
-        // first sign-in: upload current local state
+      } else if (docId === currentDocId && currentEmail) {
+        // first time for this email: create empty doc
+        state = defaultState();
         await setDoc(ref, {
           ...sanitizeForFirestore(state),
-          _email: currentUser.email,
+          _email: currentEmail,
           _updatedAt: Date.now(),
         });
       }
@@ -1817,9 +1882,9 @@
     }
   }
 
-  function setupCloudSubscription(uid) {
+  function setupCloudSubscription(docId) {
     if (firestoreUnsub) { firestoreUnsub(); firestoreUnsub = null; }
-    const ref = doc(db, 'users', uid);
+    const ref = doc(db, 'users', docId);
     firestoreUnsub = onSnapshot(ref, (snap) => {
       if (snap.metadata.hasPendingWrites) return;
       if (!snap.exists()) return;
@@ -1858,16 +1923,16 @@
   }
 
   function saveToCloud() {
-    if (!currentUser || isReadOnly || suppressCloudSave) return;
-    if (!viewingUid || viewingUid !== currentUser.uid) return;
+    if (!currentEmail || isReadOnly || suppressCloudSave) return;
+    if (!viewingDocId || viewingDocId !== currentDocId) return;
     setSyncStatus('💾 保存中...', 'saving');
     if (cloudSaveTimer) clearTimeout(cloudSaveTimer);
     cloudSaveTimer = setTimeout(async () => {
       try {
-        const ref = doc(db, 'users', currentUser.uid);
+        const ref = doc(db, 'users', currentDocId);
         await setDoc(ref, {
           ...sanitizeForFirestore(state),
-          _email: currentUser.email,
+          _email: currentEmail,
           _updatedAt: Date.now(),
         });
         setSyncStatus('✅ 同期済み');
@@ -1899,13 +1964,12 @@
         return;
       }
       $('admin-list').innerHTML = rows.map(r => {
-        const isSelf = r.uid === currentUser.uid;
+        const isSelf = r.uid === currentDocId;
         const dt = r.updatedAt ? new Date(r.updatedAt).toLocaleString('ja-JP') : '—';
         return `
           <div class="admin-row ${isSelf ? 'self' : ''}" data-uid="${r.uid}" data-email="${escAttr(r.email)}">
             <div>
               <div class="email">${esc(r.email)} ${isSelf ? '（あなた）' : ''}</div>
-              <div class="meta">UID: ${r.uid.slice(0,8)}…</div>
             </div>
             <div class="meta">最終更新: ${dt}</div>
           </div>
@@ -1922,7 +1986,7 @@
     const uid = row.dataset.uid;
     const email = row.dataset.email;
     $('admin-modal').classList.remove('show');
-    if (uid === currentUser.uid) {
+    if (uid === currentDocId) {
       // viewing self - normal mode
       enterOwnMode();
     } else {
@@ -1933,15 +1997,16 @@
   $('admin-close').addEventListener('click', () => $('admin-modal').classList.remove('show'));
   $('admin-done').addEventListener('click', () => $('admin-modal').classList.remove('show'));
 
-  async function enterReadOnlyMode(uid, email) {
+  async function enterReadOnlyMode(docId, email) {
     isReadOnly = true;
-    viewingUid = uid;
+    viewingDocId = docId;
+    viewingEmail = email;
     document.body.classList.add('readonly');
     $('ro-email').textContent = email;
     $('ro-banner').classList.add('show');
     if (firestoreUnsub) { firestoreUnsub(); firestoreUnsub = null; }
     try {
-      const snap = await getDoc(doc(db, 'users', uid));
+      const snap = await getDoc(doc(db, 'users', docId));
       if (snap.exists()) {
         const data = snap.data();
         state = {
@@ -1970,56 +2035,71 @@
   }
 
   function enterOwnMode() {
-    if (!currentUser) return;
+    if (!currentEmail) return;
     isReadOnly = false;
-    viewingUid = currentUser.uid;
+    viewingDocId = currentDocId;
+    viewingEmail = currentEmail;
     document.body.classList.remove('readonly');
     $('ro-banner').classList.remove('show');
     // Reload own data
     state = load();
     renderAll();
-    setupCloudSubscription(currentUser.uid);
-    loadFromCloud(currentUser.uid);
+    setupCloudSubscription(currentDocId);
+    loadFromCloud(currentDocId);
   }
 
   $('ro-back').addEventListener('click', enterOwnMode);
 
-  // ===== Logout =====
+  // ===== ログアウト / メアド変更 =====
   $('ub-logout').addEventListener('click', async () => {
-    if (!confirm('ログアウトしますか？\n（このブラウザのデータも消えます。次回ログイン時にクラウドから復元されます）')) return;
+    if (!confirm('ログアウトしますか？\n（クラウドのデータは残ります。次回ログイン時に復元されます）')) return;
+    if (firestoreUnsub) { firestoreUnsub(); firestoreUnsub = null; }
+    localStorage.removeItem(EMAIL_KEY);
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem('goal-mgmt-google');
     try {
-      if (firestoreUnsub) firestoreUnsub();
+      // sign out from Firebase Auth (Google session etc.)
       await signOut(auth);
-      // clear local cache so next user doesn't see prior data
-      localStorage.removeItem(STORAGE_KEY);
-      location.reload();
-    } catch (err) {
-      alert('ログアウトエラー: ' + (err.message || err));
-    }
+    } catch {}
+    location.reload();
   });
 
   // ===== Init =====
-  // Render once with cached/local state so content appears immediately
-  // (login overlay covers it visually if not signed in)
   renderAll();
 
-  (async () => {
-    await tryCompleteEmailLink();
-    onAuthStateChanged(auth, async (user) => {
-      currentUser = user;
-      if (user) {
-        viewingUid = user.uid;
-        userBarUpdate(user);
-        hideLogin();
-        await loadFromCloud(user.uid);
-        renderAll();
-        setupCloudSubscription(user.uid);
-      } else {
-        viewingUid = null;
-        showLogin();
+  // Wait for Firebase auth to settle (Google session may auto-restore)
+  onAuthStateChanged(auth, async (user) => {
+    if (user && !user.isAnonymous && user.email) {
+      // Google session restored
+      localStorage.setItem(EMAIL_KEY, user.email);
+      localStorage.setItem('goal-mgmt-google', '1');
+      if (currentEmail !== user.email) {
+        await switchToEmail(user.email);
       }
-    });
-  })();
+      return;
+    }
+    // not Google or no user yet
+    const savedEmail = localStorage.getItem(EMAIL_KEY);
+    const wasGoogle = localStorage.getItem('goal-mgmt-google') === '1';
+    if (savedEmail && !wasGoogle) {
+      // saved email login: ensure anonymous auth then switch
+      if (!user) {
+        try { await signInAnonymously(auth); } catch (err) {
+          console.error('Anonymous auth error', err);
+          showLogin('認証エラー: ' + (err.message || err), 'error');
+          return;
+        }
+        return; // onAuthStateChanged will fire again with anonymous user
+      }
+      // user is anonymous now
+      if (currentEmail !== savedEmail) {
+        await switchToEmail(savedEmail);
+      }
+    } else if (!savedEmail) {
+      // no saved login, show login screen
+      showLogin();
+    }
+  });
 </script>
 </body>
 </html>
