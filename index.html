@@ -373,6 +373,22 @@
     color: var(--text);
   }
   .week-ctrl-btn:hover { background: var(--accent-soft); border-color: var(--accent); }
+  .week-uncheck-btn {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    color: var(--muted);
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+  .week-uncheck-btn:hover {
+    background: #fef3c7;
+    border-color: var(--warn);
+    color: var(--warn);
+  }
   .weeks-list {
     display: flex;
     flex-direction: column;
@@ -1061,7 +1077,10 @@
   <section>
     <div class="sec-head">
       <h2>✅ KPIをTodoに落とし込む</h2>
-      <span class="sub" id="todo-summary">—</span>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span class="sub" id="todo-summary">—</span>
+        <button id="todo-uncheck-all" class="week-ctrl-btn" title="全てのチェックを外す">☐ 全てのレ点を外す</button>
+      </div>
     </div>
     <div class="sec-body">
       <div class="todo-grid">
@@ -1432,7 +1451,10 @@
           </div>
           <div class="week-card-body">
             <div class="week-field">
-              <div class="week-field-label">📋 アクションプラン（計画）</div>
+              <div class="week-field-label" style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                <span>📋 アクションプラン（計画）</span>
+                ${todoCount ? `<button class="week-uncheck-btn" data-week="${wi}" data-act="uncheck-week" title="この週のTodoのチェックを外す">☐ レ点を外す</button>` : ''}
+              </div>
               <div class="plan-chips">${chips}</div>
               <button class="plan-pick-btn" data-week="${wi}" data-act="pick">＋ Todoから選ぶ</button>
               <textarea class="note autosize" data-week="${wi}" data-field="planNote" placeholder="自由メモ（任意）">${esc(w.planNote)}</textarea>
@@ -1639,6 +1661,25 @@
       const id = t.dataset.todoid;
       state.weeks[wi].planTodoIds = state.weeks[wi].planTodoIds.filter(x => x !== id);
       save(); renderWeeks();
+    } else if (t.dataset.act === 'uncheck-week') {
+      e.stopPropagation();
+      const wi = +t.dataset.week;
+      const ids = state.weeks[wi].planTodoIds || [];
+      let count = 0;
+      ids.forEach(id => {
+        const found = findTodoById(id);
+        if (found && found.todo.done) {
+          found.todo.done = false;
+          count++;
+        }
+      });
+      if (count === 0) {
+        alert('この週で外せるチェックがありません');
+        return;
+      }
+      save();
+      renderTodos();
+      renderWeeks();
     } else {
       // Accordion: click on week-card-head toggles open/close
       const head = e.target.closest('.week-card-head');
@@ -1654,6 +1695,22 @@
         }
       }
     }
+  });
+
+  // Uncheck all todos (preserve text)
+  $('todo-uncheck-all').addEventListener('click', () => {
+    const total = [1,2,3].reduce((s, k) => s + state.todos[k].filter(t => t.done).length, 0);
+    if (total === 0) {
+      alert('外せるチェックがありません');
+      return;
+    }
+    if (!confirm(`${total}件のTodoのチェックを外します。\n（Todoの内容は消えません）`)) return;
+    [1,2,3].forEach(k => {
+      state.todos[k].forEach(t => { t.done = false; });
+    });
+    save();
+    renderTodos();
+    renderWeeks();
   });
 
   // Expand / collapse all weeks
