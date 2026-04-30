@@ -902,6 +902,17 @@
   }
   #user-bar button:hover { background: var(--panel-2); }
   #user-bar .actions { display: flex; gap: 6px; }
+  #user-bar .ub-name {
+    font-weight: 700;
+    color: var(--text);
+    font-size: 13px;
+  }
+  #user-bar .ub-name:empty::before {
+    content: '名前未設定';
+    color: var(--muted);
+    font-weight: 400;
+    font-style: italic;
+  }
   #user-bar .sync-status {
     color: var(--success);
     font-size: 11px;
@@ -994,13 +1005,15 @@
 <!-- ユーザーバー -->
 <div id="user-bar" style="display:none;">
   <div class="info">
+    <span id="ub-name" class="ub-name" title="クリックで名前を編集"></span>
     <span id="ub-email">—</span>
     <span class="badge" id="ub-badge" style="display:none;">管理者</span>
     <span class="sync-status" id="ub-sync">✅ 同期済み</span>
   </div>
   <div class="actions">
+    <button id="ub-edit-name">✏️ 名前</button>
     <button id="ub-admin" style="display:none;">👥 受講生一覧</button>
-    <button id="ub-logout">メアド変更</button>
+    <button id="ub-logout">ログアウト</button>
   </div>
 </div>
 
@@ -1812,12 +1825,36 @@
   }
   $('login-google').addEventListener('click', loginWithGoogle);
 
+  let currentDisplayName = '';
   function userBarUpdate(email) {
     $('ub-email').textContent = email || '(unknown)';
+    $('ub-name').textContent = currentDisplayName || '';
     const isAdmin = email === ADMIN_EMAIL;
     $('ub-badge').style.display = isAdmin ? 'inline-block' : 'none';
     $('ub-badge').className = 'badge ' + (isAdmin ? 'admin' : '');
     $('ub-admin').style.display = isAdmin ? 'inline-block' : 'none';
+  }
+
+  async function promptDisplayName() {
+    const next = window.prompt('表示名（受講生一覧などに表示されます）', currentDisplayName || '');
+    if (next === null) return;
+    const name = next.trim().slice(0, 50);
+    currentDisplayName = name;
+    userBarUpdate(currentEmail);
+    // save to firestore directly
+    if (currentEmail && currentDocId && !isReadOnly) {
+      try {
+        const ref = doc(db, 'users', currentDocId);
+        await setDoc(ref, {
+          ...sanitizeForFirestore(state),
+          _email: currentEmail,
+          _displayName: currentDisplayName,
+          _updatedAt: Date.now(),
+        });
+      } catch (err) {
+        console.error('save displayName error', err);
+      }
+    }
   }
 
   async function switchToEmail(email) {
@@ -1833,6 +1870,19 @@
     await loadFromCloud(currentDocId);
     renderAll();
     setupCloudSubscription(currentDocId);
+    // First-time prompt for display name
+    if (!currentDisplayName && email !== ADMIN_EMAIL) {
+      setTimeout(() => {
+        if (!currentDisplayName) {
+          const name = window.prompt('お名前を入力してください（受講生一覧などに表示されます）', '');
+          if (name && name.trim()) {
+            currentDisplayName = name.trim().slice(0, 50);
+            userBarUpdate(currentEmail);
+            saveToCloud();
+          }
+        }
+      }, 500);
+    }
   }
 
   // ===== Cloud sync =====
@@ -1847,6 +1897,8 @@
       const snap = await getDoc(ref);
       if (snap.exists()) {
         const data = snap.data();
+        currentDisplayName = data._displayName || '';
+        userBarUpdate(currentEmail);
         state = {
           ...defaultState(), ...data,
           goals: { ...defaultState().goals, ...(data.goals || {}) },
@@ -1871,9 +1923,12 @@
       } else if (docId === currentDocId && currentEmail) {
         // first time for this email: create empty doc
         state = defaultState();
+        currentDisplayName = '';
+        userBarUpdate(currentEmail);
         await setDoc(ref, {
           ...sanitizeForFirestore(state),
           _email: currentEmail,
+          _displayName: '',
           _updatedAt: Date.now(),
         });
       }
@@ -1935,6 +1990,7 @@
         await setDoc(ref, {
           ...sanitizeForFirestore(state),
           _email: currentEmail,
+          _displayName: currentDisplayName || '',
           _updatedAt: Date.now(),
         });
         setSyncStatus('✅ 同期済み');
@@ -1957,6 +2013,7 @@
         rows.push({
           uid: d.id,
           email: data._email || '(unknown)',
+          displayName: data._displayName || '',
           updatedAt: data._updatedAt || 0,
         });
       });
@@ -1968,11 +2025,14 @@
       $('admin-list').innerHTML = rows.map(r => {
         const isSelf = r.uid === currentDocId;
         const dt = r.updatedAt ? new Date(r.updatedAt).toLocaleString('ja-JP') : '—';
+        const nameDisplay = r.displayName
+          ? `<div class="email">${esc(r.displayName)} ${isSelf ? '（あなた）' : ''}</div>
+             <div class="meta">${esc(r.email)}</div>`
+          : `<div class="email" style="color:var(--muted);font-style:italic;">名前未設定 ${isSelf ? '（あなた）' : ''}</div>
+             <div class="meta">${esc(r.email)}</div>`;
         return `
-          <div class="admin-row ${isSelf ? 'self' : ''}" data-uid="${r.uid}" data-email="${escAttr(r.email)}">
-            <div>
-              <div class="email">${esc(r.email)} ${isSelf ? '（あなた）' : ''}</div>
-            </div>
+          <div class="admin-row ${isSelf ? 'self' : ''}" data-uid="${r.uid}" data-email="${escAttr(r.email)}" data-displayname="${escAttr(r.displayName)}">
+            <div>${nameDisplay}</div>
             <div class="meta">最終更新: ${dt}</div>
           </div>
         `;
@@ -1987,24 +2047,25 @@
     if (!row) return;
     const uid = row.dataset.uid;
     const email = row.dataset.email;
+    const displayName = row.dataset.displayname || '';
     $('admin-modal').classList.remove('show');
     if (uid === currentDocId) {
       // viewing self - normal mode
       enterOwnMode();
     } else {
-      enterReadOnlyMode(uid, email);
+      enterReadOnlyMode(uid, email, displayName);
     }
   });
 
   $('admin-close').addEventListener('click', () => $('admin-modal').classList.remove('show'));
   $('admin-done').addEventListener('click', () => $('admin-modal').classList.remove('show'));
 
-  async function enterReadOnlyMode(docId, email) {
+  async function enterReadOnlyMode(docId, email, displayName) {
     isReadOnly = true;
     viewingDocId = docId;
     viewingEmail = email;
     document.body.classList.add('readonly');
-    $('ro-email').textContent = email;
+    $('ro-email').textContent = displayName ? `${displayName}（${email}）` : email;
     $('ro-banner').classList.add('show');
     if (firestoreUnsub) { firestoreUnsub(); firestoreUnsub = null; }
     try {
@@ -2051,6 +2112,9 @@
   }
 
   $('ro-back').addEventListener('click', enterOwnMode);
+
+  $('ub-edit-name').addEventListener('click', promptDisplayName);
+  $('ub-name').addEventListener('click', promptDisplayName);
 
   // ===== ログアウト / メアド変更 =====
   $('ub-logout').addEventListener('click', async () => {
