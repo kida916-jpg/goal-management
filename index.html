@@ -541,6 +541,12 @@
   .plan-chip[data-kpi="1"] .chip-num { color: var(--kpi1); }
   .plan-chip[data-kpi="2"] .chip-num { color: var(--kpi2); }
   .plan-chip[data-kpi="3"] .chip-num { color: var(--kpi3); }
+  .plan-chip .chip-check {
+    flex-shrink: 0;
+    cursor: pointer;
+    width: 14px;
+    height: 14px;
+  }
   .plan-chip .chip-text { flex: 1; word-break: break-word; }
   .plan-chip .chip-x {
     background: transparent;
@@ -780,11 +786,18 @@
     /* Treat consecutive 達成率/成長率 visually grouped */
   }
   @media print {
-    .toolbar, .todo-add, .plan-pick-btn, .modal-backdrop, #login-overlay, #user-bar { display: none !important; }
+    .toolbar, .todo-add, .plan-pick-btn, .modal-backdrop, #login-overlay, #user-bar,
+    .week-controls, .week-uncheck-btn, #todo-uncheck-all, .chip-x, .chip-check, .todo-item button[data-act="del"] {
+      display: none !important;
+    }
     body { background: #fff; }
-    section, .kgi-hero, .kpi-card { break-inside: avoid; }
+    section, .kgi-hero, .kpi-card, .week-card { break-inside: avoid; }
     .kgi-hero { color: #000 !important; background: #ede9fe !important; box-shadow: none; }
     .kgi-target-input, .kgi-current-input { color: #000; }
+    .week-card-body { display: block !important; }
+    .week-card { border: 1px solid #ccc !important; }
+    .week-card-head { background: #f3f4f6 !important; color: #000 !important; }
+    .week-card.open .week-card-head { background: #e5e7eb !important; color: #000 !important; }
   }
 
   /* ===== ログイン画面 ===== */
@@ -1040,11 +1053,8 @@
 
 <div class="toolbar">
   <input type="text" id="period" placeholder="期間（例: 2026年4-6月）" />
-  <button id="export-btn">📥 JSONエクスポート</button>
-  <button id="import-btn">📤 JSONインポート</button>
-  <input type="file" id="import-file" accept="application/json" hidden />
+  <button id="pdf-btn" class="primary">📄 PDFで保存</button>
   <button id="reset-btn">🗑 全リセット</button>
-  <button id="print-btn" class="primary">🖨 印刷</button>
 </div>
 
 <main>
@@ -1427,9 +1437,10 @@
         const { todo, kpi } = found;
         return `
           <div class="plan-chip ${todo.done ? 'done' : ''}" data-kpi="${kpi}">
+            <input type="checkbox" class="chip-check" data-todoid="${todo.id}" data-act="chip-check" ${todo.done ? 'checked' : ''} title="完了/未完了を切り替え" />
             <span class="chip-num">KPI${['①','②','③'][kpi-1]}</span>
             <span class="chip-text">${esc(todo.text || '(未入力)')}</span>
-            <button class="chip-x" data-week="${wi}" data-todoid="${todo.id}" data-act="unpick" title="外す">×</button>
+            <button class="chip-x" data-week="${wi}" data-todoid="${todo.id}" data-act="unpick" title="この週から外す">×</button>
           </div>
         `;
       }).join('');
@@ -1628,6 +1639,10 @@
     if (t.dataset.act === 'check' && t.dataset.id) {
       const f = findTodoById(t.dataset.id);
       if (f) { f.todo.done = t.checked; save(); renderTodos(); renderWeeks(); }
+    } else if (t.dataset.act === 'chip-check' && t.dataset.todoid) {
+      // Chip checkbox toggles the underlying Todo (synced with upper Todo list)
+      const f = findTodoById(t.dataset.todoid);
+      if (f) { f.todo.done = t.checked; save(); renderTodos(); renderWeeks(); }
     } else if (t.dataset.act === 'pick-check') {
       const id = t.dataset.id;
       const wi = +t.dataset.week;
@@ -1760,36 +1775,29 @@
   });
 
   // ===== Toolbar =====
-  $('export-btn').addEventListener('click', () => {
-    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `goal-management-${state.period || 'export'}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  });
-  $('import-btn').addEventListener('click', () => $('import-file').click());
-  $('import-file').addEventListener('change', (e) => {
-    const f = e.target.files[0];
-    if (!f) return;
-    const r = new FileReader();
-    r.onload = () => {
-      try {
-        const s = JSON.parse(r.result);
-        state = { ...defaultState(), ...s };
-        save(); renderAll();
-        alert('インポートしました');
-      } catch { alert('JSONの読み込みに失敗しました'); }
-    };
-    r.readAsText(f);
-  });
   $('reset-btn').addEventListener('click', () => {
     if (confirm('すべての入力内容を削除します。よろしいですか？')) {
       state = defaultState(); save(); renderAll();
     }
   });
-  $('print-btn').addEventListener('click', () => window.print());
+  $('pdf-btn').addEventListener('click', () => {
+    // Open all weeks before printing so contents are visible in the PDF
+    const wasOpen = new Set(openWeeks);
+    state.weeks.forEach((_, i) => openWeeks.add(i));
+    document.querySelectorAll('.week-card').forEach(c => c.classList.add('open'));
+    document.querySelectorAll('.week-card textarea').forEach(autoResize);
+    setTimeout(() => {
+      window.print();
+      // Restore previous open state after print dialog closes
+      setTimeout(() => {
+        openWeeks.clear();
+        wasOpen.forEach(i => openWeeks.add(i));
+        document.querySelectorAll('.week-card').forEach((c, i) => {
+          c.classList.toggle('open', wasOpen.has(+c.dataset.wi));
+        });
+      }, 500);
+    }, 100);
+  });
 
   // ========================================
   // ===== Firebase Auth + Firestore Sync =====
