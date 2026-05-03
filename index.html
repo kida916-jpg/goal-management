@@ -389,6 +389,22 @@
     border-color: var(--warn);
     color: var(--warn);
   }
+  .week-carry-btn {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    color: var(--muted);
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+  .week-carry-btn:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
   .weeks-list {
     display: flex;
     flex-direction: column;
@@ -787,7 +803,7 @@
   }
   @media print {
     .toolbar, .todo-add, .plan-pick-btn, .modal-backdrop, #login-overlay, #user-bar,
-    .week-controls, .week-uncheck-btn, #todo-uncheck-all, .chip-x, .chip-check, .todo-item button[data-act="del"] {
+    .week-controls, .week-uncheck-btn, .week-carry-btn, #todo-uncheck-all, .chip-x, .chip-check, .todo-item button[data-act="del"] {
       display: none !important;
     }
     body { background: #fff; }
@@ -1463,9 +1479,12 @@
           </div>
           <div class="week-card-body">
             <div class="week-field">
-              <div class="week-field-label" style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+              <div class="week-field-label" style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
                 <span>📋 アクションプラン（計画）</span>
-                ${todoCount ? `<button class="week-uncheck-btn" data-week="${wi}" data-act="uncheck-week" title="この週のTodoのチェックを外す">☐ レ点を外す</button>` : ''}
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  ${wi > 0 ? `<button class="week-carry-btn" data-week="${wi}" data-act="carry-over" title="前の週のTodoをこの週にコピー">📋 先週分を引き継ぐ</button>` : ''}
+                  ${todoCount ? `<button class="week-uncheck-btn" data-week="${wi}" data-act="uncheck-week" title="この週のTodoのチェックを外す">☐ レ点を外す</button>` : ''}
+                </div>
               </div>
               <div class="plan-chips">${chips}</div>
               <button class="plan-pick-btn" data-week="${wi}" data-act="pick">＋ Todoから選ぶ</button>
@@ -1695,6 +1714,25 @@
       }
       save();
       renderTodos();
+      renderWeeks();
+    } else if (t.dataset.act === 'carry-over') {
+      e.stopPropagation();
+      const wi = +t.dataset.week;
+      if (wi === 0) return;
+      const prevIds = (state.weeks[wi - 1].planTodoIds || []).filter(id => findTodoById(id));
+      if (prevIds.length === 0) {
+        alert('前の週にTodoが設定されていません');
+        return;
+      }
+      const currentIds = state.weeks[wi].planTodoIds || [];
+      const newIds = prevIds.filter(id => !currentIds.includes(id));
+      if (newIds.length === 0) {
+        alert('前の週のTodoはすべて引き継ぎ済みです');
+        return;
+      }
+      if (!confirm(`前の週から ${newIds.length} 件のTodoを引き継ぎます。よろしいですか？`)) return;
+      state.weeks[wi].planTodoIds = [...currentIds, ...newIds];
+      save();
       renderWeeks();
     } else {
       // Accordion: click on week-card-head toggles open/close
