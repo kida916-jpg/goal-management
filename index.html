@@ -1041,6 +1041,7 @@
   </div>
   <div class="actions">
     <button id="ub-edit-name">✏️ 名前</button>
+    <button id="ub-email-toggle" title="毎週日曜に応援メールを受信するか切り替え">📧 メール</button>
     <button id="ub-admin" style="display:none;">👥 受講生一覧</button>
     <button id="ub-logout">ログアウト</button>
   </div>
@@ -1891,6 +1892,7 @@
   $('login-google').addEventListener('click', loginWithGoogle);
 
   let currentDisplayName = '';
+  let currentEmailNotifications = true;  // default: subscribed
   function userBarUpdate(email) {
     $('ub-email').textContent = email || '(unknown)';
     $('ub-name').textContent = currentDisplayName || '';
@@ -1898,6 +1900,43 @@
     $('ub-badge').style.display = isAdmin ? 'inline-block' : 'none';
     $('ub-badge').className = 'badge ' + (isAdmin ? 'admin' : '');
     $('ub-admin').style.display = isAdmin ? 'inline-block' : 'none';
+    // Email subscription button label
+    const emailBtn = $('ub-email-toggle');
+    if (emailBtn) {
+      emailBtn.textContent = currentEmailNotifications ? '📧 メールON' : '🔕 メールOFF';
+      emailBtn.title = currentEmailNotifications
+        ? '毎週日曜に応援メール配信中（クリックで停止）'
+        : 'メール配信停止中（クリックで再開）';
+    }
+  }
+
+  async function toggleEmailNotifications() {
+    if (!currentEmail || !currentDocId || isReadOnly) return;
+    const next = !currentEmailNotifications;
+    const message = next
+      ? '毎週日曜に応援メールを受信しますか？'
+      : 'メール配信を停止します。よろしいですか？\n（いつでも再開できます）';
+    if (!confirm(message)) return;
+    currentEmailNotifications = next;
+    userBarUpdate(currentEmail);
+    try {
+      const ref = doc(db, 'users', currentDocId);
+      await setDoc(ref, {
+        ...sanitizeForFirestore(state),
+        _email: currentEmail,
+        _displayName: currentDisplayName || '',
+        _emailNotifications: currentEmailNotifications,
+        _updatedAt: Date.now(),
+      });
+      setSyncStatus(next ? '✅ メール配信ON' : '✅ メール配信OFF');
+      setTimeout(() => setSyncStatus('✅ 同期済み'), 2000);
+    } catch (err) {
+      console.error('toggle email error', err);
+      alert('設定の保存に失敗しました: ' + (err.message || err));
+      // revert
+      currentEmailNotifications = !next;
+      userBarUpdate(currentEmail);
+    }
   }
 
   async function promptDisplayName() {
@@ -1914,6 +1953,7 @@
           ...sanitizeForFirestore(state),
           _email: currentEmail,
           _displayName: currentDisplayName,
+          _emailNotifications: currentEmailNotifications,
           _updatedAt: Date.now(),
         });
       } catch (err) {
@@ -1963,6 +2003,8 @@
       if (snap.exists()) {
         const data = snap.data();
         currentDisplayName = data._displayName || '';
+        // default true if undefined (existing users)
+        currentEmailNotifications = data._emailNotifications !== false;
         userBarUpdate(currentEmail);
         state = {
           ...defaultState(), ...data,
@@ -1989,11 +2031,13 @@
         // first time for this email: create empty doc
         state = defaultState();
         currentDisplayName = '';
+        currentEmailNotifications = true;
         userBarUpdate(currentEmail);
         await setDoc(ref, {
           ...sanitizeForFirestore(state),
           _email: currentEmail,
           _displayName: '',
+          _emailNotifications: true,
           _updatedAt: Date.now(),
         });
       }
@@ -2056,6 +2100,7 @@
           ...sanitizeForFirestore(state),
           _email: currentEmail,
           _displayName: currentDisplayName || '',
+          _emailNotifications: currentEmailNotifications,
           _updatedAt: Date.now(),
         });
         setSyncStatus('✅ 同期済み');
@@ -2180,6 +2225,7 @@
 
   $('ub-edit-name').addEventListener('click', promptDisplayName);
   $('ub-name').addEventListener('click', promptDisplayName);
+  $('ub-email-toggle').addEventListener('click', toggleEmailNotifications);
 
   // ===== ログアウト / メアド変更 =====
   $('ub-logout').addEventListener('click', async () => {
