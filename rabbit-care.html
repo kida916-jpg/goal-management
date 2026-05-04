@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>うさぎのお手入れゲーム</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%B0%3C/text%3E%3C/svg%3E" />
+<style>
+  :root {
+    --bg1: #ffe4f0;
+    --bg2: #e0f2fe;
+    --panel: #ffffffcc;
+    --text: #4a3b52;
+    --muted: #8a7a92;
+    --accent: #ff7aa8;
+    --accent-2: #f59ec0;
+    --good: #22c55e;
+    --warn: #f59e0b;
+    --bad: #ef4444;
+    --border: #f5d4e2;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Maru Gothic ProN", "Yu Gothic", "Comic Sans MS", sans-serif;
+    color: var(--text);
+    background: linear-gradient(135deg, var(--bg1), var(--bg2));
+    overflow-x: hidden;
+  }
+  header {
+    text-align: center;
+    padding: 14px 16px 6px;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 22px;
+    letter-spacing: 0.05em;
+    color: #b14979;
+    text-shadow: 0 2px 0 #fff;
+  }
+  header p {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .game {
+    max-width: 460px;
+    margin: 0 auto;
+    padding: 12px;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    background: var(--panel);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .stat .label {
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .bar {
+    width: 100%;
+    height: 8px;
+    background: #f1e4eb;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .bar > span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, #ffb3c8, #ff7aa8);
+    transition: width 0.4s ease;
+    border-radius: 999px;
+  }
+  .bar.clean > span { background: linear-gradient(90deg, #93e2ff, #38bdf8); }
+  .bar.fullness > span { background: linear-gradient(90deg, #ffd591, #f59e0b); }
+  .bar.energy > span { background: linear-gradient(90deg, #c4b5fd, #8b5cf6); }
+
+  .score {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .score b { color: var(--accent); font-size: 16px; }
+
+  .stage {
+    position: relative;
+    background: linear-gradient(180deg, #fff7fb 0%, #fce4ec 100%);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 10px;
+    height: 320px;
+    overflow: hidden;
+    box-shadow: inset 0 -8px 18px #ffd1e1aa;
+  }
+  .stage::before {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 60px;
+    background: linear-gradient(180deg, #fbcfe8, #f0abfc44);
+    border-top: 2px dashed #f9a8d4;
+  }
+  .clouds {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    right: 0;
+    font-size: 22px;
+    color: #fff;
+    display: flex;
+    justify-content: space-around;
+    opacity: 0.85;
+    pointer-events: none;
+  }
+  .stage-msg {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 4px 10px;
+    font-size: 11px;
+    color: var(--muted);
+    box-shadow: 0 2px 8px #fbcfe888;
+  }
+
+  .rabbit-wrap {
+    position: absolute;
+    left: 50%;
+    bottom: 28px;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 240px;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+  }
+  .rabbit-wrap:active { cursor: grabbing; }
+  .rabbit {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.2s ease;
+    transform-origin: 50% 100%;
+  }
+  .rabbit.bounce { animation: bounce 0.6s ease; }
+  @keyframes bounce {
+    0%   { transform: translateY(0) scale(1, 1); }
+    25%  { transform: translateY(-12px) scale(0.98, 1.04); }
+    50%  { transform: translateY(0) scale(1.04, 0.96); }
+    75%  { transform: translateY(-6px) scale(0.99, 1.02); }
+    100% { transform: translateY(0) scale(1, 1); }
+  }
+  .rabbit.shake { animation: shake 0.4s ease; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px) rotate(-3deg); }
+    75% { transform: translateX(6px) rotate(3deg); }
+  }
+  .rabbit.sleep { animation: sleep 2s ease-in-out infinite; }
+  @keyframes sleep {
+    0%, 100% { transform: scale(1, 1); }
+    50% { transform: scale(1.02, 0.98); }
+  }
+
+  .floaty {
+    position: absolute;
+    pointer-events: none;
+    font-size: 22px;
+    animation: floaty 1.2s ease-out forwards;
+  }
+  @keyframes floaty {
+    0%   { transform: translate(-50%, 0) scale(0.8); opacity: 0; }
+    20%  { transform: translate(-50%, -10px) scale(1.1); opacity: 1; }
+    100% { transform: translate(-50%, -60px) scale(1); opacity: 0; }
+  }
+  .sparkle {
+    position: absolute;
+    pointer-events: none;
+    font-size: 16px;
+    animation: sparkle 0.9s ease-out forwards;
+  }
+  @keyframes sparkle {
+    0% { transform: translate(-50%, -50%) scale(0.4) rotate(0); opacity: 0; }
+    40% { opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1.4) rotate(180deg); opacity: 0; }
+  }
+
+  .actions {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .btn {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: #fff;
+    border-radius: 14px;
+    padding: 10px 6px;
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--text);
+    cursor: pointer;
+    transition: transform 0.1s ease, box-shadow 0.15s ease, background 0.15s;
+    box-shadow: 0 2px 0 #f5d4e2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .btn:hover { background: #fff5f9; }
+  .btn:active { transform: translateY(1px); box-shadow: 0 1px 0 #f5d4e2; }
+  .btn .ico { font-size: 22px; }
+  .btn .name { font-weight: bold; }
+  .btn .desc { font-size: 10px; color: var(--muted); }
+  .btn.primary { background: linear-gradient(180deg, #ffd1e0, #ffb1cc); border-color: #ffb1cc; }
+  .btn[data-tool="brush"].active,
+  .btn[data-tool="bath"].active,
+  .btn[data-tool="nail"].active {
+    outline: 3px solid #ff7aa8;
+    background: #fff0f6;
+  }
+
+  .footer {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .footer button {
+    appearance: none;
+    background: transparent;
+    border: none;
+    color: var(--accent);
+    font-size: 11px;
+    cursor: pointer;
+    text-decoration: underline;
+    font-family: inherit;
+  }
+
+  .modal {
+    position: fixed;
+    inset: 0;
+    background: #4a3b5288;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 16px;
+  }
+  .modal.show { display: flex; }
+  .modal-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 18px;
+    max-width: 320px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 10px 30px #00000022;
+  }
+  .modal-card h2 { margin: 0 0 8px; color: var(--accent); font-size: 18px; }
+  .modal-card p { margin: 0 0 12px; font-size: 13px; color: var(--text); }
+
+  .level-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #ffd1e0, #ffb1cc);
+    color: #b14979;
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-left: 4px;
+  }
+
+  /* SVG rabbit cosmetic states */
+  .dirt-spot { transition: opacity 0.3s; }
+  .heart-eye { display: none; }
+  .rabbit-wrap.happy .heart-eye { display: block; }
+  .rabbit-wrap.happy .normal-eye { display: none; }
+  .rabbit-wrap.sleeping .normal-eye { display: none; }
+  .rabbit-wrap.sleeping .sleep-eye { display: block; }
+  .sleep-eye { display: none; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>🐰 うさぎのお手入れ</h1>
+    <p>なでて・ブラッシングして・ごはんをあげよう</p>
+  </header>
+
+  <div class="game">
+    <div class="stats">
+      <div class="stat">
+        <div class="label">😊 きげん</div>
+        <div class="bar"><span id="bar-happy" style="width:80%"></span></div>
+      </div>
+      <div class="stat">
+        <div class="label">✨ きれい</div>
+        <div class="bar clean"><span id="bar-clean" style="width:70%"></span></div>
+      </div>
+      <div class="stat">
+        <div class="label">🍽 おなか</div>
+        <div class="bar fullness"><span id="bar-full" style="width:60%"></span></div>
+      </div>
+      <div class="stat">
+        <div class="label">⚡️ げんき</div>
+        <div class="bar energy"><span id="bar-energy" style="width:75%"></span></div>
+      </div>
+    </div>
+
+    <div class="score">
+      なまえ: <b id="rabbit-name">もちこ</b>
+      <span class="level-badge">Lv.<span id="level">1</span></span>
+      &nbsp;|&nbsp; お世話ポイント <b id="points">0</b>
+    </div>
+
+    <div class="stage" id="stage">
+      <div class="clouds"><span>☁️</span><span>☁️</span><span>☁️</span></div>
+      <div class="stage-msg" id="msg">タップしてなでよう！</div>
+
+      <div class="rabbit-wrap" id="rabbit">
+        <svg class="rabbit" viewBox="0 0 220 260" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <!-- soft fluffy gradient -->
+            <radialGradient id="fluffGrad" cx="50%" cy="40%" r="65%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="70%" stop-color="#fff5f9"/>
+              <stop offset="100%" stop-color="#ffe1ec"/>
+            </radialGradient>
+            <radialGradient id="earInner" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#ffd6e4"/>
+              <stop offset="100%" stop-color="#ffb1cc"/>
+            </radialGradient>
+            <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/>
+              <feOffset dy="2"/>
+              <feComponentTransfer><feFuncA type="linear" slope="0.18"/></feComponentTransfer>
+              <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <!-- fluff bumps used as a clip-friendly outline pattern -->
+            <symbol id="bump" overflow="visible">
+              <circle r="9" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1"/>
+            </symbol>
+          </defs>
+
+          <!-- ground shadow -->
+          <ellipse cx="110" cy="244" rx="68" ry="8" fill="#00000018"/>
+
+          <!-- LEFT EAR (fluffy) -->
+          <g filter="url(#softShadow)">
+            <ellipse cx="78" cy="58" rx="16" ry="52" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.5"/>
+            <ellipse cx="78" cy="64" rx="7" ry="36" fill="url(#earInner)"/>
+            <!-- ear fluff bumps -->
+            <circle cx="68" cy="20" r="6" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1"/>
+            <circle cx="86" cy="14" r="5" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1"/>
+            <circle cx="64" cy="85" r="5" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1"/>
+          </g>
+
+          <!-- RIGHT EAR (fluffy) -->
+          <g filter="url(#softShadow)">
+            <ellipse cx="142" cy="58" rx="16" ry="52" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.5"/>
+            <ellipse cx="142" cy="64" rx="7" ry="36" fill="url(#earInner)"/>
+            <circle cx="152" cy="20" r="6" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1"/>
+            <circle cx="134" cy="14" r="5" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1"/>
+            <circle cx="156" cy="85" r="5" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1"/>
+          </g>
+
+          <!-- BODY fluff outline (ring of bumps) -->
+          <g filter="url(#softShadow)">
+            <!-- bumpy ring around body -->
+            <g>
+              <circle cx="40"  cy="200" r="14" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+              <circle cx="56"  cy="225" r="13" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+              <circle cx="80"  cy="235" r="13" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+              <circle cx="110" cy="238" r="14" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+              <circle cx="140" cy="235" r="13" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+              <circle cx="164" cy="225" r="13" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+              <circle cx="180" cy="200" r="14" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+              <circle cx="184" cy="178" r="12" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+              <circle cx="38"  cy="178" r="12" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+            </g>
+            <!-- main body -->
+            <ellipse cx="110" cy="200" rx="78" ry="44" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.5"/>
+            <!-- chest fluff -->
+            <g>
+              <circle cx="90"  cy="178" r="10" fill="#ffffff" stroke="#f5dbe7" stroke-width="1"/>
+              <circle cx="110" cy="172" r="11" fill="#ffffff" stroke="#f5dbe7" stroke-width="1"/>
+              <circle cx="130" cy="178" r="10" fill="#ffffff" stroke="#f5dbe7" stroke-width="1"/>
+              <circle cx="100" cy="190" r="9"  fill="#ffffff" stroke="#f5dbe7" stroke-width="1"/>
+              <circle cx="120" cy="190" r="9"  fill="#ffffff" stroke="#f5dbe7" stroke-width="1"/>
+            </g>
+          </g>
+
+          <!-- tail (super fluffy) -->
+          <g filter="url(#softShadow)">
+            <circle cx="190" cy="210" r="12" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+            <circle cx="196" cy="218" r="7" fill="#ffffff" stroke="#f5dbe7" stroke-width="1"/>
+            <circle cx="188" cy="220" r="6" fill="#ffffff" stroke="#f5dbe7" stroke-width="1"/>
+          </g>
+
+          <!-- HEAD with fluff bumps around -->
+          <g filter="url(#softShadow)">
+            <!-- head fluff ring -->
+            <g>
+              <circle cx="58"  cy="120" r="11" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+              <circle cx="48"  cy="140" r="10" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+              <circle cx="55"  cy="158" r="10" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+              <circle cx="72"  cy="170" r="10" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+              <circle cx="148" cy="170" r="10" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+              <circle cx="165" cy="158" r="10" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+              <circle cx="172" cy="140" r="10" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+              <circle cx="162" cy="120" r="11" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+              <circle cx="150" cy="100" r="10" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+              <circle cx="70"  cy="100" r="10" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+              <circle cx="90"  cy="86"  r="9"  fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+              <circle cx="130" cy="86"  r="9"  fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+              <circle cx="110" cy="78"  r="9"  fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+            </g>
+            <!-- face -->
+            <circle cx="110" cy="138" r="58" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.5"/>
+            <!-- forehead highlight -->
+            <ellipse cx="92" cy="110" rx="22" ry="12" fill="#ffffff" opacity="0.7"/>
+          </g>
+
+          <!-- cheeks (blush) -->
+          <ellipse cx="74"  cy="150" rx="10" ry="6" fill="#ffb1cc" opacity="0.75"/>
+          <ellipse cx="146" cy="150" rx="10" ry="6" fill="#ffb1cc" opacity="0.75"/>
+
+          <!-- normal eyes (big sparkly) -->
+          <g class="normal-eye">
+            <ellipse cx="90"  cy="132" rx="6" ry="8.5" fill="#3a2540"/>
+            <ellipse cx="130" cy="132" rx="6" ry="8.5" fill="#3a2540"/>
+            <circle cx="92"  cy="129" r="2"   fill="#fff"/>
+            <circle cx="132" cy="129" r="2"   fill="#fff"/>
+            <circle cx="88"  cy="135" r="1"   fill="#fff"/>
+            <circle cx="128" cy="135" r="1"   fill="#fff"/>
+          </g>
+          <!-- happy heart eyes -->
+          <g class="heart-eye">
+            <text x="82"  y="142" font-size="18">💗</text>
+            <text x="122" y="142" font-size="18">💗</text>
+          </g>
+          <!-- sleeping eyes -->
+          <g class="sleep-eye" stroke="#3a2540" stroke-width="2.4" fill="none" stroke-linecap="round">
+            <path d="M82 132 Q90 138 98 132"/>
+            <path d="M122 132 Q130 138 138 132"/>
+          </g>
+
+          <!-- nose -->
+          <path d="M105 152 Q110 158 115 152 Q113 156 110 156 Q107 156 105 152 Z" fill="#ff7aa8"/>
+          <!-- mouth (3-shape) -->
+          <path d="M110 156 L110 161" stroke="#3a2540" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M110 161 Q105 165 102 162" stroke="#3a2540" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+          <path d="M110 161 Q115 165 118 162" stroke="#3a2540" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+
+          <!-- whiskers -->
+          <g stroke="#cdb6c1" stroke-width="1" stroke-linecap="round" opacity="0.9">
+            <line x1="68" y1="156" x2="44" y2="152"/>
+            <line x1="68" y1="160" x2="42" y2="162"/>
+            <line x1="152" y1="156" x2="176" y2="152"/>
+            <line x1="152" y1="160" x2="178" y2="162"/>
+          </g>
+
+          <!-- arms (paws) -->
+          <g filter="url(#softShadow)">
+            <circle cx="42" cy="195" r="14" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+            <circle cx="178" cy="195" r="14" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+            <circle cx="42" cy="208" r="9"  fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+            <circle cx="178" cy="208" r="9"  fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+          </g>
+
+          <!-- feet (toe-beans) -->
+          <g filter="url(#softShadow)">
+            <ellipse cx="86"  cy="240" rx="20" ry="10" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+            <ellipse cx="134" cy="240" rx="20" ry="10" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+          </g>
+          <ellipse cx="86"  cy="241" rx="7" ry="3.5" fill="#ffc4d6"/>
+          <ellipse cx="134" cy="241" rx="7" ry="3.5" fill="#ffc4d6"/>
+          <!-- toe beans -->
+          <circle cx="80"  cy="238" r="1.6" fill="#ff89ad"/>
+          <circle cx="86"  cy="237" r="1.6" fill="#ff89ad"/>
+          <circle cx="92"  cy="238" r="1.6" fill="#ff89ad"/>
+          <circle cx="128" cy="238" r="1.6" fill="#ff89ad"/>
+          <circle cx="134" cy="237" r="1.6" fill="#ff89ad"/>
+          <circle cx="140" cy="238" r="1.6" fill="#ff89ad"/>
+
+          <!-- ribbon bow on the ear (cuteness) -->
+          <g transform="translate(150 30) rotate(-10)">
+            <path d="M-8 0 Q-2 -8 0 0 Q-2 8 -8 0 Z" fill="#ff7aa8"/>
+            <path d="M8 0 Q2 -8 0 0 Q2 8 8 0 Z" fill="#ff7aa8"/>
+            <circle cx="0" cy="0" r="2" fill="#ffd1e0"/>
+          </g>
+
+          <!-- dirt spots (toggleable) -->
+          <g id="dirt">
+            <circle class="dirt-spot" cx="88"  cy="190" r="6" fill="#a17a4f" opacity="0"/>
+            <circle class="dirt-spot" cx="130" cy="195" r="5" fill="#a17a4f" opacity="0"/>
+            <circle class="dirt-spot" cx="115" cy="215" r="4" fill="#a17a4f" opacity="0"/>
+            <circle class="dirt-spot" cx="78"  cy="170" r="4" fill="#a17a4f" opacity="0"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" id="btn-pet">
+        <span class="ico">🤚</span><span class="name">なでなで</span><span class="desc">きげん UP</span>
+      </button>
+      <button class="btn" id="btn-feed">
+        <span class="ico">🥕</span><span class="name">ごはん</span><span class="desc">おなか UP</span>
+      </button>
+      <button class="btn" data-tool="brush" id="btn-brush">
+        <span class="ico">🪮</span><span class="name">ブラシ</span><span class="desc">ドラッグでとかす</span>
+      </button>
+      <button class="btn" data-tool="bath" id="btn-bath">
+        <span class="ico">🛁</span><span class="name">おふろ</span><span class="desc">よごれをおとす</span>
+      </button>
+      <button class="btn" data-tool="nail" id="btn-nail">
+        <span class="ico">💅</span><span class="name">つめきり</span><span class="desc">あしをタップ</span>
+      </button>
+      <button class="btn" id="btn-sleep">
+        <span class="ico">💤</span><span class="name">おやすみ</span><span class="desc">げんき回復</span>
+      </button>
+    </div>
+
+    <div class="footer">
+      <button id="btn-rename">なまえをかえる</button>
+      &nbsp;｜&nbsp;
+      <button id="btn-reset">リセット</button>
+    </div>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="modal-card">
+      <h2 id="modal-title">レベルアップ！</h2>
+      <p id="modal-text">もちこと もっとなかよくなれたよ</p>
+      <button class="btn primary" id="modal-close" style="width:100%"><span class="name">やったー！</span></button>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const STORAGE_KEY = "rabbit-care-v1";
+  const state = loadState();
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return Object.assign(defaults(), JSON.parse(raw));
+    } catch(e) {}
+    return defaults();
+  }
+  function defaults() {
+    return {
+      name: "もちこ",
+      happy: 80,
+      clean: 70,
+      full: 60,
+      energy: 75,
+      points: 0,
+      level: 1,
+      dirty: [false,false,false,false],
+      sleeping: false,
+      tool: null,
+    };
+  }
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+  }
+  function clamp(v) { return Math.max(0, Math.min(100, v)); }
+
+  const $ = (id) => document.getElementById(id);
+  const stage = $("stage");
+  const rabbit = $("rabbit");
+  const msg = $("msg");
+
+  function render() {
+    $("bar-happy").style.width = state.happy + "%";
+    $("bar-clean").style.width = state.clean + "%";
+    $("bar-full").style.width  = state.full  + "%";
+    $("bar-energy").style.width = state.energy + "%";
+    $("rabbit-name").textContent = state.name;
+    $("points").textContent = state.points;
+    $("level").textContent = state.level;
+
+    const spots = document.querySelectorAll(".dirt-spot");
+    spots.forEach((el, i) => {
+      el.style.opacity = state.dirty[i] ? 1 : 0;
+    });
+
+    rabbit.classList.toggle("happy", state.happy >= 85 && !state.sleeping);
+    rabbit.classList.toggle("sleeping", state.sleeping);
+    rabbit.querySelector(".rabbit").classList.toggle("sleep", state.sleeping);
+
+    document.querySelectorAll("[data-tool]").forEach(b => {
+      b.classList.toggle("active", b.dataset.tool === state.tool);
+    });
+  }
+
+  function setMsg(text) {
+    msg.textContent = text;
+  }
+
+  function floaty(emoji, x, y) {
+    const el = document.createElement("div");
+    el.className = "floaty";
+    el.textContent = emoji;
+    el.style.left = x + "px";
+    el.style.top = y + "px";
+    stage.appendChild(el);
+    setTimeout(() => el.remove(), 1300);
+  }
+
+  function sparkle(x, y) {
+    const el = document.createElement("div");
+    el.className = "sparkle";
+    el.textContent = "✨";
+    el.style.left = x + "px";
+    el.style.top = y + "px";
+    stage.appendChild(el);
+    setTimeout(() => el.remove(), 1000);
+  }
+
+  function pointsUp(n, label) {
+    state.points += n;
+    const need = state.level * 30;
+    if (state.points >= need) {
+      state.level += 1;
+      state.points -= need;
+      showModal("レベルアップ！🎉", `${state.name}と もっとなかよくなれたよ\n（Lv.${state.level}）`);
+    }
+    if (label) setMsg(label);
+    render();
+    save();
+  }
+
+  function showModal(title, text) {
+    $("modal-title").textContent = title;
+    $("modal-text").textContent = text;
+    $("modal").classList.add("show");
+  }
+  $("modal-close").addEventListener("click", () => {
+    $("modal").classList.remove("show");
+  });
+
+  // === Actions ===
+  function pet(x, y) {
+    if (state.sleeping) {
+      setMsg("Zzz... 起こさないで");
+      return;
+    }
+    state.happy = clamp(state.happy + 4);
+    state.energy = clamp(state.energy - 1);
+    rabbit.querySelector(".rabbit").classList.remove("bounce");
+    void rabbit.offsetWidth;
+    rabbit.querySelector(".rabbit").classList.add("bounce");
+    floaty("💖", x, y);
+    pointsUp(1, "うれしい〜♪");
+  }
+
+  function feed() {
+    if (state.sleeping) { setMsg("Zzz... 起きてからね"); return; }
+    if (state.full >= 98) {
+      setMsg("もうおなかいっぱい...");
+      return;
+    }
+    state.full = clamp(state.full + 18);
+    state.happy = clamp(state.happy + 3);
+    state.energy = clamp(state.energy + 4);
+    const r = stage.getBoundingClientRect();
+    floaty("🥕", r.width/2, r.height - 100);
+    rabbit.querySelector(".rabbit").classList.remove("bounce");
+    void rabbit.offsetWidth;
+    rabbit.querySelector(".rabbit").classList.add("bounce");
+    pointsUp(2, "もぐもぐ おいしい！");
+  }
+
+  function selectTool(tool) {
+    state.tool = state.tool === tool ? null : tool;
+    if (state.tool === "brush") setMsg("ドラッグして毛をとかしてあげて");
+    else if (state.tool === "bath") setMsg("よごれの上をこすってきれいに");
+    else if (state.tool === "nail") setMsg("足をタップしてつめをきろう");
+    else setMsg("タップしてなでよう！");
+    render();
+    save();
+  }
+
+  function sleepToggle() {
+    state.sleeping = !state.sleeping;
+    if (state.sleeping) {
+      setMsg("Zzz... おやすみなさい");
+    } else {
+      setMsg("おはよう！");
+      state.energy = clamp(state.energy + 30);
+      pointsUp(2);
+    }
+    render();
+    save();
+  }
+
+  function applyTool(x, y, target) {
+    const r = stage.getBoundingClientRect();
+    const px = x - r.left;
+    const py = y - r.top;
+    if (state.tool === "brush") {
+      state.clean = clamp(state.clean + 1.5);
+      state.happy = clamp(state.happy + 0.6);
+      sparkle(px, py);
+      if (Math.random() < 0.15) pointsUp(1);
+      else { render(); save(); }
+    } else if (state.tool === "bath") {
+      // remove nearest dirt
+      const spots = document.querySelectorAll(".dirt-spot");
+      let removed = false;
+      spots.forEach((el, i) => {
+        if (!state.dirty[i]) return;
+        const cb = el.getBoundingClientRect();
+        const cx = cb.left + cb.width/2;
+        const cy = cb.top + cb.height/2;
+        const d = Math.hypot(cx - x, cy - y);
+        if (!removed && d < 28) {
+          state.dirty[i] = false;
+          removed = true;
+          state.clean = clamp(state.clean + 8);
+          floaty("🫧", px, py);
+          pointsUp(2, "ピカピカ✨");
+        }
+      });
+      if (!removed) {
+        state.clean = clamp(state.clean + 0.6);
+        sparkle(px, py);
+        render(); save();
+      }
+    } else if (state.tool === "nail") {
+      // require tapping a foot
+      if (target && target.tagName === "ellipse") {
+        const cy = parseFloat(target.getAttribute("cy") || "0");
+        if (cy > 220) {
+          state.happy = clamp(state.happy + 2);
+          floaty("✂️", px, py);
+          pointsUp(2, "つめスッキリ！");
+          return;
+        }
+      }
+      setMsg("足をタップしてつめをきってね");
+    }
+  }
+
+  // Pointer interactions on the rabbit / stage
+  rabbit.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    rabbit.setPointerCapture(e.pointerId);
+    if (state.tool) {
+      applyTool(e.clientX, e.clientY, e.target);
+    } else {
+      const r = stage.getBoundingClientRect();
+      pet(e.clientX - r.left, e.clientY - r.top);
+    }
+  });
+  rabbit.addEventListener("pointermove", (e) => {
+    if (e.buttons === 0 && e.pressure === 0) return;
+    if (state.tool) applyTool(e.clientX, e.clientY, e.target);
+  });
+
+  // Buttons
+  $("btn-pet").addEventListener("click", () => {
+    state.tool = null;
+    const r = stage.getBoundingClientRect();
+    pet(r.width/2, r.height - 140);
+  });
+  $("btn-feed").addEventListener("click", feed);
+  $("btn-brush").addEventListener("click", () => selectTool("brush"));
+  $("btn-bath").addEventListener("click", () => selectTool("bath"));
+  $("btn-nail").addEventListener("click", () => selectTool("nail"));
+  $("btn-sleep").addEventListener("click", sleepToggle);
+
+  $("btn-rename").addEventListener("click", () => {
+    const n = prompt("うさぎの新しいなまえは？", state.name);
+    if (n && n.trim()) {
+      state.name = n.trim().slice(0, 12);
+      render(); save();
+    }
+  });
+  $("btn-reset").addEventListener("click", () => {
+    if (confirm("ほんとうに最初からやり直しますか？")) {
+      localStorage.removeItem(STORAGE_KEY);
+      Object.assign(state, defaults());
+      render();
+    }
+  });
+
+  // === Time tick: stats decrease, dirt builds ===
+  setInterval(() => {
+    if (state.sleeping) {
+      state.energy = clamp(state.energy + 2);
+      state.full = clamp(state.full - 0.4);
+      // wake up automatically
+      if (state.energy >= 100) {
+        state.sleeping = false;
+        setMsg("ぐっすり寝た！おはよう☀️");
+      }
+    } else {
+      state.happy = clamp(state.happy - 0.6);
+      state.full  = clamp(state.full  - 0.8);
+      state.clean = clamp(state.clean - 0.4);
+      state.energy = clamp(state.energy - 0.3);
+    }
+
+    // randomly add dirt
+    if (!state.sleeping && Math.random() < 0.12) {
+      for (let i = 0; i < state.dirty.length; i++) {
+        if (!state.dirty[i]) { state.dirty[i] = true; break; }
+      }
+    }
+
+    // mood feedback messages occasionally
+    if (Math.random() < 0.08) {
+      if (state.full < 25) setMsg("おなかすいた...🥕");
+      else if (state.clean < 25) setMsg("ちょっとよごれちゃった...🛁");
+      else if (state.energy < 25) setMsg("ねむい...💤");
+      else if (state.happy < 25) setMsg("さみしいよ...🥺");
+      else if (state.happy > 90) setMsg("だいすき！💖");
+    }
+
+    render();
+    save();
+  }, 1500);
+
+  render();
+  setMsg("タップしてなでよう！");
+})();
+</script>
+</body>
+</html>
