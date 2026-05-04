@@ -210,17 +210,17 @@
   .actions {
     margin-top: 12px;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
   }
   .btn {
     appearance: none;
     border: 1px solid var(--border);
     background: #fff;
     border-radius: 14px;
-    padding: 10px 6px;
+    padding: 8px 4px;
     font-family: inherit;
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text);
     cursor: pointer;
     transition: transform 0.1s ease, box-shadow 0.15s ease, background 0.15s;
@@ -228,13 +228,13 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 2px;
   }
   .btn:hover { background: #fff5f9; }
   .btn:active { transform: translateY(1px); box-shadow: 0 1px 0 #f5d4e2; }
-  .btn .ico { font-size: 22px; }
-  .btn .name { font-weight: bold; }
-  .btn .desc { font-size: 10px; color: var(--muted); }
+  .btn .ico { font-size: 22px; line-height: 1; }
+  .btn .name { font-weight: bold; font-size: 11px; }
+  .btn .desc { font-size: 9px; color: var(--muted); }
   .btn.primary { background: linear-gradient(180deg, #ffd1e0, #ffb1cc); border-color: #ffb1cc; }
   .btn[data-tool="brush"].active,
   .btn[data-tool="bath"].active,
@@ -374,12 +374,105 @@
 
   /* SVG rabbit cosmetic states */
   .dirt-spot { transition: opacity 0.3s; }
-  .heart-eye { display: none; }
+  .heart-eye, .sleep-eye, .comfort-eye, .comfort-mouth { display: none; }
   .rabbit-wrap.happy .heart-eye { display: block; }
   .rabbit-wrap.happy .normal-eye { display: none; }
   .rabbit-wrap.sleeping .normal-eye { display: none; }
   .rabbit-wrap.sleeping .sleep-eye { display: block; }
-  .sleep-eye { display: none; }
+  .rabbit-wrap.brushing .normal-eye,
+  .rabbit-wrap.brushing .heart-eye,
+  .rabbit-wrap.brushing .sleep-eye { display: none; }
+  .rabbit-wrap.brushing .comfort-eye { display: block; }
+  .rabbit-wrap.brushing .normal-mouth { display: none; }
+  .rabbit-wrap.brushing .comfort-mouth { display: block; }
+  .rabbit-wrap.bathing { transform: translateX(-50%) translateY(-12px); }
+
+  /* Bathtub */
+  .bathtub {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    width: 300px;
+    height: 130px;
+    display: none;
+    z-index: 5;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.4s ease;
+  }
+  .bathtub.show {
+    display: block;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+    touch-action: none;
+  }
+  .bathtub svg { width: 100%; height: 100%; display: block; }
+  .bath-wave {
+    transform-origin: center;
+    animation: wave 1.5s ease-in-out infinite;
+  }
+  @keyframes wave {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+  }
+  .bath-bubble {
+    position: absolute;
+    pointer-events: none;
+    font-size: 18px;
+    animation: bubbleUp 1.5s ease-out forwards;
+  }
+  @keyframes bubbleUp {
+    0%   { transform: translate(-50%, 0) scale(0.5); opacity: 0; }
+    20%  { opacity: 1; }
+    100% { transform: translate(-50%, -90px) scale(1.1); opacity: 0; }
+  }
+  .splash {
+    position: absolute;
+    pointer-events: none;
+    font-size: 24px;
+    animation: splashPop 0.7s ease-out forwards;
+  }
+  @keyframes splashPop {
+    0%   { transform: translate(-50%, 0) scale(0.4); opacity: 0; }
+    40%  { transform: translate(-50%, -25px) scale(1.2); opacity: 1; }
+    100% { transform: translate(-50%, -50px) scale(1.4); opacity: 0; }
+  }
+
+  /* Outfit picker (reuses food picker styling) */
+  .outfit-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .outfit-btn {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: #fff5f9;
+    border-radius: 14px;
+    padding: 10px 4px 6px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform 0.1s, background 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    box-shadow: 0 2px 0 #f5d4e2;
+  }
+  .outfit-btn .outfit-emoji { font-size: 26px; line-height: 1; }
+  .outfit-btn .outfit-name {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .outfit-btn:active { transform: translateY(1px) scale(0.96); background: #ffe8f1; }
+  .outfit-btn.active {
+    background: linear-gradient(180deg, #fff0f6, #ffd1e0);
+    border-color: #ffb1cc;
+    outline: 2px solid #ff7aa8;
+  }
 </style>
 </head>
 <body>
@@ -418,216 +511,167 @@
       <div class="clouds"><span>☁️</span><span>☁️</span><span>☁️</span></div>
       <div class="stage-msg" id="msg">タップしてなでよう！</div>
 
+      <div class="bathtub" id="bathtub">
+        <svg viewBox="0 0 300 130" preserveAspectRatio="xMidYMax meet">
+          <!-- tub body -->
+          <path d="M 25 35
+                   Q 25 125, 150 125
+                   Q 275 125, 275 35
+                   L 265 35
+                   Q 265 110, 150 110
+                   Q 35 110, 35 35 Z"
+                fill="#ffffff" stroke="#5a3a2a" stroke-width="4" stroke-linejoin="round"/>
+          <!-- tub feet -->
+          <ellipse cx="55" cy="125" rx="10" ry="6" fill="#5a3a2a"/>
+          <ellipse cx="245" cy="125" rx="10" ry="6" fill="#5a3a2a"/>
+          <!-- water -->
+          <path d="M 38 50
+                   Q 38 108, 150 108
+                   Q 262 108, 262 50 Z"
+                fill="#7dd3fc"/>
+          <!-- water surface waves -->
+          <g class="bath-wave">
+            <path d="M 38 50 Q 70 44, 100 50 T 162 50 T 224 50 T 262 50"
+                  fill="none" stroke="#0284c7" stroke-width="2" opacity="0.5"/>
+            <path d="M 50 60 Q 80 56, 110 60 T 172 60 T 234 60"
+                  fill="none" stroke="#0284c7" stroke-width="1.5" opacity="0.35"/>
+          </g>
+          <!-- foam bubbles in water -->
+          <circle cx="70" cy="78" r="7" fill="#ffffff" opacity="0.85"/>
+          <circle cx="90" cy="68" r="5" fill="#ffffff" opacity="0.75"/>
+          <circle cx="210" cy="78" r="8" fill="#ffffff" opacity="0.85"/>
+          <circle cx="230" cy="70" r="5" fill="#ffffff" opacity="0.75"/>
+          <circle cx="150" cy="92" r="6" fill="#ffffff" opacity="0.7"/>
+        </svg>
+      </div>
+
       <div class="rabbit-wrap" id="rabbit">
-        <svg class="rabbit" viewBox="0 0 220 290" xmlns="http://www.w3.org/2000/svg">
+        <svg class="rabbit" viewBox="0 0 240 270" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <radialGradient id="fluffGrad" cx="50%" cy="40%" r="65%">
-              <stop offset="0%" stop-color="#ffffff"/>
-              <stop offset="70%" stop-color="#fff5f9"/>
-              <stop offset="100%" stop-color="#ffe1ec"/>
-            </radialGradient>
-            <radialGradient id="earInner" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stop-color="#ffd6e4"/>
-              <stop offset="100%" stop-color="#ffb1cc"/>
-            </radialGradient>
-            <radialGradient id="dressGrad" cx="50%" cy="20%" r="80%">
-              <stop offset="0%" stop-color="#f3e8ff"/>
-              <stop offset="60%" stop-color="#d8b4fe"/>
-              <stop offset="100%" stop-color="#c084fc"/>
-            </radialGradient>
             <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/>
+              <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
               <feOffset dy="2"/>
-              <feComponentTransfer><feFuncA type="linear" slope="0.18"/></feComponentTransfer>
+              <feComponentTransfer><feFuncA type="linear" slope="0.15"/></feComponentTransfer>
               <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
           </defs>
 
           <!-- ground shadow -->
-          <ellipse cx="110" cy="282" rx="72" ry="9" fill="#00000018"/>
+          <ellipse cx="120" cy="262" rx="80" ry="6" fill="#00000018"/>
 
-          <!-- BODY (drawn first) -->
-          <g filter="url(#softShadow)">
-            <g>
-              <circle cx="40"  cy="220" r="14" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-              <circle cx="56"  cy="245" r="13" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-              <circle cx="80"  cy="255" r="13" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-              <circle cx="110" cy="258" r="14" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-              <circle cx="140" cy="255" r="13" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-              <circle cx="164" cy="245" r="13" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-              <circle cx="180" cy="220" r="14" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-              <circle cx="184" cy="198" r="12" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-              <circle cx="38"  cy="198" r="12" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-            </g>
-            <ellipse cx="110" cy="220" rx="78" ry="44" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.5"/>
+          <!-- LEFT LOP EAR (drawn behind everything) -->
+          <g>
+            <path d="M 92 55
+                     C 60 60, 35 95, 38 150
+                     C 40 175, 55 185, 72 178
+                     C 90 168, 98 130, 100 90
+                     C 100 65, 98 50, 92 55 Z"
+                  fill="#ffffff"
+                  stroke="#5a3a2a" stroke-width="3.5" stroke-linejoin="round"/>
+            <path d="M 78 95
+                     C 58 108, 50 140, 56 168
+                     C 62 178, 70 178, 76 168
+                     C 84 152, 88 115, 88 95 Z"
+                  fill="#d4b8a0"/>
           </g>
 
-          <!-- TAIL -->
-          <g filter="url(#softShadow)">
-            <circle cx="190" cy="230" r="12" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-            <circle cx="196" cy="238" r="7" fill="#ffffff" stroke="#f5dbe7" stroke-width="1"/>
-            <circle cx="188" cy="240" r="6" fill="#ffffff" stroke="#f5dbe7" stroke-width="1"/>
+          <!-- RIGHT LOP EAR -->
+          <g>
+            <path d="M 148 55
+                     C 180 60, 205 95, 202 150
+                     C 200 175, 185 185, 168 178
+                     C 150 168, 142 130, 140 90
+                     C 140 65, 142 50, 148 55 Z"
+                  fill="#ffffff"
+                  stroke="#5a3a2a" stroke-width="3.5" stroke-linejoin="round"/>
+            <path d="M 162 95
+                     C 182 108, 190 140, 184 168
+                     C 178 178, 170 178, 164 168
+                     C 156 152, 152 115, 152 95 Z"
+                  fill="#d4b8a0"/>
           </g>
 
-          <!-- LOP EARS (drooping, drawn behind head) -->
-          <g filter="url(#softShadow)">
-            <!-- left lop ear -->
-            <ellipse cx="70" cy="160" rx="16" ry="62" transform="rotate(22 70 160)" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.5"/>
-            <ellipse cx="70" cy="163" rx="7" ry="46" transform="rotate(22 70 163)" fill="url(#earInner)" opacity="0.85"/>
-            <!-- ear tip fluff -->
-            <circle cx="46" cy="216" r="6" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1"/>
-            <circle cx="54" cy="222" r="5" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1"/>
-            <!-- right lop ear -->
-            <ellipse cx="150" cy="160" rx="16" ry="62" transform="rotate(-22 150 160)" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.5"/>
-            <ellipse cx="150" cy="163" rx="7" ry="46" transform="rotate(-22 150 163)" fill="url(#earInner)" opacity="0.85"/>
-            <circle cx="174" cy="216" r="6" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1"/>
-            <circle cx="166" cy="222" r="5" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1"/>
-          </g>
+          <!-- HEAD TUFT (between ears) -->
+          <path d="M 102 65 Q 110 50, 118 60 Q 124 50, 132 60 Q 137 55, 138 65"
+                fill="#fff" stroke="#5a3a2a" stroke-width="3"
+                stroke-linejoin="round" stroke-linecap="round"/>
 
-          <!-- DRESS (cake-cupcake themed) -->
-          <g filter="url(#softShadow)">
-            <!-- skirt main -->
-            <path d="M 70 200
-                     Q 85 192, 110 192
-                     Q 135 192, 150 200
-                     Q 165 232, 178 256
-                     Q 170 262, 162 260
-                     Q 110 272, 58 260
-                     Q 50 262, 42 256
-                     Q 55 232, 70 200 Z"
-                  fill="url(#dressGrad)" stroke="#a78bfa" stroke-width="1.5"/>
-            <!-- ruffle scallops at hem -->
-            <g fill="#f3e8ff" stroke="#a78bfa" stroke-width="1">
-              <path d="M 42 256 Q 52 268, 62 256 L 62 252 Q 52 263, 44 252 Z"/>
-              <path d="M 62 256 Q 75 270, 88 256 L 88 252 Q 75 264, 62 252 Z"/>
-              <path d="M 88 256 Q 100 271, 112 256 L 112 252 Q 100 264, 88 252 Z"/>
-              <path d="M 112 256 Q 124 271, 136 256 L 136 252 Q 124 264, 112 252 Z"/>
-              <path d="M 136 256 Q 148 270, 160 256 L 160 252 Q 148 264, 136 252 Z"/>
-              <path d="M 160 256 Q 168 268, 178 256 L 176 252 Q 168 263, 158 252 Z"/>
-            </g>
-            <!-- collar / neckline frill -->
-            <ellipse cx="110" cy="194" rx="42" ry="7" fill="#ffffff" stroke="#a78bfa" stroke-width="1.2"/>
-            <g fill="#ffffff" stroke="#a78bfa" stroke-width="1">
-              <path d="M 70 194 q 4 7, 8 0 z"/>
-              <path d="M 78 194 q 4 7, 8 0 z"/>
-              <path d="M 86 194 q 4 7, 8 0 z"/>
-              <path d="M 94 194 q 4 7, 8 0 z"/>
-              <path d="M 102 194 q 4 7, 8 0 z"/>
-              <path d="M 110 194 q 4 7, 8 0 z"/>
-              <path d="M 118 194 q 4 7, 8 0 z"/>
-              <path d="M 126 194 q 4 7, 8 0 z"/>
-              <path d="M 134 194 q 4 7, 8 0 z"/>
-              <path d="M 142 194 q 4 7, 8 0 z"/>
-            </g>
-            <!-- dress decorations: cake & cupcake & strawberry -->
-            <text x="64" y="232" font-size="17">🧁</text>
-            <text x="135" y="232" font-size="17">🍰</text>
-            <text x="100" y="250" font-size="13">🍓</text>
-            <!-- chest bow -->
-            <g transform="translate(110 198)">
-              <path d="M-14 0 Q-5 -10 0 0 Q-5 10 -14 0 Z" fill="#ff7aa8" stroke="#e85a8e" stroke-width="1"/>
-              <path d="M14 0 Q5 -10 0 0 Q5 10 14 0 Z" fill="#ff7aa8" stroke="#e85a8e" stroke-width="1"/>
-              <circle cx="0" cy="0" r="4" fill="#ffd1e0" stroke="#e85a8e" stroke-width="1"/>
-              <path d="M-3 4 L-7 12 L-2 10 Z" fill="#ff7aa8"/>
-              <path d="M3 4 L7 12 L2 10 Z" fill="#ff7aa8"/>
-            </g>
-          </g>
+          <!-- BODY -->
+          <path d="M 70 168
+                   C 60 200, 55 235, 80 248
+                   Q 120 256, 160 248
+                   C 185 235, 180 200, 170 168
+                   Z"
+                fill="#fff" stroke="#5a3a2a" stroke-width="3.5" stroke-linejoin="round"/>
 
-          <!-- HEAD (covers ear tops & dress neckline) -->
-          <g filter="url(#softShadow)">
-            <g>
-              <circle cx="58"  cy="120" r="11" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-              <circle cx="48"  cy="140" r="10" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-              <circle cx="55"  cy="158" r="10" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-              <circle cx="72"  cy="170" r="10" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-              <circle cx="148" cy="170" r="10" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-              <circle cx="165" cy="158" r="10" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-              <circle cx="172" cy="140" r="10" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-              <circle cx="162" cy="120" r="11" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-              <circle cx="150" cy="100" r="10" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-              <circle cx="70"  cy="100" r="10" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-              <circle cx="90"  cy="86"  r="9"  fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-              <circle cx="130" cy="86"  r="9"  fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-              <circle cx="110" cy="78"  r="9"  fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-            </g>
-            <circle cx="110" cy="138" r="58" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.5"/>
-            <ellipse cx="92" cy="110" rx="22" ry="12" fill="#ffffff" opacity="0.7"/>
-          </g>
+          <!-- FEET (sides) -->
+          <ellipse cx="78" cy="246" rx="20" ry="11" fill="#fff"
+                   stroke="#5a3a2a" stroke-width="3"/>
+          <ellipse cx="162" cy="246" rx="20" ry="11" fill="#fff"
+                   stroke="#5a3a2a" stroke-width="3"/>
+          <ellipse cx="78" cy="248" rx="6" ry="3" fill="#f8c5c8"/>
+          <ellipse cx="162" cy="248" rx="6" ry="3" fill="#f8c5c8"/>
 
-          <!-- cheeks (blush) -->
-          <ellipse cx="74"  cy="150" rx="10" ry="6" fill="#ffb1cc" opacity="0.75"/>
-          <ellipse cx="146" cy="150" rx="10" ry="6" fill="#ffb1cc" opacity="0.75"/>
+          <!-- FRONT PAWS -->
+          <ellipse cx="105" cy="240" rx="13" ry="16" fill="#fff"
+                   stroke="#5a3a2a" stroke-width="3"/>
+          <ellipse cx="135" cy="240" rx="13" ry="16" fill="#fff"
+                   stroke="#5a3a2a" stroke-width="3"/>
 
-          <!-- normal eyes -->
+          <!-- HEAD -->
+          <ellipse cx="120" cy="130" rx="65" ry="58"
+                   fill="#fff" stroke="#5a3a2a" stroke-width="3.5"/>
+
+          <!-- CHEEKS -->
+          <ellipse cx="80" cy="153" rx="15" ry="9" fill="#f8c5c8" opacity="0.9"/>
+          <ellipse cx="160" cy="153" rx="15" ry="9" fill="#f8c5c8" opacity="0.9"/>
+          <ellipse cx="80" cy="153" rx="7" ry="4" fill="#e89599" opacity="0.4"/>
+          <ellipse cx="160" cy="153" rx="7" ry="4" fill="#e89599" opacity="0.4"/>
+          <ellipse cx="76" cy="150" rx="3" ry="2" fill="#fff" opacity="0.6"/>
+          <ellipse cx="156" cy="150" rx="3" ry="2" fill="#fff" opacity="0.6"/>
+
+          <!-- EYES -->
           <g class="normal-eye">
-            <ellipse cx="90"  cy="132" rx="6.5" ry="9" fill="#3a2540"/>
-            <ellipse cx="130" cy="132" rx="6.5" ry="9" fill="#3a2540"/>
-            <circle cx="92"  cy="129" r="2.2" fill="#fff"/>
-            <circle cx="132" cy="129" r="2.2" fill="#fff"/>
-            <circle cx="88"  cy="135" r="1.2" fill="#fff"/>
-            <circle cx="128" cy="135" r="1.2" fill="#fff"/>
+            <ellipse cx="100" cy="135" rx="6.5" ry="9" fill="#3a2018"/>
+            <ellipse cx="140" cy="135" rx="6.5" ry="9" fill="#3a2018"/>
+            <circle cx="102" cy="131" r="2" fill="#fff"/>
+            <circle cx="142" cy="131" r="2" fill="#fff"/>
           </g>
           <g class="heart-eye">
-            <text x="82"  y="142" font-size="18">💗</text>
-            <text x="122" y="142" font-size="18">💗</text>
+            <text x="91" y="148" font-size="20">💗</text>
+            <text x="131" y="148" font-size="20">💗</text>
           </g>
-          <g class="sleep-eye" stroke="#3a2540" stroke-width="2.4" fill="none" stroke-linecap="round">
-            <path d="M82 132 Q90 138 98 132"/>
-            <path d="M122 132 Q130 138 138 132"/>
+          <g class="sleep-eye" stroke="#3a2018" stroke-width="3" fill="none" stroke-linecap="round">
+            <path d="M93 138 Q100 132 107 138"/>
+            <path d="M133 138 Q140 132 147 138"/>
           </g>
-
-          <!-- nose & mouth -->
-          <path d="M105 152 Q110 158 115 152 Q113 156 110 156 Q107 156 105 152 Z" fill="#ff7aa8"/>
-          <path d="M110 156 L110 161" stroke="#3a2540" stroke-width="1.6" stroke-linecap="round"/>
-          <path d="M110 161 Q105 165 102 162" stroke="#3a2540" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-          <path d="M110 161 Q115 165 118 162" stroke="#3a2540" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-
-          <!-- whiskers -->
-          <g stroke="#cdb6c1" stroke-width="1" stroke-linecap="round" opacity="0.9">
-            <line x1="68" y1="156" x2="44" y2="152"/>
-            <line x1="68" y1="160" x2="42" y2="162"/>
-            <line x1="152" y1="156" x2="176" y2="152"/>
-            <line x1="152" y1="160" x2="178" y2="162"/>
+          <g class="comfort-eye" stroke="#3a2018" stroke-width="3" fill="none" stroke-linecap="round">
+            <path d="M91 140 Q100 128 109 140"/>
+            <path d="M131 140 Q140 128 149 140"/>
           </g>
 
-          <!-- arms (paws) - peeking from sleeves -->
-          <g filter="url(#softShadow)">
-            <circle cx="42"  cy="232" r="14" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-            <circle cx="178" cy="232" r="14" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-            <circle cx="42"  cy="246" r="9"  fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-            <circle cx="178" cy="246" r="9"  fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
+          <!-- NOSE (Y) -->
+          <path d="M 116 158 L 124 158 L 120 165 Z"
+                fill="#a87060" stroke="#5a3a2a" stroke-width="1.5" stroke-linejoin="round"/>
+          <!-- MOUTH -->
+          <g class="normal-mouth">
+            <path d="M 120 165 L 120 169" stroke="#5a3a2a" stroke-width="2" stroke-linecap="round"/>
+            <path d="M 120 169 Q 116 173 113 170" stroke="#5a3a2a" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <path d="M 120 169 Q 124 173 127 170" stroke="#5a3a2a" stroke-width="2" fill="none" stroke-linecap="round"/>
+          </g>
+          <g class="comfort-mouth">
+            <path d="M 113 170 Q 120 176 127 170" stroke="#5a3a2a" stroke-width="2" fill="none" stroke-linecap="round"/>
           </g>
 
-          <!-- feet (toe-beans) -->
-          <g filter="url(#softShadow)">
-            <ellipse cx="86"  cy="276" rx="20" ry="10" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-            <ellipse cx="134" cy="276" rx="20" ry="10" fill="url(#fluffGrad)" stroke="#f3cddc" stroke-width="1.2"/>
-          </g>
-          <ellipse cx="86"  cy="277" rx="7" ry="3.5" fill="#ffc4d6"/>
-          <ellipse cx="134" cy="277" rx="7" ry="3.5" fill="#ffc4d6"/>
-          <circle cx="80"  cy="274" r="1.6" fill="#ff89ad"/>
-          <circle cx="86"  cy="273" r="1.6" fill="#ff89ad"/>
-          <circle cx="92"  cy="274" r="1.6" fill="#ff89ad"/>
-          <circle cx="128" cy="274" r="1.6" fill="#ff89ad"/>
-          <circle cx="134" cy="273" r="1.6" fill="#ff89ad"/>
-          <circle cx="140" cy="274" r="1.6" fill="#ff89ad"/>
+          <!-- OUTFIT OVERLAY (JS injects content here) -->
+          <g id="outfit-overlay"></g>
 
-          <!-- head bow (between ear bases) -->
-          <g transform="translate(110 80) rotate(-6)">
-            <path d="M-15 0 Q-6 -12 0 0 Q-6 12 -15 0 Z" fill="#ff7aa8" stroke="#e85a8e" stroke-width="1"/>
-            <path d="M15 0 Q6 -12 0 0 Q6 12 15 0 Z" fill="#ff7aa8" stroke="#e85a8e" stroke-width="1"/>
-            <circle cx="0" cy="0" r="4" fill="#ffd1e0" stroke="#e85a8e" stroke-width="1"/>
-            <path d="M-3 4 L-8 14 L-2 11 Z" fill="#ff7aa8"/>
-            <path d="M3 4 L8 14 L2 11 Z" fill="#ff7aa8"/>
-            <text x="-5" y="3" font-size="6">🍓</text>
-          </g>
-
-          <!-- dirt spots (on visible fur) -->
+          <!-- DIRT SPOTS -->
           <g id="dirt">
-            <circle class="dirt-spot" cx="68"  cy="125" r="5" fill="#a17a4f" opacity="0"/>
-            <circle class="dirt-spot" cx="152" cy="125" r="5" fill="#a17a4f" opacity="0"/>
-            <circle class="dirt-spot" cx="42"  cy="232" r="4" fill="#a17a4f" opacity="0"/>
-            <circle class="dirt-spot" cx="86"  cy="274" r="3.5" fill="#a17a4f" opacity="0"/>
+            <circle class="dirt-spot" cx="92"  cy="115" r="5" fill="#a17a4f" opacity="0"/>
+            <circle class="dirt-spot" cx="148" cy="115" r="5" fill="#a17a4f" opacity="0"/>
+            <circle class="dirt-spot" cx="105" cy="240" r="3.5" fill="#a17a4f" opacity="0"/>
+            <circle class="dirt-spot" cx="78"  cy="246" r="3.5" fill="#a17a4f" opacity="0"/>
           </g>
         </svg>
       </div>
@@ -652,6 +696,9 @@
       <button class="btn" id="btn-sleep">
         <span class="ico">💤</span><span class="name">おやすみ</span><span class="desc">げんき回復</span>
       </button>
+      <button class="btn" id="btn-outfit">
+        <span class="ico">👗</span><span class="name">おしゃれ</span><span class="desc">服を選ぶ</span>
+      </button>
     </div>
 
     <div class="footer">
@@ -666,6 +713,14 @@
       <h2 id="modal-title">レベルアップ！</h2>
       <p id="modal-text">もちこと もっとなかよくなれたよ</p>
       <button class="btn primary" id="modal-close" style="width:100%"><span class="name">やったー！</span></button>
+    </div>
+  </div>
+
+  <div class="food-picker" id="outfit-picker">
+    <div class="food-picker-card">
+      <h3>👗 どの服にする？</h3>
+      <div class="outfit-grid" id="outfit-grid"></div>
+      <button class="food-close-btn" id="outfit-close">とじる</button>
     </div>
   </div>
 
@@ -718,6 +773,7 @@
       dirty: [false,false,false,false],
       sleeping: false,
       tool: null,
+      outfit: "none",
     };
   }
   function save() {
@@ -744,13 +800,71 @@
       el.style.opacity = state.dirty[i] ? 1 : 0;
     });
 
-    rabbit.classList.toggle("happy", state.happy >= 85 && !state.sleeping);
+    rabbit.classList.toggle("happy", state.happy >= 85 && !state.sleeping && !state.tool);
     rabbit.classList.toggle("sleeping", state.sleeping);
+    rabbit.classList.toggle("bathing", state.tool === "bath");
     rabbit.querySelector(".rabbit").classList.toggle("sleep", state.sleeping);
+    $("bathtub").classList.toggle("show", state.tool === "bath");
 
     document.querySelectorAll("[data-tool]").forEach(b => {
       b.classList.toggle("active", b.dataset.tool === state.tool);
     });
+
+    applyOutfit();
+  }
+
+  // === Outfits ===
+  const OUTFITS = {
+    none:     { emoji: "🚫", name: "なし",       svg: "" },
+    ribbon:   { emoji: "🎀", name: "リボン",     svg: `<g transform="translate(120 60) rotate(-6)"><path d="M-15 0 Q-6 -12 0 0 Q-6 12 -15 0 Z" fill="#ff7aa8" stroke="#5a3a2a" stroke-width="2"/><path d="M15 0 Q6 -12 0 0 Q6 12 15 0 Z" fill="#ff7aa8" stroke="#5a3a2a" stroke-width="2"/><circle cx="0" cy="0" r="4" fill="#ffd1e0" stroke="#5a3a2a" stroke-width="2"/></g>` },
+    pinkDress:{ emoji: "👗", name: "ピンクドレス", svg: `<g><path d="M 70 175 Q 95 168, 120 168 Q 145 168, 170 175 Q 178 210, 188 245 Q 175 252, 120 252 Q 65 252, 52 245 Q 62 210, 70 175 Z" fill="#ffb1cc" stroke="#5a3a2a" stroke-width="3" stroke-linejoin="round"/><ellipse cx="120" cy="173" rx="42" ry="6" fill="#fff" stroke="#5a3a2a" stroke-width="2"/><circle cx="100" cy="200" r="3" fill="#fff"/><circle cx="140" cy="200" r="3" fill="#fff"/><circle cx="120" cy="220" r="3" fill="#fff"/><g transform="translate(120 178)"><path d="M-10 0 Q-4 -8 0 0 Q-4 8 -10 0 Z" fill="#ff7aa8" stroke="#5a3a2a" stroke-width="1.5"/><path d="M10 0 Q4 -8 0 0 Q4 8 10 0 Z" fill="#ff7aa8" stroke="#5a3a2a" stroke-width="1.5"/><circle cx="0" cy="0" r="3" fill="#ffd1e0" stroke="#5a3a2a" stroke-width="1"/></g></g>` },
+    lavenderDress:{ emoji: "💜", name: "ラベンダー", svg: `<g><path d="M 70 175 Q 95 168, 120 168 Q 145 168, 170 175 Q 178 210, 188 245 Q 175 252, 120 252 Q 65 252, 52 245 Q 62 210, 70 175 Z" fill="#d8b4fe" stroke="#5a3a2a" stroke-width="3" stroke-linejoin="round"/><ellipse cx="120" cy="173" rx="42" ry="6" fill="#fff" stroke="#5a3a2a" stroke-width="2"/><text x="100" y="208" font-size="14">🍰</text><text x="125" y="208" font-size="14">🧁</text><text x="113" y="232" font-size="11">🍓</text></g>` },
+    yellowShirt:{ emoji: "👕", name: "Tシャツ",  svg: `<g><path d="M 75 175 Q 95 168, 120 168 Q 145 168, 165 175 L 175 195 L 165 198 L 165 235 Q 120 245, 75 235 L 75 198 L 65 195 Z" fill="#fde047" stroke="#5a3a2a" stroke-width="3" stroke-linejoin="round"/><text x="108" y="215" font-size="20">⭐</text></g>` },
+    overall:  { emoji: "🩱", name: "オーバーオール", svg: `<g><path d="M 70 175 Q 95 168, 120 168 Q 145 168, 170 175 L 175 245 Q 120 252, 65 245 Z" fill="#7dd3fc" stroke="#5a3a2a" stroke-width="3" stroke-linejoin="round"/><line x1="100" y1="172" x2="100" y2="195" stroke="#5a3a2a" stroke-width="3"/><line x1="140" y1="172" x2="140" y2="195" stroke="#5a3a2a" stroke-width="3"/><circle cx="100" cy="194" r="3" fill="#fef3c7" stroke="#5a3a2a" stroke-width="1.5"/><circle cx="140" cy="194" r="3" fill="#fef3c7" stroke="#5a3a2a" stroke-width="1.5"/><rect x="105" y="208" width="30" height="22" fill="none" stroke="#5a3a2a" stroke-width="2" rx="2"/></g>` },
+    princess: { emoji: "👑", name: "おひめさま", svg: `<g><g transform="translate(120 50)"><path d="M-22 0 L-16 -16 L-8 -6 L0 -20 L8 -6 L16 -16 L22 0 Z" fill="#fde047" stroke="#5a3a2a" stroke-width="2.5" stroke-linejoin="round"/><circle cx="-13" cy="-13" r="2" fill="#ef4444"/><circle cx="0" cy="-17" r="2" fill="#ef4444"/><circle cx="13" cy="-13" r="2" fill="#ef4444"/></g><path d="M 60 175 Q 95 168, 120 168 Q 145 168, 180 175 Q 190 218, 198 252 Q 120 262, 42 252 Q 50 218, 60 175 Z" fill="#fda4d6" stroke="#5a3a2a" stroke-width="3" stroke-linejoin="round"/><path d="M 65 210 Q 120 205, 175 210" fill="none" stroke="#fde047" stroke-width="3"/><text x="108" y="232" font-size="14">💎</text></g>` },
+    pajamas:  { emoji: "🌙", name: "パジャマ",   svg: `<g><path d="M 65 175 Q 95 168, 120 168 Q 145 168, 175 175 L 180 245 Q 120 252, 60 245 Z" fill="#a5b4fc" stroke="#5a3a2a" stroke-width="3" stroke-linejoin="round"/><text x="74" y="200" font-size="13">⭐</text><text x="138" y="195" font-size="13">⭐</text><text x="100" y="225" font-size="13">🌙</text></g>` },
+    kimono:   { emoji: "👘", name: "きもの",     svg: `<g><path d="M 60 175 Q 95 168, 120 168 Q 145 168, 180 175 L 185 245 Q 120 252, 55 245 Z" fill="#dc2626" stroke="#5a3a2a" stroke-width="3" stroke-linejoin="round"/><path d="M 120 168 L 100 245 M 120 168 L 140 245" stroke="#5a3a2a" stroke-width="2"/><rect x="55" y="205" width="130" height="14" fill="#fde047" stroke="#5a3a2a" stroke-width="2"/><circle cx="90" cy="220" r="3" fill="#fff"/><circle cx="150" cy="220" r="3" fill="#fff"/></g>` },
+    sailor:   { emoji: "⚓", name: "セーラー服", svg: `<g><path d="M 70 175 Q 95 168, 120 168 Q 145 168, 170 175 L 175 245 Q 120 252, 65 245 Z" fill="#fff" stroke="#5a3a2a" stroke-width="3" stroke-linejoin="round"/><path d="M 88 170 L 120 200 L 152 170 L 152 175 L 120 205 L 88 175 Z" fill="#3b82f6" stroke="#5a3a2a" stroke-width="2" stroke-linejoin="round"/><path d="M 110 198 L 120 210 L 130 198 L 125 207 L 120 210 L 115 207 Z" fill="#dc2626" stroke="#5a3a2a" stroke-width="1.5"/><line x1="92" y1="172" x2="100" y2="172" stroke="#fff" stroke-width="2"/><line x1="140" y1="172" x2="148" y2="172" stroke="#fff" stroke-width="2"/></g>` },
+    chef:     { emoji: "👨‍🍳", name: "コック",     svg: `<g><g transform="translate(120 55)"><ellipse cx="0" cy="-5" rx="22" ry="14" fill="#fff" stroke="#5a3a2a" stroke-width="2.5"/><rect x="-15" y="0" width="30" height="6" fill="#fff" stroke="#5a3a2a" stroke-width="2"/></g><path d="M 70 175 Q 95 168, 120 168 Q 145 168, 170 175 L 175 245 Q 120 252, 65 245 Z" fill="#fff" stroke="#5a3a2a" stroke-width="3" stroke-linejoin="round"/><circle cx="105" cy="195" r="3" fill="#5a3a2a"/><circle cx="105" cy="210" r="3" fill="#5a3a2a"/><circle cx="105" cy="225" r="3" fill="#5a3a2a"/></g>` },
+    swim:     { emoji: "🏊", name: "みずぎ",     svg: `<g><path d="M 80 178 Q 100 175, 120 175 Q 140 175, 160 178 L 168 240 Q 120 250, 72 240 Z" fill="#ec4899" stroke="#5a3a2a" stroke-width="3" stroke-linejoin="round"/><path d="M 90 195 Q 120 192, 150 195" fill="none" stroke="#fff" stroke-width="3"/><path d="M 90 215 Q 120 212, 150 215" fill="none" stroke="#fff" stroke-width="3"/></g>` },
+  };
+
+  function applyOutfit() {
+    const overlay = document.getElementById("outfit-overlay");
+    if (!overlay) return;
+    const o = OUTFITS[state.outfit] || OUTFITS.none;
+    overlay.innerHTML = o.svg;
+  }
+  function buildOutfitGrid() {
+    const grid = $("outfit-grid");
+    grid.innerHTML = "";
+    Object.entries(OUTFITS).forEach(([key, o]) => {
+      const btn = document.createElement("button");
+      btn.className = "outfit-btn" + (state.outfit === key ? " active" : "");
+      btn.dataset.outfit = key;
+      btn.innerHTML = `<span class="outfit-emoji">${o.emoji}</span><span class="outfit-name">${o.name}</span>`;
+      btn.addEventListener("click", () => selectOutfit(key));
+      grid.appendChild(btn);
+    });
+  }
+  function openOutfitPicker() {
+    buildOutfitGrid();
+    $("outfit-picker").classList.add("show");
+  }
+  function closeOutfitPicker() {
+    $("outfit-picker").classList.remove("show");
+  }
+  function selectOutfit(key) {
+    state.outfit = key;
+    setMsg(OUTFITS[key].name === "なし" ? "すっぴん〜♪" : `${OUTFITS[key].name} かわいい！`);
+    if (state.outfit !== "none") {
+      state.happy = clamp(state.happy + 3);
+      pointsUp(1);
+    }
+    buildOutfitGrid();
+    render();
+    save();
+    setTimeout(closeOutfitPicker, 250);
   }
 
   function setMsg(text) {
@@ -866,12 +980,32 @@
 
   function selectTool(tool) {
     state.tool = state.tool === tool ? null : tool;
+    rabbit.classList.remove("brushing");
     if (state.tool === "brush") setMsg("ドラッグして毛をとかしてあげて");
-    else if (state.tool === "bath") setMsg("よごれの上をこすってきれいに");
+    else if (state.tool === "bath") setMsg("じゃぶじゃぶ〜♪ こすってあげて");
     else if (state.tool === "nail") setMsg("足をタップしてつめをきろう");
     else setMsg("タップしてなでよう！");
     render();
     save();
+  }
+
+  function bathBubble(x, y) {
+    const el = document.createElement("div");
+    el.className = "bath-bubble";
+    el.textContent = Math.random() < 0.5 ? "🫧" : "💧";
+    el.style.left = x + "px";
+    el.style.top = y + "px";
+    stage.appendChild(el);
+    setTimeout(() => el.remove(), 1600);
+  }
+  function splashFx(x, y) {
+    const el = document.createElement("div");
+    el.className = "splash";
+    el.textContent = "💦";
+    el.style.left = x + "px";
+    el.style.top = y + "px";
+    stage.appendChild(el);
+    setTimeout(() => el.remove(), 800);
   }
 
   function sleepToggle() {
@@ -892,13 +1026,21 @@
     const px = x - r.left;
     const py = y - r.top;
     if (state.tool === "brush") {
+      rabbit.classList.add("brushing");
+      clearTimeout(rabbit._brushT);
+      rabbit._brushT = setTimeout(() => rabbit.classList.remove("brushing"), 600);
       state.clean = clamp(state.clean + 1.5);
-      state.happy = clamp(state.happy + 0.6);
+      state.happy = clamp(state.happy + 0.8);
       sparkle(px, py);
-      if (Math.random() < 0.15) pointsUp(1);
+      if (Math.random() < 0.2) {
+        const r = stage.getBoundingClientRect();
+        floaty("💭", r.width/2 + 30, r.height - 230);
+        pointsUp(1, "きもちいい〜♪");
+      }
       else { render(); save(); }
     } else if (state.tool === "bath") {
-      // remove nearest dirt
+      bathBubble(px, py);
+      if (Math.random() < 0.4) splashFx(px + (Math.random()*40-20), py - 10);
       const spots = document.querySelectorAll(".dirt-spot");
       let removed = false;
       spots.forEach((el, i) => {
@@ -907,17 +1049,17 @@
         const cx = cb.left + cb.width/2;
         const cy = cb.top + cb.height/2;
         const d = Math.hypot(cx - x, cy - y);
-        if (!removed && d < 28) {
+        if (!removed && d < 32) {
           state.dirty[i] = false;
           removed = true;
           state.clean = clamp(state.clean + 8);
-          floaty("🫧", px, py);
+          state.happy = clamp(state.happy + 2);
           pointsUp(2, "ピカピカ✨");
         }
       });
       if (!removed) {
-        state.clean = clamp(state.clean + 0.6);
-        sparkle(px, py);
+        state.clean = clamp(state.clean + 0.8);
+        state.happy = clamp(state.happy + 0.3);
         render(); save();
       }
     } else if (state.tool === "nail") {
@@ -950,6 +1092,22 @@
     if (e.buttons === 0 && e.pressure === 0) return;
     if (state.tool) applyTool(e.clientX, e.clientY, e.target);
   });
+  rabbit.addEventListener("pointerup", () => {
+    if (state.tool === "brush") {
+      clearTimeout(rabbit._brushT);
+      rabbit._brushT = setTimeout(() => rabbit.classList.remove("brushing"), 800);
+    }
+  });
+  // Allow scrubbing inside the bathtub area
+  $("bathtub").addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    $("bathtub").setPointerCapture(e.pointerId);
+    if (state.tool === "bath") applyTool(e.clientX, e.clientY, e.target);
+  });
+  $("bathtub").addEventListener("pointermove", (e) => {
+    if (e.buttons === 0 && e.pressure === 0) return;
+    if (state.tool === "bath") applyTool(e.clientX, e.clientY, e.target);
+  });
 
   // Buttons
   $("btn-pet").addEventListener("click", () => {
@@ -969,6 +1127,11 @@
   $("btn-bath").addEventListener("click", () => selectTool("bath"));
   $("btn-nail").addEventListener("click", () => selectTool("nail"));
   $("btn-sleep").addEventListener("click", sleepToggle);
+  $("btn-outfit").addEventListener("click", openOutfitPicker);
+  $("outfit-close").addEventListener("click", closeOutfitPicker);
+  $("outfit-picker").addEventListener("click", (e) => {
+    if (e.target.id === "outfit-picker") closeOutfitPicker();
+  });
 
   $("btn-rename").addEventListener("click", () => {
     const n = prompt("うさぎの新しいなまえは？", state.name);
