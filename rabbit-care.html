@@ -389,16 +389,38 @@
 
   /* Ear stand/lop toggle */
   .ear-stand-left, .ear-stand-right { display: none; }
-  .rabbit-wrap.ear-left  .ear-lop-left   { display: none; }
-  .rabbit-wrap.ear-left  .ear-stand-left { display: block; transform-box: fill-box; transform-origin: 50% 100%; animation: earPop 0.7s ease; }
-  .rabbit-wrap.ear-right .ear-lop-right   { display: none; }
-  .rabbit-wrap.ear-right .ear-stand-right { display: block; transform-box: fill-box; transform-origin: 50% 100%; animation: earPop 0.7s ease; }
+  .ear-lop-left, .ear-lop-right { display: none; }
+  .rabbit-wrap.both-up   .ear-stand-left,
+  .rabbit-wrap.both-up   .ear-stand-right,
+  .rabbit-wrap.flop-left .ear-stand-right,
+  .rabbit-wrap.flop-right .ear-stand-left { display: block; }
+  .rabbit-wrap.flop-left .ear-lop-left,
+  .rabbit-wrap.flop-right .ear-lop-right { display: block; }
+  .rabbit-wrap.both-up .ear-stand-left,
+  .rabbit-wrap.both-up .ear-stand-right,
+  .rabbit-wrap.flop-left .ear-stand-right,
+  .rabbit-wrap.flop-right .ear-stand-left {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: earPop 0.7s ease;
+  }
+  .rabbit-wrap.flop-left .ear-lop-left,
+  .rabbit-wrap.flop-right .ear-lop-right {
+    transform-box: fill-box;
+    transform-origin: 50% 0%;
+    animation: earDrop 0.5s ease;
+  }
   @keyframes earPop {
     0%   { transform: scaleY(0.15) rotate(-10deg); opacity: 0.4; }
     40%  { transform: scaleY(1.12) rotate(2deg);   opacity: 1; }
     65%  { transform: scaleY(0.92) rotate(-2deg); }
     85%  { transform: scaleY(1.04) rotate(1deg); }
     100% { transform: scaleY(1)    rotate(0); }
+  }
+  @keyframes earDrop {
+    0%   { transform: scaleY(0.4); opacity: 0.6; }
+    60%  { transform: scaleY(1.05); opacity: 1; }
+    100% { transform: scaleY(1); }
   }
 
   /* Bathtub */
@@ -591,11 +613,11 @@
 
           <!-- LEFT EAR STANDING UP -->
           <g class="ear-stand-left">
-            <ellipse cx="90" cy="40" rx="15" ry="46"
-                     transform="rotate(-10 90 40)"
+            <ellipse cx="90" cy="48" rx="22" ry="34"
+                     transform="rotate(-14 90 48)"
                      fill="#ffffff" stroke="#5a3a2a" stroke-width="3.5"/>
-            <ellipse cx="90" cy="44" rx="6" ry="34"
-                     transform="rotate(-10 90 44)"
+            <ellipse cx="90" cy="54" rx="11" ry="22"
+                     transform="rotate(-14 90 54)"
                      fill="#d4b8a0"/>
           </g>
 
@@ -617,11 +639,11 @@
 
           <!-- RIGHT EAR STANDING UP -->
           <g class="ear-stand-right">
-            <ellipse cx="150" cy="40" rx="15" ry="46"
-                     transform="rotate(10 150 40)"
+            <ellipse cx="150" cy="48" rx="22" ry="34"
+                     transform="rotate(14 150 48)"
                      fill="#ffffff" stroke="#5a3a2a" stroke-width="3.5"/>
-            <ellipse cx="150" cy="44" rx="6" ry="34"
-                     transform="rotate(10 150 44)"
+            <ellipse cx="150" cy="54" rx="11" ry="22"
+                     transform="rotate(14 150 54)"
                      fill="#d4b8a0"/>
           </g>
 
@@ -1222,16 +1244,19 @@
   render();
   setMsg("タップしてなでよう！");
 
-  // Ear flip — alternate which ear stands up every 30s
-  let earUp = "left";
-  function flipEar() {
-    rabbit.classList.remove("ear-left", "ear-right");
+  // Ears: both up by default; occasionally one flops
+  function setEars(cls) {
+    rabbit.classList.remove("both-up", "flop-left", "flop-right");
     void rabbit.offsetWidth; // restart CSS animation
-    rabbit.classList.add("ear-" + earUp);
-    earUp = earUp === "left" ? "right" : "left";
+    rabbit.classList.add(cls);
   }
-  flipEar();
-  setInterval(flipEar, 30000);
+  setEars("both-up");
+  setInterval(() => {
+    const r = Math.random();
+    if (r < 0.7) setEars("both-up");
+    else if (r < 0.85) setEars("flop-left");
+    else setEars("flop-right");
+  }, 15000);
 })();
 </script>
 </body>
