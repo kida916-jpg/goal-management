@@ -387,6 +387,20 @@
   .rabbit-wrap.brushing .comfort-mouth { display: block; }
   .rabbit-wrap.bathing { transform: translateX(-50%) translateY(-12px); }
 
+  /* Ear stand/lop toggle */
+  .ear-stand-left, .ear-stand-right { display: none; }
+  .rabbit-wrap.ear-left  .ear-lop-left   { display: none; }
+  .rabbit-wrap.ear-left  .ear-stand-left { display: block; transform-box: fill-box; transform-origin: 50% 100%; animation: earPop 0.7s ease; }
+  .rabbit-wrap.ear-right .ear-lop-right   { display: none; }
+  .rabbit-wrap.ear-right .ear-stand-right { display: block; transform-box: fill-box; transform-origin: 50% 100%; animation: earPop 0.7s ease; }
+  @keyframes earPop {
+    0%   { transform: scaleY(0.15) rotate(-10deg); opacity: 0.4; }
+    40%  { transform: scaleY(1.12) rotate(2deg);   opacity: 1; }
+    65%  { transform: scaleY(0.92) rotate(-2deg); }
+    85%  { transform: scaleY(1.04) rotate(1deg); }
+    100% { transform: scaleY(1)    rotate(0); }
+  }
+
   /* Bathtub */
   .bathtub {
     position: absolute;
@@ -560,7 +574,7 @@
           <ellipse cx="120" cy="262" rx="80" ry="6" fill="#00000018"/>
 
           <!-- LEFT LOP EAR (drawn behind everything) -->
-          <g>
+          <g class="ear-lop-left">
             <path d="M 92 55
                      C 60 60, 35 95, 38 150
                      C 40 175, 55 185, 72 178
@@ -575,8 +589,18 @@
                   fill="#d4b8a0"/>
           </g>
 
+          <!-- LEFT EAR STANDING UP -->
+          <g class="ear-stand-left">
+            <ellipse cx="90" cy="40" rx="15" ry="46"
+                     transform="rotate(-10 90 40)"
+                     fill="#ffffff" stroke="#5a3a2a" stroke-width="3.5"/>
+            <ellipse cx="90" cy="44" rx="6" ry="34"
+                     transform="rotate(-10 90 44)"
+                     fill="#d4b8a0"/>
+          </g>
+
           <!-- RIGHT LOP EAR -->
-          <g>
+          <g class="ear-lop-right">
             <path d="M 148 55
                      C 180 60, 205 95, 202 150
                      C 200 175, 185 185, 168 178
@@ -589,6 +613,16 @@
                      C 178 178, 170 178, 164 168
                      C 156 152, 152 115, 152 95 Z"
                   fill="#d4b8a0"/>
+          </g>
+
+          <!-- RIGHT EAR STANDING UP -->
+          <g class="ear-stand-right">
+            <ellipse cx="150" cy="40" rx="15" ry="46"
+                     transform="rotate(10 150 40)"
+                     fill="#ffffff" stroke="#5a3a2a" stroke-width="3.5"/>
+            <ellipse cx="150" cy="44" rx="6" ry="34"
+                     transform="rotate(10 150 44)"
+                     fill="#d4b8a0"/>
           </g>
 
           <!-- HEAD TUFT (between ears) -->
@@ -1187,6 +1221,17 @@
 
   render();
   setMsg("タップしてなでよう！");
+
+  // Ear flip — alternate which ear stands up every 30s
+  let earUp = "left";
+  function flipEar() {
+    rabbit.classList.remove("ear-left", "ear-right");
+    void rabbit.offsetWidth; // restart CSS animation
+    rabbit.classList.add("ear-" + earUp);
+    earUp = earUp === "left" ? "right" : "left";
+  }
+  flipEar();
+  setInterval(flipEar, 30000);
 })();
 </script>
 </body>
