@@ -374,7 +374,30 @@
 
   /* SVG rabbit cosmetic states */
   .dirt-spot { transition: opacity 0.3s; }
-  .heart-eye, .sleep-eye, .comfort-eye, .comfort-mouth { display: none; }
+  .heart-eye, .sleep-eye, .comfort-eye, .comfort-mouth,
+  .angry-brow, .angry-mark, .devil-horns, .devil-eye, .devil-mouth, .devil-tail { display: none; }
+  /* Angry */
+  .rabbit-wrap.angry .angry-brow,
+  .rabbit-wrap.angry .angry-mark { display: block; }
+  .rabbit-wrap.angry .normal-mouth { display: none; }
+  .rabbit-wrap.angry .devil-mouth { display: block; }
+  .rabbit-wrap.angry .heart-eye { display: none !important; }
+  .rabbit-wrap.angry .rabbit { animation: angryShake 0.18s ease-in-out infinite alternate; }
+  /* Devil (overrides angry) */
+  .rabbit-wrap.devil .angry-brow,
+  .rabbit-wrap.devil .angry-mark,
+  .rabbit-wrap.devil .devil-horns,
+  .rabbit-wrap.devil .devil-eye,
+  .rabbit-wrap.devil .devil-mouth,
+  .rabbit-wrap.devil .devil-tail { display: block; }
+  .rabbit-wrap.devil .normal-eye,
+  .rabbit-wrap.devil .heart-eye,
+  .rabbit-wrap.devil .normal-mouth { display: none; }
+  .rabbit-wrap.devil .rabbit { animation: angryShake 0.12s ease-in-out infinite alternate; filter: hue-rotate(-15deg) saturate(1.1); }
+  @keyframes angryShake {
+    0%   { transform: translateX(-2px) rotate(-1deg); }
+    100% { transform: translateX(2px)  rotate(1deg); }
+  }
   .rabbit-wrap.happy .heart-eye { display: block; }
   .rabbit-wrap.happy .normal-eye { display: none; }
   .rabbit-wrap.sleeping .normal-eye { display: none; }
@@ -719,6 +742,34 @@
             <path d="M 113 170 Q 120 176 127 170" stroke="#5a3a2a" stroke-width="2" fill="none" stroke-linecap="round"/>
           </g>
 
+          <!-- ANGRY: brows + 💢 mark -->
+          <g class="angry-brow" stroke="#5a3a2a" stroke-width="3.5" stroke-linecap="round">
+            <line x1="84" y1="116" x2="108" y2="124"/>
+            <line x1="156" y1="116" x2="132" y2="124"/>
+          </g>
+          <text class="angry-mark" x="155" y="86" font-size="22">💢</text>
+          <text class="angry-mark angry-mark-2" x="62" y="100" font-size="18">💢</text>
+
+          <!-- DEVIL: horns + red eyes + jagged mouth + tail -->
+          <g class="devil-horns">
+            <path d="M 88 38 L 96 14 L 102 40 Z" fill="#9a1c1c" stroke="#3a0a0a" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M 138 40 L 144 14 L 152 38 Z" fill="#9a1c1c" stroke="#3a0a0a" stroke-width="2.5" stroke-linejoin="round"/>
+          </g>
+          <g class="devil-eye">
+            <ellipse cx="100" cy="135" rx="7" ry="9" fill="#dc2626"/>
+            <ellipse cx="140" cy="135" rx="7" ry="9" fill="#dc2626"/>
+            <ellipse cx="100" cy="135" rx="3" ry="6" fill="#3a0a0a"/>
+            <ellipse cx="140" cy="135" rx="3" ry="6" fill="#3a0a0a"/>
+          </g>
+          <g class="devil-mouth">
+            <path d="M 108 170 L 114 165 L 120 172 L 126 165 L 132 170"
+                  stroke="#5a3a2a" stroke-width="2.5" fill="#fff" stroke-linejoin="round" stroke-linecap="round"/>
+            <!-- tiny fangs -->
+            <path d="M 116 169 L 118 174 L 120 169 Z" fill="#fff" stroke="#5a3a2a" stroke-width="1"/>
+            <path d="M 122 169 L 124 174 L 126 169 Z" fill="#fff" stroke="#5a3a2a" stroke-width="1"/>
+          </g>
+          <text class="devil-tail" x="178" y="240" font-size="22">🔱</text>
+
           <!-- OUTFIT OVERLAY (JS injects content here) -->
           <g id="outfit-overlay"></g>
 
@@ -856,7 +907,12 @@
       el.style.opacity = state.dirty[i] ? 1 : 0;
     });
 
-    rabbit.classList.toggle("happy", state.happy >= 85 && !state.sleeping && !state.tool);
+    const minGauge = Math.min(state.happy, state.clean, state.full, state.energy);
+    const isDevil = minGauge <= 30 && !state.sleeping;
+    const isAngry = !isDevil && minGauge <= 50 && !state.sleeping;
+    rabbit.classList.toggle("devil", isDevil);
+    rabbit.classList.toggle("angry", isAngry);
+    rabbit.classList.toggle("happy", state.happy >= 85 && !isAngry && !isDevil && !state.sleeping && !state.tool);
     rabbit.classList.toggle("sleeping", state.sleeping);
     rabbit.classList.toggle("bathing", state.tool === "bath");
     rabbit.querySelector(".rabbit").classList.toggle("sleep", state.sleeping);
