@@ -94,6 +94,33 @@
   }
   textarea:focus, input:focus { outline: none; }
 
+  /* ===== ゴール定義ブロック ===== */
+  .goal-definition {
+    background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+    border-left: 4px solid #7c3aed;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    color: #4c1d95;
+  }
+  .goal-definition-title {
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+  }
+  .goal-definition-body {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    line-height: 1.5;
+  }
+  .goal-definition-footer {
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.85;
+  }
+
   /* ===== KGI Hero ===== */
   .kgi-hero {
     background: linear-gradient(135deg, #6d28d9 0%, #9333ea 50%, #c026d3 100%);
@@ -1002,6 +1029,30 @@
     .kgi-current-wrap .clabel { font-size: 10px; letter-spacing: 0.15em; }
     .kgi-current-input { font-size: 13px; }
 
+    /* メトリクスブロック: スマホでは縦積み（数字が見切れないように） */
+    .metric-row {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+    }
+    .metric-row .field {
+      flex: none;
+      width: 100%;
+    }
+    .metric-row .num-input {
+      width: 100%;
+      min-width: 0;
+      font-size: 14px;
+      padding: 6px 10px;
+    }
+    .metric-row .unit-select {
+      width: 100%;
+      font-size: 13px;
+    }
+    .metric-row .field-label {
+      min-width: 36px;
+    }
+
     /* KPI カードヘッダ: スマホでフォント縮小＋折り返し可 */
     .kpi-card-head { padding: 10px 12px; gap: 8px; }
     .kpi-num { font-size: 11px; padding: 2px 8px; }
@@ -1396,9 +1447,14 @@
   <section>
     <div class="sec-head">
       <h2>📌 年間目標</h2>
-      <span class="sub">※具体的な質問のみFB（全体のFBはなし）／未来戦略の年間目標からGOALを考える</span>
     </div>
     <div class="sec-body">
+      <!-- ゴール定義の説明 -->
+      <div class="goal-definition">
+        <div class="goal-definition-title">ゴールの定義</div>
+        <div class="goal-definition-body">いつまで（期限）にどんな状態（定量）か</div>
+        <div class="goal-definition-footer">これがKGIゴールの定義</div>
+      </div>
       <!-- KGI Hero -->
       <div class="kgi-hero">
         <div class="kgi-label">⭐ KGI — KEY GOAL INDICATOR</div>
@@ -1610,6 +1666,49 @@
       ? n.toLocaleString('ja-JP')
       : (Math.abs(n) >= 1000 ? n.toLocaleString('ja-JP') : String(n));
     return formatted + suffix;
+  }
+  // Format value for live display in input (commas for thousands + unit suffix)
+  // Used when the input is NOT focused. On focus, raw value is shown for editing.
+  function formatLiveValue(rawValue, unit) {
+    if (rawValue === '' || rawValue === null || rawValue === undefined) return '';
+    const n = parseFloat(rawValue);
+    if (isNaN(n)) return String(rawValue);
+    const suffix = UNIT_SUFFIX_MAP[unit] || '';
+    // Always use commas for yen, or for any number >= 1000
+    const formatted = (unit === 'yen' || Math.abs(n) >= 1000)
+      ? n.toLocaleString('ja-JP')
+      : String(n);
+    return formatted + suffix;
+  }
+  // Get raw value from state for an input element
+  function getRawValueForInput(t) {
+    if (t.dataset.goal && (t.dataset.field === 'currentValue' || t.dataset.field === 'targetValue')) {
+      return (state.goals[t.dataset.goal] && state.goals[t.dataset.goal][t.dataset.field]) ?? '';
+    }
+    if (t.dataset.result && t.dataset.field === 'actual') {
+      return (state.results[t.dataset.result] && state.results[t.dataset.result].actual) ?? '';
+    }
+    return '';
+  }
+  // Get unit for an input element (from related goal)
+  function getUnitForInput(t) {
+    if (t.dataset.goal) {
+      return (state.goals[t.dataset.goal] && state.goals[t.dataset.goal].unit) || 'none';
+    }
+    if (t.dataset.result) {
+      return (state.goals[t.dataset.result] && state.goals[t.dataset.result].unit) || 'none';
+    }
+    return 'none';
+  }
+  // Refresh all numeric input displays to formatted version (skip focused input)
+  function refreshNumericDisplays() {
+    const active = document.activeElement;
+    document.querySelectorAll('input[data-goal][data-field="currentValue"], input[data-goal][data-field="targetValue"], input[data-result][data-field="actual"]').forEach(inp => {
+      if (inp === active) return;  // don't disturb the input being typed in
+      const raw = getRawValueForInput(inp);
+      const unit = getUnitForInput(inp);
+      inp.value = formatLiveValue(raw, unit);
+    });
   }
   // Format period for display "2026年4月〜6月"
   function formatPeriodDisplay(period) {
@@ -1840,8 +1939,8 @@
             </div>
             <div class="metric-row">
               <select class="unit-select" data-goal="${k}" data-field="unit">${unitOptionsHTML(g.unit || 'none')}</select>
-              <div class="field"><span class="field-label">現状:</span><input type="text" class="num-input" data-goal="${k}" data-field="currentValue" value="${escAttr(g.currentValue)}" placeholder="0" inputmode="decimal" /></div>
-              <div class="field"><span class="field-label">目標:</span><input type="text" class="num-input" data-goal="${k}" data-field="targetValue" value="${escAttr(g.targetValue)}" placeholder="0" inputmode="decimal" /></div>
+              <div class="field"><span class="field-label">現状:</span><input type="text" class="num-input" data-goal="${k}" data-field="currentValue" value="${escAttr(formatLiveValue(g.currentValue, g.unit || 'none'))}" placeholder="0" inputmode="decimal" /></div>
+              <div class="field"><span class="field-label">目標:</span><input type="text" class="num-input" data-goal="${k}" data-field="targetValue" value="${escAttr(formatLiveValue(g.targetValue, g.unit || 'none'))}" placeholder="0" inputmode="decimal" /></div>
             </div>
           </div>
         </div>
@@ -2051,7 +2150,7 @@
           <td class="content-cell" data-label="📌 内容" style="text-align:left;">${contentDisplay}</td>
           <td data-label="現状" style="font-weight:600;">${curDisp}</td>
           <td data-label="目標" style="font-weight:600;">${tgtDisp}</td>
-          <td data-label="実績"><input type="text" inputmode="decimal" data-result="${k}" data-field="actual" value="${escAttr(r.actual)}" placeholder="0" /></td>
+          <td data-label="実績"><input type="text" inputmode="decimal" data-result="${k}" data-field="actual" value="${escAttr(formatLiveValue(r.actual, r.unit))}" placeholder="0" /></td>
           <td class="calc ${calcCls(ach)}" data-label="達成率">${calcFmt(ach)}</td>
           <td class="calc ${calcCls(grw)}" data-label="成長率">${calcFmt(grw)}</td>
         </tr>
@@ -2117,8 +2216,8 @@
     const kgiTV = document.querySelector('[data-goal="kgi"][data-field="targetValue"]');
     const kgiLB = document.querySelector('[data-goal="kgi"][data-field="lowerIsBetter"]');
     if (kgiUnit) kgiUnit.innerHTML = unitOptionsHTML(g.unit || 'none');
-    if (kgiCV) kgiCV.value = g.currentValue ?? '';
-    if (kgiTV) kgiTV.value = g.targetValue ?? '';
+    if (kgiCV) kgiCV.value = formatLiveValue(g.currentValue, g.unit || 'none');
+    if (kgiTV) kgiTV.value = formatLiveValue(g.targetValue, g.unit || 'none');
     if (kgiLB) kgiLB.checked = !!g.lowerIsBetter;
     // Period auto-display
     const periodDisp = $('kgi-period-display');
@@ -2207,12 +2306,34 @@
       state.goals[t.dataset.goal].unit = t.value;
       save();
       renderResults();
+      refreshNumericDisplays();  // re-format all numeric inputs with new unit
     } else if (t.dataset.goal && t.dataset.field === 'lowerIsBetter') {
       state.goals[t.dataset.goal].lowerIsBetter = !!t.checked;
       save();
       renderResults();
     }
   }, true);  // capture phase to handle before other change listeners
+
+  // Focus: revert input to raw numeric value for editing
+  // Blur: re-format with commas + unit suffix
+  document.addEventListener('focusin', (e) => {
+    const t = e.target;
+    if (t.tagName !== 'INPUT') return;
+    const isGoalNumeric = t.dataset.goal && (t.dataset.field === 'currentValue' || t.dataset.field === 'targetValue');
+    const isResultActual = t.dataset.result && t.dataset.field === 'actual';
+    if (isGoalNumeric || isResultActual) {
+      t.value = String(getRawValueForInput(t) ?? '');
+    }
+  });
+  document.addEventListener('focusout', (e) => {
+    const t = e.target;
+    if (t.tagName !== 'INPUT') return;
+    const isGoalNumeric = t.dataset.goal && (t.dataset.field === 'currentValue' || t.dataset.field === 'targetValue');
+    const isResultActual = t.dataset.result && t.dataset.field === 'actual';
+    if (isGoalNumeric || isResultActual) {
+      t.value = formatLiveValue(getRawValueForInput(t), getUnitForInput(t));
+    }
+  });
 
   document.addEventListener('change', (e) => {
     const t = e.target;
