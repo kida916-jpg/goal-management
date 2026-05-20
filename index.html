@@ -1574,6 +1574,41 @@
     border-radius: 6px;
     background: #fff;
   }
+  /* フィードバック欄: オレンジ系で他のフィールドと差別化 */
+  .rich-field-wrap.feedback-field {
+    border-color: #fcd34d;
+    background: #fffbeb;
+  }
+  .rich-field-wrap.feedback-field .rich-display.collapsed::after {
+    background: linear-gradient(to bottom, transparent, #fffbeb 90%);
+  }
+  .rich-field-wrap.feedback-field .rich-expand-hint {
+    background: #fef3c7;
+    color: #d97706;
+    border-color: #fcd34d;
+  }
+  .kpi-row.feedback-row .lbl {
+    background: #fef3c7;
+    color: #b45309;
+  }
+  /* KGI Hero 内のフィードバック欄 */
+  .kgi-feedback-wrap {
+    margin-top: 14px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .kgi-feedback-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fef3c7;
+    margin-bottom: 6px;
+    letter-spacing: 0.04em;
+  }
+  .kgi-feedback-wrap .rich-field-wrap {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: #fcd34d;
+  }
   .rich-field-wrap .rich-expand-btn {
     position: absolute;
     top: 4px;
@@ -1627,6 +1662,7 @@
     font-family: 'SFMono-Regular', Consolas, monospace;
     font-size: 12px;
   }
+  /* Headings inside rich text — give clear hierarchy */
   .rich-display .rich-h, .rich-preview .rich-h { font-weight: 800; line-height: 1.3; margin: 12px 0 6px; color: #111827; }
   .rich-display .rich-h:first-child, .rich-preview .rich-h:first-child { margin-top: 0; }
   .rich-display .rich-h1, .rich-preview .rich-h1 { font-size: 1.6em; border-bottom: 2px solid #d1d5db; padding-bottom: 4px; }
@@ -1636,8 +1672,9 @@
   .rich-display .rich-h5, .rich-preview .rich-h5 { font-size: 1em; color: #4b5563; }
   .rich-display .rich-h6, .rich-preview .rich-h6 { font-size: 0.95em; color: #6b7280; font-weight: 700; }
   .rich-display .rich-hr, .rich-preview .rich-hr { border: 0; border-top: 1px dashed #d1d5db; margin: 10px 0; }
+  /* Collapsed preview: clamp to 4 lines with fade gradient */
   .rich-display.collapsed {
-    max-height: calc(1.6em * 4 + 20px);
+    max-height: calc(1.6em * 4 + 20px); /* 4 lines + padding */
     overflow: hidden;
     position: relative;
   }
@@ -2413,11 +2450,13 @@
   body.readonly input,
   body.readonly textarea,
   body.readonly select {
+    /* 入力は禁止、ただしテキスト選択(コピペ)は許可 */
     pointer-events: none;
     opacity: 0.85;
     user-select: text;
     -webkit-user-select: text;
   }
+  /* readonly 表示でも文字を選択してコピー可能に */
   body.readonly,
   body.readonly .rich-display,
   body.readonly .done-auto-list,
@@ -2429,6 +2468,9 @@
     user-select: text !important;
     -webkit-user-select: text !important;
   }
+  /* readonlyではテキストエリアにpointer-events:noneがあるとフォーカス不可で選択もできない。
+     仕方なくテキストエリアにはinert風: 入力できないが選択可能になるようpointer-events:autoに戻し
+     selectable text + JSでreadonly属性を付ける運用を想定。CSSではcursorだけdefaultに。 */
   body.readonly textarea, body.readonly input {
     pointer-events: auto;
     cursor: default;
@@ -2458,7 +2500,7 @@
   #ro-banner.public button {
     background: #059669;
   }
-  /* Public-view mode: hide buttons that require login */
+  /* Public-view mode: hide buttons that require login (admin, name edit, mail, logout) */
   body.public-view #ub-edit-name,
   body.public-view #ub-email-toggle,
   body.public-view #ub-admin,
@@ -2596,6 +2638,12 @@
             <select class="unit-select" data-goal="kgi" data-field="unit"></select>
             <div class="field"><span class="field-label">現状:</span><input type="text" class="num-input" data-goal="kgi" data-field="currentValue" placeholder="0" inputmode="decimal" /></div>
             <div class="field"><span class="field-label">目標:</span><input type="text" class="num-input" data-goal="kgi" data-field="targetValue" placeholder="0" inputmode="decimal" /></div>
+          </div>
+        </div>
+        <div class="kgi-feedback-wrap">
+          <div class="kgi-feedback-label">💬 フィードバック</div>
+          <div class="rich-field-wrap goal-rich-field feedback-field" data-goal="kgi" data-field="feedback" data-label="💬 KGIフィードバック" data-act="goal-text-expand">
+            <div class="rich-display collapsed" id="kgi-feedback-display"><span class="rich-placeholder">受講生本人＋管理者の両方が記入できる(クリックで編集)</span><span class="rich-expand-hint">クリックで全文＋編集</span></div>
           </div>
         </div>
       </div>
@@ -2744,8 +2792,9 @@
       <textarea id="rich-modal-textarea" rows="10" style="width:100%;resize:vertical;font-size:14px;padding:12px;border:1.5px solid var(--border);border-radius:6px;font-family:inherit;box-sizing:border-box;line-height:1.6;"></textarea>
       <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin:14px 0 4px;">📖 プレビュー（リンクは押せます）</label>
       <div id="rich-modal-preview" class="rich-preview"></div>
-      <div style="text-align:right;margin-top:14px;">
-        <button id="rich-modal-done" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:8px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">閉じる（自動保存済み）</button>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:8px;flex-wrap:wrap;">
+        <button id="rich-modal-add-feedback" style="display:none;background:linear-gradient(135deg,#16a34a,#059669);color:#fff;border:none;border-radius:6px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">✍ 新規フィードバックを追記（署名・日時付き）</button>
+        <button id="rich-modal-done" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:8px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-left:auto;">閉じる（自動保存済み）</button>
       </div>
     </div>
   </div>
@@ -3635,6 +3684,7 @@
     targetValue: '',
     currentValue: '',
     lowerIsBetter: false,
+    feedback: '',
     ...extra,
   });
   const defaultState = () => ({
@@ -3681,7 +3731,7 @@
       }
       if (old.todos) {
         [1,2,3].forEach(k => {
-          d.todos[k] = (old.todos[k] || []).map(t => ({ id: newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, details: t.details || '' }));
+          d.todos[k] = (old.todos[k] || []).map(t => ({ id: newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, routineWeeks: Array.isArray(t.routineWeeks) ? t.routineWeeks : null, details: t.details || '', feedback: t.feedback || '' }));
         });
       }
       if (old.weeks) {
@@ -3710,6 +3760,7 @@
       targetValue: g.targetValue ?? '',
       currentValue: g.currentValue ?? '',
       lowerIsBetter: !!g.lowerIsBetter,
+      feedback: g.feedback || '',
       ...(isKgi ? {} : { issue: g.issue || '', solution: g.solution || '' }),
     };
   }
@@ -3763,7 +3814,7 @@
         derivePeriodFields(merged, merged.period);
         // ensure todo ids
         TODO_KEYS.forEach(k => {
-          merged.todos[k] = (merged.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, details: t.details || '' }));
+          merged.todos[k] = (merged.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, routineWeeks: Array.isArray(t.routineWeeks) ? t.routineWeeks : null, details: t.details || '', feedback: t.feedback || '' }));
         });
         // ensure week shape
         merged.weeks = merged.weeks.map((w, i) => ({
@@ -3773,6 +3824,7 @@
           planNote: w.planNote ?? (w.plan || ''),
           done: w.done || '',
           review: w.review || '',
+          feedback: w.feedback || '',
         }));
         return merged;
       }
@@ -3844,6 +3896,12 @@
               <div class="rich-display collapsed">${g.solution ? renderRichText(g.solution) : '<span class="rich-placeholder">課題を解決する方法・アクションを入力（クリックで全文表示・編集）</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
             </div>
           </div>
+          <div class="kpi-row feedback-row">
+            <div class="lbl">💬 フィードバック</div>
+            <div class="rich-field-wrap goal-rich-field feedback-field" data-goal="${k}" data-field="feedback" data-label="💬 フィードバック" data-act="goal-text-expand">
+              <div class="rich-display collapsed">${g.feedback ? renderRichText(g.feedback) : '<span class="rich-placeholder">受講生本人＋管理者の両方が記入できるフィードバック欄（クリックで編集／署名・日時自動付与）</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
+            </div>
+          </div>
           <div class="metric-block">
             <div class="mlabel">
               <span>📊 数値で測る</span>
@@ -3874,6 +3932,49 @@
 
   // ===== Todos =====
   const PRIORITY_LABELS = { high: '大', medium: '中', low: '小', none: '—' };
+  // Routine button display logic.
+  // - routine:false → "🔁"（off, dimmed）
+  // - routine:true & routineWeeks:null/[] → "🔁毎"（all weeks）
+  // - routine:true & routineWeeks:[0] → "🔁1"  (only 1st)
+  // - routine:true & routineWeeks:[1] → "🔁2"
+  // - etc.
+  function routineLabel(t) {
+    if (!t.routine) return '🔁';
+    const rw = Array.isArray(t.routineWeeks) ? t.routineWeeks : null;
+    if (!rw || rw.length === 0) return '🔁毎';
+    if (rw.length === 1) return `🔁${rw[0] + 1}`;
+    // 複数指定: コンマ区切り
+    return '🔁' + rw.map(i => i + 1).join(',');
+  }
+  // Cycle: routine state advances through 6 stages
+  // off → 毎週(weeks=null) → 第1週 → 第2週 → 第3週 → 第4週 → off
+  function cycleRoutineState(t) {
+    if (!t.routine) {
+      t.routine = true;
+      t.routineWeeks = null; // 毎週
+      return;
+    }
+    const rw = Array.isArray(t.routineWeeks) ? t.routineWeeks : null;
+    if (rw === null || rw.length === 0) {
+      // 毎週 → 第1週
+      t.routineWeeks = [0];
+      return;
+    }
+    if (rw.length === 1) {
+      const wi = rw[0];
+      if (wi < 3) {
+        t.routineWeeks = [wi + 1];
+        return;
+      }
+      // 第4週 → OFF
+      t.routine = false;
+      t.routineWeeks = null;
+      return;
+    }
+    // それ以外（複数指定など）はOFFに戻す
+    t.routine = false;
+    t.routineWeeks = null;
+  }
   const PRIORITY_NEXT = { none: 'high', high: 'medium', medium: 'low', low: 'none' };
   const PRIORITY_ORDER = { high: 0, medium: 1, low: 2, none: 3 };
   const priorityRank = (p) => PRIORITY_ORDER[p || 'none'] ?? 3;
@@ -3903,15 +4004,17 @@
     s = s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
     // 2) Process line-by-line for block-level elements (heading / list / hr)
     const lines = s.split('\n');
-    let listType = null;
+    let listType = null; // 'ul' | 'ol' | null
     const out = [];
     const closeList = () => { if (listType) { out.push(`</${listType}>`); listType = null; } };
     for (let line of lines) {
+      // Horizontal rule: "---" or "***" on its own line
       if (/^\s*(---|\*\*\*|___)\s*$/.test(line)) {
         closeList();
         out.push('<hr class="rich-hr">');
         continue;
       }
+      // Heading: 1-6 #
       const h = line.match(/^(#{1,6})\s+(.+)$/);
       if (h) {
         closeList();
@@ -3919,28 +4022,37 @@
         out.push(`<h${level} class="rich-h rich-h${level}">${h[2]}</h${level}>`);
         continue;
       }
+      // Unordered list: "- " or "* " or "・ "
       const ul = line.match(/^[\s]*[-*・][\s]+(.+)$/);
       if (ul) {
         if (listType !== 'ul') { closeList(); out.push('<ul>'); listType = 'ul'; }
         out.push('<li>' + ul[1] + '</li>');
         continue;
       }
+      // Ordered list: "1. " "2) " etc.
       const ol = line.match(/^[\s]*\d+[.)][\s]+(.+)$/);
       if (ol) {
         if (listType !== 'ol') { closeList(); out.push('<ol>'); listType = 'ol'; }
         out.push('<li>' + ol[1] + '</li>');
         continue;
       }
+      // Regular line: close any active list
       closeList();
       out.push(line);
     }
     closeList();
     s = out.join('\n');
+    // 3) URL auto-link (must precede inline emphasis)
     s = s.replace(/(https?:\/\/[^\s<>"']+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" class="rich-link">$1</a>');
+    // 4) Code spans `...`
     s = s.replace(/`([^`\n]+?)`/g, '<code>$1</code>');
+    // 5) Bold **...**
     s = s.replace(/\*\*([^*\n][^*\n]*?)\*\*/g, '**$1**');
+    // 6) Italic *...*
     s = s.replace(/(^|[^*])\*([^*\n]+?)\*(?!\*)/g, '$1<em>$2</em>');
+    // 7) Newlines → <br> (outside of structured block elements)
     s = s.replace(/\n(?!<\/?(?:ul|ol|li|h[1-6]|hr))/g, '<br>');
+    // Clean up extra <br> adjacent to block elements
     s = s.replace(/<\/(ul|ol|h[1-6]|hr)><br>/g, '</$1>');
     s = s.replace(/<br>(<(?:ul|ol|h[1-6]|hr))/g, '$1');
     return s;
@@ -4002,7 +4114,7 @@
         <textarea class="autosize todo-text" data-id="${t.id}" data-act="text" placeholder="Todoを入力" rows="1">${esc(t.text)}</textarea>
         <button class="todo-detail-toggle ${hasDetails ? 'has-content' : ''}" data-id="${t.id}" data-act="toggle-detail" title="詳細・リンクを${isOpen ? '閉じる' : '開く'}（クリックで何をどうするか書ける）">${isOpen ? '▼' : '▶'}${hasDetails ? '📝' : '＋'}</button>
         <button class="priority-btn ${priClass}" data-id="${t.id}" data-act="cycle-priority" title="優先順位を切り替え（大/中/小/なし）">${PRIORITY_LABELS[p]}</button>
-        <button class="routine-btn ${t.routine ? 'active' : ''}" data-id="${t.id}" data-act="cycle-routine" title="ルーティン: 期切替時に自動で次期へ復元される（クリックでON/OFF）">🔁</button>
+        <button class="routine-btn ${t.routine ? 'active' : ''}" data-id="${t.id}" data-act="cycle-routine" title="ルーティン: 期切替時に自動で次期へ復元される（クリックで状態切替: OFF→毎週→1週目→2週目→3週目→4週目→OFF）">${routineLabel(t)}</button>
         ${completedMeta}
         <button data-id="${t.id}" data-act="del" title="削除"
           style="border:none;background:transparent;cursor:pointer;color:var(--muted);font-size:14px;">×</button>
@@ -4011,6 +4123,10 @@
         <div class="todo-detail-label">📝 何をどうする？（具体メモ・リンク・参考資料 — クリックで全文表示・編集）</div>
         <div class="rich-field-wrap todo-detail-field" data-todoid="${t.id}" data-field="details" data-act="todo-detail-expand">
           <div class="rich-display todo-detail-display collapsed">${t.details ? renderRichText(t.details) : '<span class="rich-placeholder">具体的にやることや参考リンクを書く（例: 「○○さんに連絡 - https://example.com の資料を見てから提案」）。**太字** / *斜体* / # 見出し / URL自動リンク 対応</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
+        </div>
+        <div class="todo-detail-label" style="margin-top:10px;">💬 フィードバック（受講生・管理者の双方が記入可）</div>
+        <div class="rich-field-wrap todo-detail-field feedback-field" data-todoid="${t.id}" data-field="feedback" data-act="todo-detail-expand">
+          <div class="rich-display todo-detail-display collapsed">${t.feedback ? renderRichText(t.feedback) : '<span class="rich-placeholder">フィードバック欄(クリックで編集／署名・日時自動付与)</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
         </div>
       </div>
     </div>
@@ -4277,6 +4393,12 @@
                 <div class="rich-display collapsed">${w.review ? renderRichText(w.review) : '<span class="rich-placeholder">振り返り — クリックして全文表示・編集。**太字** / # 見出し / URL自動リンクなど対応</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
               </div>
             </div>
+            <div class="week-field">
+              <div class="week-field-label">💬 フィードバック（受講生・管理者の双方が記入可 — クリックで全文表示・編集）</div>
+              <div class="rich-field-wrap feedback-field" data-week="${wi}" data-field="feedback" data-label="💬 フィードバック" data-act="rich-expand">
+                <div class="rich-display collapsed">${w.feedback ? renderRichText(w.feedback) : '<span class="rich-placeholder">フィードバック欄(クリックで編集／署名・日時自動付与)</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
+              </div>
+            </div>
           </div>
         </div>
       `;
@@ -4461,6 +4583,11 @@
     if (kgiCV) kgiCV.value = formatLiveValue(g.currentValue, g.unit || 'none');
     if (kgiTV) kgiTV.value = formatLiveValue(g.targetValue, g.unit || 'none');
     if (kgiLB) kgiLB.checked = !!g.lowerIsBetter;
+    // KGI feedback display
+    const kgiFbDisp = $('kgi-feedback-display');
+    if (kgiFbDisp) {
+      kgiFbDisp.innerHTML = (g.feedback ? renderRichText(g.feedback) : '<span class="rich-placeholder">受講生本人＋管理者の両方が記入できる(クリックで編集)</span>') + '<span class="rich-expand-hint">クリックで全文＋編集</span>';
+    }
     // Period auto-display
     const periodDisp = $('kgi-period-display');
     if (periodDisp) periodDisp.textContent = '期間：' + (formatPeriodDisplay(state.period) || '—');
@@ -4473,7 +4600,9 @@
     applyReadonlyToInputs();
   }
 
-  // readonly切替時にinput/textareaにreadonly属性を付与(コピー可、編集不可)
+  // Toggle input/textarea readonly attr based on body.readonly state.
+  // CSSのpointer-eventsだけだとフォーカス可能になっているので、ここで readonly属性も付ける。
+  // 結果: 文字選択(コピー)はできるが、編集はできない。
   function applyReadonlyToInputs() {
     const isRO = document.body.classList.contains('readonly');
     document.querySelectorAll('main input, main textarea, main select').forEach(el => {
@@ -4486,6 +4615,7 @@
         }
       } else {
         el.removeAttribute('readonly');
+        // disabled は他の理由で付いている可能性があるので、自分が付けたとわかるケースのみ消す
         if (el.tagName === 'SELECT' || el.type === 'checkbox') {
           el.removeAttribute('disabled');
         }
@@ -4807,7 +4937,7 @@
       const rawK = t.dataset.kpi;
       const k = (rawK === 'other') ? 'other' : +rawK;
       if (!state.todos[k]) state.todos[k] = [];
-      state.todos[k].push({ id: newId(), text: '', done: false, priority: 'none', completedAt: null, routine: false, details: '' });
+      state.todos[k].push({ id: newId(), text: '', done: false, priority: 'none', completedAt: null, routine: false, routineWeeks: null, details: '', feedback: '' });
       save(); renderTodos();
       setTimeout(() => {
         const containerId = (k === 'other') ? 'todo-other' : `todo-${k}`;
@@ -4835,14 +4965,16 @@
     } else if (t.dataset.act === 'cycle-routine' && t.dataset.id) {
       const found = findTodoById(t.dataset.id);
       if (found) {
-        found.todo.routine = !found.todo.routine;
+        cycleRoutineState(found.todo);
         save(); renderTodos();
       }
     } else if (t.dataset.act === 'toggle-detail' && t.dataset.id) {
       e.stopPropagation();
       const id = t.dataset.id;
+      // Toggle open state
       if (openTodoDetails.has(id)) openTodoDetails.delete(id);
       else openTodoDetails.add(id);
+      // Toggle DOM in-place (avoid re-render so user doesn't lose focus on textareas)
       const wrap = document.querySelector(`.todo-item-wrap[data-id="${id}"]`);
       if (wrap) {
         const isOpen = openTodoDetails.has(id);
@@ -5161,25 +5293,43 @@
     TODO_KEYS.forEach(k => {
       (state.todos[k] || []).forEach(t => { t.done = false; t.completedAt = null; });
     });
-    // Collect routine todo IDs across all KPI keys
-    const routineIds = [];
+    // Collect routine todos with their week-specific settings.
+    // - routineWeeks: null/empty → all weeks (毎週)
+    // - routineWeeks: [0] → 第1週のみ, [1] → 第2週のみ, etc.
+    // weekIndex in state.weeks: each month has 4 weeks, so for monthly cycle modulo 4.
+    const routineTodos = []; // [{id, routineWeeks}]
     TODO_KEYS.forEach(k => {
-      (state.todos[k] || []).forEach(t => { if (t.routine) routineIds.push(t.id); });
+      (state.todos[k] || []).forEach(t => {
+        if (t.routine) routineTodos.push({ id: t.id, routineWeeks: t.routineWeeks });
+      });
     });
-    state.weeks.forEach(w => {
+    state.weeks.forEach((w, wi) => {
       w.done = '';
       w.review = '';
       w.planNote = '';
-      // Auto-restore routine todos to each week (clean week + routine baseline)
-      w.planTodoIds = [...routineIds];
+      w.feedback = '';
+      // 月内の何週目か (0-indexed): wi % 4
+      const weekOfMonth = wi % 4;
+      const planIds = [];
+      routineTodos.forEach(rt => {
+        const rw = Array.isArray(rt.routineWeeks) ? rt.routineWeeks : null;
+        if (!rw || rw.length === 0) {
+          // 毎週
+          planIds.push(rt.id);
+        } else if (rw.includes(weekOfMonth)) {
+          // 指定週のみ
+          planIds.push(rt.id);
+        }
+      });
+      w.planTodoIds = planIds;
     });
     save();
     renderAll();
     updateArchiveSelect();
-    const routineDoneMsg = routineIds.length > 0
-      ? `\n・🔁 ルーティン指定の ${routineIds.length} 件のTodoが新期の全週に自動セットされました`
+    const routineDoneMsg = routineTodos.length > 0
+      ? `\n・🔁 ルーティン指定の ${routineTodos.length} 件のTodoが指定の週にセットされました（毎週／第1〜4週など）`
       : '';
-    alert(`✅ 今期を保存しました。\n\n・KGI/KPI/Todoはそのまま引き継がれています\n・実績/週次の振り返り/Todoのチェックはリセットされました${routineDoneMsg}\n・期間フィールドを新期（例: 2026年7-9月）に書き換えれば新期スタートです`);
+    alert(`✅ 今期を保存しました。\n\n・KGI/KPI/Todoはそのまま引き継がれています\n・実績/週次の振り返り/フィードバック/Todoのチェックはリセットされました${routineDoneMsg}\n・期間フィールドを新期（例: 2026年7-9月）に書き換えれば新期スタートです`);
   });
 
   $('archive-select').addEventListener('change', (e) => {
@@ -5440,6 +5590,8 @@
   }
 
   // ===== Shared link feature (案A: 公開リンク・ログイン不要) =====
+  // 本関数は「ログイン中のユーザーがリンク経由で開いた場合」のみ呼ばれる。
+  // 未ログインからのアクセスは init 時の loadPublicViewMode に流れる。
   async function handleViewParam() {
     const params = new URLSearchParams(window.location.search);
     const viewDocId = params.get('view');
@@ -5457,6 +5609,7 @@
       const data = snap.data();
       const email = data._email || '(不明)';
       const displayName = data._displayName || '';
+      // ログイン中なら管理者かどうかで編集/読み取りが自動分岐 (enterReadOnlyMode 内のロジック)
       await enterReadOnlyMode(viewDocId, email, displayName);
     } catch (err) {
       console.error('handleViewParam error', err);
@@ -5464,6 +5617,7 @@
     }
   }
 
+  // Get shareable URL for a docId
   function getShareableLink(docId) {
     const url = new URL(window.location.href);
     url.search = '';
@@ -5510,7 +5664,7 @@
         };
         // normalize todos / weeks
         TODO_KEYS.forEach(k => {
-          state.todos[k] = (state.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, details: t.details || '' }));
+          state.todos[k] = (state.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, routineWeeks: Array.isArray(t.routineWeeks) ? t.routineWeeks : null, details: t.details || '', feedback: t.feedback || '' }));
         });
         state.weeks = state.weeks.map((w, i) => ({
           week: w.week || DEFAULT_WEEKS[i] || `週${i+1}`,
@@ -5519,6 +5673,7 @@
           planNote: w.planNote ?? (w.plan || ''),
           done: w.done || '',
           review: w.review || '',
+          feedback: w.feedback || '',
         }));
         suppressCloudSave = true;
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
@@ -5564,7 +5719,7 @@
         archives: Array.isArray(data.archives) ? data.archives : [],
       };
       TODO_KEYS.forEach(k => {
-        newState.todos[k] = (newState.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, details: t.details || '' }));
+        newState.todos[k] = (newState.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, routineWeeks: Array.isArray(t.routineWeeks) ? t.routineWeeks : null, details: t.details || '', feedback: t.feedback || '' }));
       });
       newState.weeks = newState.weeks.map((w, i) => ({
         week: w.week || DEFAULT_WEEKS[i] || `週${i+1}`,
@@ -5573,6 +5728,7 @@
         planNote: w.planNote ?? (w.plan || ''),
         done: w.done || '',
         review: w.review || '',
+        feedback: w.feedback || '',
       }));
       // Only re-render if focus is not on an input (to avoid disrupting typing)
       const active = document.activeElement;
@@ -5765,7 +5921,7 @@
           archives: Array.isArray(data.archives) ? data.archives : [],
         };
         TODO_KEYS.forEach(k => {
-          state.todos[k] = (state.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, details: t.details || '' }));
+          state.todos[k] = (state.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, routineWeeks: Array.isArray(t.routineWeeks) ? t.routineWeeks : null, details: t.details || '', feedback: t.feedback || '' }));
         });
         state.weeks = state.weeks.map((w, i) => ({
           week: w.week || DEFAULT_WEEKS[i] || `週${i+1}`,
@@ -5774,6 +5930,7 @@
           planNote: w.planNote ?? (w.plan || ''),
           done: w.done || '',
           review: w.review || '',
+          feedback: w.feedback || '',
         }));
         renderAll();
       }
@@ -5816,6 +5973,7 @@
     lines.push(``);
     lines.push(`---`);
     lines.push(``);
+    // 年間最終ゴール
     const ag = state.annualGoal || {};
     lines.push(`## 🎯 年間最終ゴール`);
     lines.push(`- **目標**: ${ag.target || '(未入力)'}`);
@@ -5824,6 +5982,7 @@
       lines.push(`- **数値**: 現状 ${formatLiveValue(ag.currentValue || '', ag.unit)} / 目標 ${formatLiveValue(ag.targetValue || '', ag.unit)}${ag.lowerIsBetter ? ' (↓低い方が良い)' : ''}`);
     }
     lines.push(``);
+    // KGI
     const kgi = state.goals.kgi || {};
     lines.push(`## ⭐ KGI（最重要目標）`);
     lines.push(`- **目標**: ${kgi.target || '(未入力)'}`);
@@ -5837,7 +5996,12 @@
       const ach = calcAch(r), grw = calcGrw(r);
       lines.push(`- **実績**: ${formatLiveValue(kgiResult.actual, kgi.unit)} / 達成率 ${calcFmt(ach)} / 成長率 ${calcFmt(grw)}`);
     }
+    if (kgi.feedback && kgi.feedback.trim()) {
+      lines.push(`- **💬 フィードバック**:`);
+      kgi.feedback.split('\n').forEach(l => lines.push(`  > ${l}`));
+    }
     lines.push(``);
+    // KPI①②③
     [1, 2, 3].forEach(n => {
       const k = 'kpi' + n;
       const g = state.goals[k] || {};
@@ -5856,8 +6020,13 @@
         const ach = calcAch(r), grw = calcGrw(r);
         lines.push(`- **実績**: ${formatLiveValue(result.actual, g.unit)} / 達成率 ${calcFmt(ach)} / 成長率 ${calcFmt(grw)}`);
       }
+      if (g.feedback && g.feedback.trim()) {
+        lines.push(`- **💬 フィードバック**:`);
+        g.feedback.split('\n').forEach(l => lines.push(`  > ${l}`));
+      }
       lines.push(``);
     });
+    // その他の業務
     const og = state.goals.other || {};
     if (og.target || og.current) {
       lines.push(`## 📁 その他の業務`);
@@ -5865,6 +6034,7 @@
       lines.push(`- **現状**: ${og.current || '(未入力)'}`);
       lines.push(``);
     }
+    // Todo一覧（KPI別）
     lines.push(`---`);
     lines.push(``);
     lines.push(`## ✅ Todo一覧`);
@@ -5873,19 +6043,25 @@
       if (list.length === 0) return;
       const kLabel = k === 'other' ? 'その他' : `KPI${['①','②','③'][k-1]}`;
       lines.push(``);
-      lines.push(`### ${kLabel}(${list.filter(t=>t.done).length}/${list.length} 完了)`);
+      lines.push(`### ${kLabel}（${list.filter(t=>t.done).length}/${list.length} 完了）`);
       list.forEach((t, idx) => {
         const pri = t.priority === 'high' ? '【大】' : t.priority === 'medium' ? '【中】' : t.priority === 'low' ? '【小】' : '';
         const status = t.done ? '✓' : '☐';
         const routine = t.routine ? ' 🔁' : '';
         lines.push(`${idx+1}. ${status} ${pri}${t.text || '(未入力)'}${routine}${t.done && t.completedAt ? ` (完了: ${fmtCompletedDate(t.completedAt)})` : ''}`);
         if (t.details && t.details.trim()) {
+          // Indent the details
           const detail = t.details.split('\n').map(l => '   > ' + l).join('\n');
           lines.push(detail);
+        }
+        if (t.feedback && t.feedback.trim()) {
+          lines.push(`   💬 フィードバック:`);
+          t.feedback.split('\n').forEach(l => lines.push(`   > ${l}`));
         }
       });
     });
     lines.push(``);
+    // 週次行動目標
     lines.push(`---`);
     lines.push(``);
     lines.push(`## 🗓 週次行動目標`);
@@ -5911,6 +6087,7 @@
         lines.push(`**📝 自由メモ:**`);
         lines.push(w.planNote);
       }
+      // ✅実際実行できたこと（自動）
       const doneTodos = (w.planTodoIds || [])
         .map(id => findTodoById(id))
         .filter(f => f && f.todo.done);
@@ -5927,8 +6104,14 @@
         lines.push(`**💭 振り返り:**`);
         lines.push(w.review);
       }
+      if (w.feedback && w.feedback.trim()) {
+        lines.push(``);
+        lines.push(`**💬 フィードバック:**`);
+        lines.push(w.feedback);
+      }
     });
     lines.push(``);
+    // 結果テーブル
     lines.push(`---`);
     lines.push(``);
     lines.push(`## 📊 結果テーブル`);
@@ -5967,6 +6150,7 @@
   }
   $('ub-copy-gm').addEventListener('click', copyGmSheetToClipboard);
   $('ub-copy-link').addEventListener('click', () => {
+    // Copy a shareable link for the currently-viewed sheet
     const targetDocId = viewingDocId || currentDocId;
     const name = (viewingEmail && viewingEmail !== currentEmail)
       ? viewingEmail
@@ -6256,6 +6440,7 @@ ${ctx}
       const label = ['①','②','③'][n - 1];
       const k = 'kpi' + n;
       const kpi = state.goals[k] || {};
+      // Existing todos for this KPI
       const existing = (state.todos[n] || []).map(t => `  - ${t.text || '(未入力)'} [優先${t.priority === 'high' ? '大' : t.priority === 'medium' ? '中' : t.priority === 'low' ? '小' : 'なし'}]${t.done ? ' ✓' : ''}`).join('\n') || '  （まだ登録なし）';
       title = `🤖 AIにKPI${label}のTodo提案を相談`;
       prompt = `あなたは目標達成の伴走コーチ＋店長/マネージャーです。KPI${label}達成のための **Todoの種類とヒント**を提示してください。経験の浅いスタッフが「どんなTodoがあるか」をパッと把握できる量で。
@@ -6479,8 +6664,11 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
   });
 
   // ===== Rich text fields: click anywhere on the field → opens modal =====
+  // (Replaces old inline edit-in-place. The field is now always a click-to-expand preview.)
   document.addEventListener('click', (e) => {
+    // Ignore clicks on links inside the preview (let them open the URL)
     if (e.target.closest('a')) return;
+    // Match the wrap element itself, which carries the data-act
     const wrap = e.target.closest('.rich-field-wrap[data-act="rich-expand"], .rich-field-wrap[data-act="todo-detail-expand"], .rich-field-wrap[data-act="goal-text-expand"]');
     if (!wrap) return;
     e.stopPropagation();
@@ -6500,6 +6688,12 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
   // ===== Rich text expand modal =====
   // ctx: { type: 'week', wi, field, label }  OR  { type: 'todo', todoId, label }
   let richModalCtx = null;
+  // Show/hide the "✍ 新規フィードバックを追記" button based on whether the modal is showing a "feedback" field.
+  function updateFeedbackAddBtn(field) {
+    const btn = $('rich-modal-add-feedback');
+    if (!btn) return;
+    btn.style.display = (field === 'feedback') ? '' : 'none';
+  }
   function openRichModal(wi, field, label) {
     richModalCtx = { type: 'week', wi, field, label };
     const w = state.weeks[wi];
@@ -6507,21 +6701,25 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
     $('rich-modal-title').textContent = `📝 ${label} - 拡大表示（${w?.week || ''}）`;
     $('rich-modal-textarea').value = val;
     $('rich-modal-preview').innerHTML = val ? renderRichText(val) : '<span class="rich-placeholder">プレビューはここに表示されます</span>';
+    updateFeedbackAddBtn(field);
     $('rich-modal').classList.add('show');
     setTimeout(() => $('rich-modal-textarea').focus(), 50);
   }
-  function openTodoDetailModal(todoId) {
+  function openTodoDetailModal(todoId, field) {
     const found = findTodoById(todoId);
     if (!found) return;
-    richModalCtx = { type: 'todo', todoId, label: '何をどうする？' };
-    const val = found.todo.details || '';
+    const f = field || 'details';
+    richModalCtx = { type: 'todo', todoId, label: f === 'feedback' ? 'フィードバック' : '何をどうする？', field: f };
+    const val = (f === 'feedback' ? (found.todo.feedback || '') : (found.todo.details || ''));
     const todoText = found.todo.text || '(未入力)';
-    $('rich-modal-title').textContent = `📝 ${todoText.slice(0, 30)}${todoText.length > 30 ? '…' : ''} - 詳細メモ`;
+    $('rich-modal-title').textContent = `📝 ${todoText.slice(0, 30)}${todoText.length > 30 ? '…' : ''} - ${f === 'feedback' ? '💬 フィードバック' : '詳細メモ'}`;
     $('rich-modal-textarea').value = val;
     $('rich-modal-preview').innerHTML = val ? renderRichText(val) : '<span class="rich-placeholder">プレビューはここに表示されます</span>';
+    updateFeedbackAddBtn(f);
     $('rich-modal').classList.add('show');
     setTimeout(() => $('rich-modal-textarea').focus(), 50);
   }
+  // Open modal for a state.goals[goalKey][field] text field (現状 / 課題 / 解決策 / feedback etc.)
   function openGoalTextModal(goalKey, field, label) {
     const g = state.goals[goalKey] || {};
     richModalCtx = { type: 'goal', goalKey, field, label };
@@ -6530,6 +6728,7 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
     $('rich-modal-title').textContent = `📝 ${kpiLabel} - ${label}`;
     $('rich-modal-textarea').value = val;
     $('rich-modal-preview').innerHTML = val ? renderRichText(val) : '<span class="rich-placeholder">プレビューはここに表示されます</span>';
+    updateFeedbackAddBtn(field);
     $('rich-modal').classList.add('show');
     setTimeout(() => $('rich-modal-textarea').focus(), 50);
   }
@@ -6537,6 +6736,7 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
     $('rich-modal').classList.remove('show');
     richModalCtx = null;
   }
+  // Live sync: textarea input → state + preview + inline display
   $('rich-modal-textarea').addEventListener('input', (e) => {
     if (!richModalCtx) return;
     const val = e.target.value;
@@ -6565,6 +6765,7 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
       found.todo.details = val;
       save();
       $('rich-modal-preview').innerHTML = val ? renderRichText(val) : '<span class="rich-placeholder">プレビューはここに表示されます</span>';
+      // Sync inline display
       const wrap = document.querySelector(`.rich-field-wrap[data-todoid="${richModalCtx.todoId}"][data-field="details"]`);
       if (wrap) {
         const display = wrap.querySelector('.rich-display');
@@ -6574,6 +6775,7 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
         }
         if (inlineTa) inlineTa.value = val;
       }
+      // Update toggle button "has-content" state
       const itemWrap = document.querySelector(`.todo-item-wrap[data-id="${richModalCtx.todoId}"]`);
       if (itemWrap) {
         const btn = itemWrap.querySelector('[data-act="toggle-detail"]');
@@ -6595,12 +6797,14 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
       if (state.goals[goalKey]) {
         state.goals[goalKey][field] = val;
         save();
+        // Trigger derived re-renders for fields that affect results (target etc.)
         if (field === 'target') {
           if (typeof updateKpiNames === 'function') updateKpiNames();
           if (typeof renderResults === 'function') renderResults();
         }
       }
       $('rich-modal-preview').innerHTML = val ? renderRichText(val) : '<span class="rich-placeholder">プレビューはここに表示されます</span>';
+      // Sync inline display
       const wrap = document.querySelector(`.rich-field-wrap[data-goal="${goalKey}"][data-field="${field}"]`);
       if (wrap) {
         const display = wrap.querySelector('.rich-display');
@@ -6619,7 +6823,29 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
   $('rich-modal').addEventListener('click', (e) => {
     if (e.target.id === 'rich-modal') closeRichModal();
   });
-
+  // 「✍ 新規フィードバックを追記」ボタン: 署名・日時付きの新規ブロックを末尾に追加
+  $('rich-modal-add-feedback').addEventListener('click', () => {
+    const ta = $('rich-modal-textarea');
+    if (!ta) return;
+    // 名前を決定: 表示名 > メール
+    const writerName = (currentDisplayName && currentDisplayName.trim())
+      || (currentEmail || '匿名');
+    const role = (currentEmail === ADMIN_EMAIL) ? '主管理者' : (isAdminUser ? '管理者' : '受講生本人');
+    const ts = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    const stamp = `${ts.getFullYear()}/${pad(ts.getMonth()+1)}/${pad(ts.getDate())} ${pad(ts.getHours())}:${pad(ts.getMinutes())}`;
+    const header = `\n\n---\n\n### 💬 ${writerName}（${role}） — ${stamp}\n`;
+    const cur = ta.value || '';
+    // Append at end, position cursor right after header
+    const newVal = cur + header;
+    ta.value = newVal;
+    ta.dispatchEvent(new Event('input', { bubbles: true }));
+    // Move cursor to end and focus
+    ta.focus();
+    try { ta.setSelectionRange(ta.value.length, ta.value.length); } catch {}
+    // Scroll textarea to bottom
+    ta.scrollTop = ta.scrollHeight;
+  });
   // Calendar modal handlers
   $('cal-close').addEventListener('click', closeCalModal);
   $('cal-modal').addEventListener('click', (e) => {
@@ -6811,14 +7037,16 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
 
   // Wait for Firebase auth to settle (Google session may auto-restore)
   onAuthStateChanged(auth, async (user) => {
+    // Public view mode: anyone with the link can read (no login required)
     if (_isPublicView) {
+      // Need anonymous auth for Firestore read (per public-read rules)
       if (!user) {
         try { await signInAnonymously(auth); } catch (err) {
           console.error('Anonymous auth error', err);
           showLogin('認証エラー: ' + (err.message || err), 'error');
           return;
         }
-        return;
+        return; // onAuthStateChanged will fire again with anonymous user
       }
       await loadPublicViewMode(_viewParam);
       return;
@@ -6867,10 +7095,12 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
       const data = snap.data();
       const email = data._email || '(不明)';
       const displayName = data._displayName || '名前未設定';
+      // Set state without "currentEmail" (no login)
       isReadOnly = true;
       viewingDocId = viewDocId;
       viewingEmail = email;
       document.body.classList.add('readonly', 'public-view');
+      // Load state from the snapshot
       state = {
         ...defaultState(), ...data,
         annualGoal: normalizeGoal(data.annualGoal, true),
@@ -6881,7 +7111,7 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
         archives: Array.isArray(data.archives) ? data.archives : [],
       };
       TODO_KEYS.forEach(k => {
-        state.todos[k] = (state.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, details: t.details || '' }));
+        state.todos[k] = (state.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, routineWeeks: Array.isArray(t.routineWeeks) ? t.routineWeeks : null, details: t.details || '', feedback: t.feedback || '' }));
       });
       state.weeks = state.weeks.map((w, i) => ({
         week: w.week || DEFAULT_WEEKS[i] || `週${i+1}`,
@@ -6890,13 +7120,16 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
         planNote: w.planNote ?? (w.plan || ''),
         done: w.done || '',
         review: w.review || '',
+        feedback: w.feedback || '',
       }));
+      // Hide login overlay; show a public-view banner
       hideLogin();
       $('user-bar').style.display = 'flex';
       const ub = $('ub-name');
       if (ub) ub.textContent = '🔗 公開リンクで閲覧中';
       const ubEmail = $('ub-email');
       if (ubEmail) ubEmail.textContent = `${displayName}（${email}）`;
+      // Show banner
       const banner = $('ro-banner');
       banner.classList.add('show');
       banner.classList.remove('editing');
