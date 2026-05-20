@@ -881,7 +881,30 @@
     border-radius: 4px;
     border-left: 3px solid transparent;
     transition: background 0.1s;
+    flex-wrap: wrap;
+    row-gap: 4px;
   }
+  /* Action buttons go on the top row (order 1) */
+  .todo-item > .todo-detail-toggle,
+  .todo-item > .priority-btn,
+  .todo-item > .routine-btn,
+  .todo-item > .todo-pending-badge,
+  .todo-item > .todo-completed-meta,
+  .todo-item > button[data-act="del"] { order: 1; }
+  /* Force a line break between top buttons and main text row */
+  .todo-item::after {
+    content: "";
+    order: 2;
+    flex-basis: 100%;
+    height: 0;
+  }
+  /* Drag, checkbox, textarea on the bottom row */
+  .todo-item > .drag-handle,
+  .todo-item > input[type="checkbox"],
+  .todo-item > textarea.todo-text { order: 3; }
+  /* History items keep single-row layout (no buttons, simpler view) */
+  .todo-history .todo-item { flex-wrap: nowrap; }
+  .todo-history .todo-item::after { display: none; }
   .todo-item > input[type="checkbox"],
   .todo-item > .drag-handle,
   .todo-item > .priority-btn,
@@ -1311,7 +1334,26 @@
     font-size: 12px;
     border-left: 3px solid;
     background: var(--panel-2);
+    flex-wrap: wrap;
+    row-gap: 4px;
   }
+  /* チップ: ボタン群を上段に配置 */
+  .plan-chip > .chip-prio,
+  .plan-chip > .chip-routine,
+  .plan-chip > .chip-detail,
+  .plan-chip > .chip-cal,
+  .plan-chip > .chip-x { order: 1; }
+  /* 上段と下段の間を改行 */
+  .plan-chip::after {
+    content: "";
+    order: 2;
+    flex-basis: 100%;
+    height: 0;
+  }
+  /* ドラッグ・チェック・テキストは下段 */
+  .plan-chip > .chip-drag,
+  .plan-chip > .chip-check,
+  .plan-chip > .chip-text { order: 3; }
   .plan-chip[data-kpi="1"] { border-color: var(--kpi1); background: var(--kpi1-soft); }
   .plan-chip[data-kpi="2"] { border-color: var(--kpi2); background: var(--kpi2-soft); }
   .plan-chip[data-kpi="3"] { border-color: var(--kpi3); background: var(--kpi3-soft); }
@@ -1330,7 +1372,7 @@
     width: 14px;
     height: 14px;
   }
-  .plan-chip .chip-text { flex: 1; word-break: break-word; }
+  .plan-chip .chip-text { flex: 1; min-width: 0; word-break: break-word; }
   .plan-chip .chip-x {
     background: transparent;
     border: none;
@@ -1408,6 +1450,26 @@
   .plan-chip .chip-prio.priority-high { background: #fef2f2; border-color: #dc2626; color: #dc2626; }
   .plan-chip .chip-prio.priority-medium { background: #fffbeb; border-color: #f59e0b; color: #d97706; }
   .plan-chip .chip-prio.priority-low { background: #f0fdf4; border-color: #16a34a; color: #16a34a; }
+  .plan-chip .chip-routine {
+    border: 1px solid var(--border);
+    background: #fff;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+    color: var(--muted);
+    font-family: inherit;
+    line-height: 1.4;
+    transition: all 0.15s;
+  }
+  .plan-chip .chip-routine.active {
+    background: #fef3c7;
+    border-color: #f59e0b;
+    color: #b45309;
+  }
+  .plan-chip .chip-routine:hover { transform: scale(1.05); }
   .plan-chip.dragging { opacity: 0.4; }
   .plan-chip.drop-target { box-shadow: 0 -2px 0 var(--accent); }
   .plan-kpi-group {
@@ -1455,16 +1517,30 @@
   .plan-kpi-group.drop-target { box-shadow: 0 -3px 0 var(--accent); }
   .plan-pick-btn {
     width: 100%;
-    border: 1px dashed var(--border);
-    background: transparent;
-    padding: 6px;
-    color: var(--muted);
-    font-size: 12px;
+    border: 2px solid #2563eb;
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    padding: 10px 14px;
+    color: #1e40af;
+    font-size: 14px;
+    font-weight: 700;
     cursor: pointer;
-    border-radius: 4px;
-    margin-bottom: 6px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.15);
+    transition: all 0.15s;
+    font-family: inherit;
+    letter-spacing: 0.02em;
   }
-  .plan-pick-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .plan-pick-btn:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #fff;
+    border-color: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+  }
+  .plan-pick-btn:active { transform: translateY(0); }
+  .plan-pick-btn-top { margin-top: 4px; margin-bottom: 10px; }
+  .plan-pick-btn-bottom { margin-top: 6px; margin-bottom: 8px; }
   .week-table textarea {
     width: 100%;
     border: 1px solid var(--border);
@@ -1574,7 +1650,7 @@
     border-radius: 6px;
     background: #fff;
   }
-  /* フィードバック欄: オレンジ系で他のフィールドと差別化 */
+  /* FB欄: オレンジ系で他のフィールドと差別化 */
   .rich-field-wrap.feedback-field {
     border-color: #fcd34d;
     background: #fffbeb;
@@ -1604,7 +1680,7 @@
     background: #fef3c7;
     color: #b45309;
   }
-  /* KGI Hero 内のフィードバック欄 */
+  /* KGI Hero 内のFB欄 */
   .kgi-feedback-wrap {
     margin-top: 14px;
     background: rgba(255, 255, 255, 0.12);
@@ -2648,7 +2724,7 @@
   .feedback-status-badge.unread { background: #fee2e2; color: #b91c1c; }
   .feedback-status-badge.confirmed { background: #fef3c7; color: #b45309; }
   .feedback-status-badge.resolved { background: #d1fae5; color: #047857; }
-  /* モーダル内のフィードバック状態セレクター */
+  /* モーダル内のFB状態セレクター */
   .feedback-status-selector {
     display: none;
     margin: 8px 0 12px;
@@ -2871,14 +2947,17 @@
     background: linear-gradient(135deg, #fef3c7, #fed7aa);
     border: 1px solid #f59e0b;
     border-radius: 4px;
-    padding: 4px 6px;
-    font-size: 12px;
+    padding: 3px 4px;
+    font-size: 11px;
     font-weight: 700;
     cursor: pointer;
     font-family: inherit;
     color: #92400e;
     white-space: nowrap;
     width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    letter-spacing: -0.02em;
   }
   .routine-list-table .rl-freq-btn:hover {
     filter: brightness(0.95);
@@ -3048,8 +3127,8 @@
           </div>
         </div>
         <div class="kgi-feedback-wrap">
-          <div class="kgi-feedback-label">💬 フィードバック<span id="kgi-feedback-badge"></span></div>
-          <div class="rich-field-wrap goal-rich-field feedback-field" data-goal="kgi" data-field="feedback" data-label="💬 KGIフィードバック" data-act="goal-text-expand">
+          <div class="kgi-feedback-label">💬 FB<span id="kgi-feedback-badge"></span></div>
+          <div class="rich-field-wrap goal-rich-field feedback-field" data-goal="kgi" data-field="feedback" data-label="💬 KGIFB" data-act="goal-text-expand">
             <div class="rich-display collapsed" id="kgi-feedback-display"><span class="rich-placeholder">受講生本人＋管理者の両方が記入できる(クリックで編集)</span><span class="rich-expand-hint">クリックで全文＋編集</span></div>
           </div>
         </div>
@@ -3154,6 +3233,9 @@
     <div class="sec-head">
       <h2>🗓 週次行動目標</h2>
       <span class="sub">「+ Todoから選ぶ」でTodoを紐付け／自由メモも追加可能</span>
+      <div style="font-size:11px;color:#92400e;background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;padding:6px 10px;margin-top:6px;line-height:1.5;">
+        💡 各Todoチップの <strong>🔁ボタン</strong> をクリックすると、ここからもルーティン設定を切替できます（毎週／第1〜4週／月初／月末／OFF）。変更内容は今期の各週に自動反映されます。
+      </div>
     </div>
     <div class="sec-body">
       <div id="overdue-stats" class="overdue-stats" style="display:none;"></div>
@@ -3217,7 +3299,7 @@
       <textarea id="rich-modal-textarea" rows="14" style="display:none;width:100%;resize:vertical;font-size:14px;padding:12px;border:1.5px solid var(--accent);border-radius:6px;font-family:inherit;box-sizing:border-box;line-height:1.6;min-height:300px;"></textarea>
       <div id="rich-modal-preview" class="rich-preview"></div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:8px;flex-wrap:wrap;">
-        <button id="rich-modal-add-feedback" style="display:none;background:linear-gradient(135deg,#16a34a,#059669);color:#fff;border:none;border-radius:6px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">✍ 新規フィードバックを追記（署名・日時付き）</button>
+        <button id="rich-modal-add-feedback" style="display:none;background:linear-gradient(135deg,#16a34a,#059669);color:#fff;border:none;border-radius:6px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">✍ 新規FBを追記（署名・日時付き）</button>
         <button id="rich-modal-done" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:8px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-left:auto;">閉じる（自動保存済み）</button>
       </div>
     </div>
@@ -3556,12 +3638,12 @@
           <li><strong>行クリック</strong>：該当のTodoまで自動スクロール＋黄色ハイライト。「その他」のTodoはアコーディオンも自動展開</li>
         </ul>
 
-        <h4>💬 フィードバック機能（受講生＋管理者の双方向コミュニケーション）</h4>
-        <p>KGI / KPI / Todo / 週次行動目標のそれぞれに「💬 フィードバック」欄を配置。本人も管理者もコメントを書き込めます。</p>
+        <h4>💬 FB機能（受講生＋管理者の双方向コミュニケーション）</h4>
+        <p>KGI / KPI / Todo / 週次行動目標のそれぞれに「💬 FB」欄を配置。本人も管理者もコメントを書き込めます。</p>
         <h5>✍ 使い方</h5>
         <ol>
-          <li>各フィードバック欄をクリック → 拡大モーダル</li>
-          <li>緑色の <strong>「✍ 新規フィードバックを追記」</strong> ボタンを押すと、<strong>署名（名前）＋日時</strong> 付きの見出し（### マーク）が自動挿入</li>
+          <li>各FB欄をクリック → 拡大モーダル</li>
+          <li>緑色の <strong>「✍ 新規FBを追記」</strong> ボタンを押すと、<strong>署名（名前）＋日時</strong> 付きの見出し（### マーク）が自動挿入</li>
           <li>その下に本文を入力 → 自動保存</li>
           <li>複数人のコメントが時系列で蓄積されます</li>
         </ol>
@@ -3571,10 +3653,10 @@
           <li>🟡 <strong>確認済</strong>：読んだが対応未完</li>
           <li>🟢 <strong>解決済</strong>：対応完了</li>
         </ul>
-        <div class="info">💡 ラベル横にステータスバッジが表示されるので、未確認のフィードバックが一目で分かります。</div>
+        <div class="info">💡 ラベル横にステータスバッジが表示されるので、未確認のFBが一目で分かります。</div>
 
         <h4>📝 リッチテキスト編集（Markdown対応）</h4>
-        <p>「自由メモ」「振り返り」「フィードバック」「Todo詳細」「AI相談履歴」など、すべての長文入力欄でMarkdownが使えます。</p>
+        <p>「自由メモ」「振り返り」「FB」「Todo詳細」「AI相談履歴」など、すべての長文入力欄でMarkdownが使えます。</p>
         <h5>🎨 使える書式</h5>
         <ul>
           <li><strong>見出し</strong>： <code># H1</code> ／ <code>## H2</code> ／ <code>### H3</code> 〜 <code>###### H6</code></li>
@@ -3612,12 +3694,12 @@
         <h5>📋 GMシート全コピー</h5>
         <p>ユーザーバーの「📋 GMシート全コピー」ボタンで、自分のシート全データをMarkdown形式でクリップボードへ。</p>
         <ul>
-          <li>年間ゴール／KGI／KPI／Todo／週次／結果・フィードバック・AI相談履歴 すべて含まれる</li>
+          <li>年間ゴール／KGI／KPI／Todo／週次／結果・FB・AI相談履歴 すべて含まれる</li>
           <li>そのままAIに貼って相談できる形式</li>
           <li>管理者が他の受講生のシートを開いた時も、その受講生のデータをコピー可能</li>
         </ul>
         <h5>📋 個別セルの右クリックコピー</h5>
-        <p>任意のテキスト欄（KPI / Todo / フィードバック など）を <strong>右クリック</strong> すると、ポップアップメニュー：</p>
+        <p>任意のテキスト欄（KPI / Todo / FB など）を <strong>右クリック</strong> すると、ポップアップメニュー：</p>
         <ul>
           <li><strong>📋 この内容をコピー</strong> — その欄の全テキストをコピー</li>
           <li><strong>✂ 選択範囲だけコピー</strong> — マウスで選択した範囲だけ（選択時のみ表示）</li>
@@ -4451,9 +4533,9 @@
             </div>
           </div>
           <div class="kpi-row feedback-row">
-            <div class="lbl">💬 フィードバック${g.feedback ? feedbackStatusBadge(g.feedbackStatus) : ''}</div>
-            <div class="rich-field-wrap goal-rich-field feedback-field" data-goal="${k}" data-field="feedback" data-label="💬 フィードバック" data-act="goal-text-expand">
-              <div class="rich-display collapsed">${g.feedback ? renderRichText(g.feedback) : '<span class="rich-placeholder">受講生本人＋管理者の両方が記入できるフィードバック欄（クリックで編集／署名・日時自動付与）</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
+            <div class="lbl">💬 FB${g.feedback ? feedbackStatusBadge(g.feedbackStatus) : ''}</div>
+            <div class="rich-field-wrap goal-rich-field feedback-field" data-goal="${k}" data-field="feedback" data-label="💬 FB" data-act="goal-text-expand">
+              <div class="rich-display collapsed">${g.feedback ? renderRichText(g.feedback) : '<span class="rich-placeholder">受講生本人＋管理者の両方が記入できるFB欄（クリックで編集／署名・日時自動付与）</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
             </div>
           </div>
           <div class="metric-block">
@@ -4499,6 +4581,16 @@
     if (!Array.isArray(rw) || rw.length === 0) return '🔁毎';
     if (rw.length === 1) return `🔁${rw[0] + 1}`;
     return '🔁' + rw.map(i => i + 1).join(',');
+  }
+  // 略語でない長いラベル版（チップ用）
+  function routineLabelLong(t) {
+    if (!t.routine) return '🔁';
+    const rw = t.routineWeeks;
+    if (rw === 'first') return '🔁月初';
+    if (rw === 'last') return '🔁月末';
+    if (!Array.isArray(rw) || rw.length === 0) return '🔁毎週';
+    if (rw.length === 1) return `🔁第${rw[0] + 1}週`;
+    return '🔁' + rw.map(i => `第${i + 1}週`).join('・');
   }
   // Cycle: off → 毎週 → 第1週 → 第2週 → 第3週 → 第4週 → 月初 → 月末 → off
   function cycleRoutineState(t) {
@@ -4804,9 +4896,9 @@
         <div class="rich-field-wrap todo-detail-field" data-todoid="${t.id}" data-field="details" data-act="todo-detail-expand">
           <div class="rich-display todo-detail-display collapsed">${t.details ? renderRichText(t.details) : '<span class="rich-placeholder">具体的にやることや参考リンクを書く（例: 「○○さんに連絡 - https://example.com の資料を見てから提案」）。**太字** / *斜体* / # 見出し / URL自動リンク 対応</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
         </div>
-        <div class="todo-detail-label" style="margin-top:10px;">💬 フィードバック（受講生・管理者の双方が記入可）${t.feedback ? feedbackStatusBadge(t.feedbackStatus) : ''}</div>
+        <div class="todo-detail-label" style="margin-top:10px;">💬 FB（受講生・管理者の双方が記入可）${t.feedback ? feedbackStatusBadge(t.feedbackStatus) : ''}</div>
         <div class="rich-field-wrap todo-detail-field feedback-field" data-todoid="${t.id}" data-field="feedback" data-act="todo-detail-expand">
-          <div class="rich-display todo-detail-display collapsed">${t.feedback ? renderRichText(t.feedback) : '<span class="rich-placeholder">フィードバック欄(クリックで編集／署名・日時自動付与)</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
+          <div class="rich-display todo-detail-display collapsed">${t.feedback ? renderRichText(t.feedback) : '<span class="rich-placeholder">FB欄(クリックで編集／署名・日時自動付与)</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
         </div>
         <div class="todo-detail-label" style="margin-top:10px;">🤖 AI相談履歴（ChatGPT/Claudeの回答を貼り付けて履歴化）</div>
         <div class="rich-field-wrap todo-detail-field ai-history-field" data-todoid="${t.id}" data-field="aiHistory" data-act="todo-detail-expand">
@@ -5029,6 +5121,7 @@
               <input type="checkbox" class="chip-check" data-todoid="${todo.id}" data-act="chip-check" ${todo.done ? 'checked' : ''} title="完了/未完了を切り替え" />
               <span class="chip-text">${esc(todo.text || '(未入力)')}</span>
               <button class="chip-prio ${priClass}" data-todoid="${todo.id}" data-act="cycle-chip-priority" title="優先順位を切り替え（大/中/小/なし）">${PRIORITY_LABELS[p]}</button>
+              <button class="chip-routine ${todo.routine ? 'active' : ''}" data-todoid="${todo.id}" data-act="cycle-chip-routine" title="ルーティン: 期切替時に自動で次期へ復元される（クリックで状態切替: OFF→毎週→1週目→2週目→3週目→4週目→月初→月末→OFF）">${routineLabelLong(todo)}</button>
               <button class="chip-detail ${todo.details && todo.details.trim() ? 'has-content' : ''}" data-todoid="${todo.id}" data-act="chip-detail-open" title="このTodoの詳細メモ・リンクを開く（クリックで全文表示・編集）">${todo.details && todo.details.trim() ? '📝' : '＋'}</button>
               <button class="chip-cal" data-week="${wi}" data-todoid="${todo.id}" data-act="todo-calendar" title="このTodoをカレンダーに登録（1時間枠）">📅</button>
               <button class="chip-x" data-week="${wi}" data-todoid="${todo.id}" data-act="unpick" title="この週から外す">×</button>
@@ -5086,8 +5179,9 @@
                   ${todoCount ? `<button class="week-uncheck-btn" data-week="${wi}" data-act="uncheck-week" title="この週のTodoのチェックを外す">☐ レ点を外す</button>` : ''}
                 </div>
               </div>
+              <button class="plan-pick-btn plan-pick-btn-top" data-week="${wi}" data-act="pick">➕ Todoから選ぶ</button>
               <div class="plan-chips">${chips}</div>
-              <button class="plan-pick-btn" data-week="${wi}" data-act="pick">＋ Todoから選ぶ</button>
+              <button class="plan-pick-btn plan-pick-btn-bottom" data-week="${wi}" data-act="pick">➕ Todoから選ぶ</button>
               <div class="rich-field-wrap" data-week="${wi}" data-field="planNote" data-label="自由メモ" data-act="rich-expand">
                 <div class="rich-display collapsed">${w.planNote ? renderRichText(w.planNote) : '<span class="rich-placeholder">自由メモ（任意） — クリックして全文表示・編集。**太字** / # 見出し / URL自動リンクなど対応</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
               </div>
@@ -5103,9 +5197,9 @@
               </div>
             </div>
             <div class="week-field">
-              <div class="week-field-label">💬 フィードバック（受講生・管理者の双方が記入可 — クリックで全文表示・編集）${w.feedback ? feedbackStatusBadge(w.feedbackStatus) : ''}</div>
-              <div class="rich-field-wrap feedback-field" data-week="${wi}" data-field="feedback" data-label="💬 フィードバック" data-act="rich-expand">
-                <div class="rich-display collapsed">${w.feedback ? renderRichText(w.feedback) : '<span class="rich-placeholder">フィードバック欄(クリックで編集／署名・日時自動付与)</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
+              <div class="week-field-label">💬 FB（受講生・管理者の双方が記入可 — クリックで全文表示・編集）${w.feedback ? feedbackStatusBadge(w.feedbackStatus) : ''}</div>
+              <div class="rich-field-wrap feedback-field" data-week="${wi}" data-field="feedback" data-label="💬 FB" data-act="rich-expand">
+                <div class="rich-display collapsed">${w.feedback ? renderRichText(w.feedback) : '<span class="rich-placeholder">FB欄(クリックで編集／署名・日時自動付与)</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
               </div>
             </div>
           </div>
@@ -5853,6 +5947,15 @@
         updatePriorityVisualInPlace(found.todo.id, next);
         scheduleSortAfterDelay();
       }
+    } else if (t.dataset.act === 'cycle-chip-routine' && t.dataset.todoid) {
+      e.stopPropagation();
+      const found = findTodoById(t.dataset.todoid);
+      if (found) {
+        cycleRoutineState(found.todo);
+        // 自動: ルーティン設定に従って現在期間の週に反映
+        applyRoutineToCurrentPeriod(found.todo);
+        save(); renderTodos(); renderWeeks();
+      }
     } else if (t.dataset.act === 'pick') {
       openPicker(+t.dataset.week);
     } else if (t.dataset.act === 'unpick') {
@@ -6121,7 +6224,7 @@
         <thead><tr>
           <th style="width:64px;">カテゴリ<br><span style="font-weight:400;font-size:10px;">/優先</span></th>
           <th style="width:auto;">Todo内容</th>
-          <th style="width:54px;">頻度</th>
+          <th style="width:68px;">頻度</th>
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>
@@ -6375,7 +6478,7 @@
     const routineDoneMsg = routineTodos.length > 0
       ? `\n・🔁 ルーティン指定の ${routineTodos.length} 件のTodoが指定の週にセットされました（毎週／第1〜4週など）`
       : '';
-    alert(`✅ 今期を保存しました。\n\n・KGI/KPI/Todoはそのまま引き継がれています\n・実績/週次の振り返り/フィードバック/Todoのチェックはリセットされました${routineDoneMsg}\n・期間フィールドを新期（例: 2026年7-9月）に書き換えれば新期スタートです`);
+    alert(`✅ 今期を保存しました。\n\n・KGI/KPI/Todoはそのまま引き継がれています\n・実績/週次の振り返り/FB/Todoのチェックはリセットされました${routineDoneMsg}\n・期間フィールドを新期（例: 2026年7-9月）に書き換えれば新期スタートです`);
   });
 
   $('archive-select').addEventListener('change', (e) => {
@@ -7044,7 +7147,7 @@
       lines.push(`- **実績**: ${formatLiveValue(kgiResult.actual, kgi.unit)} / 達成率 ${calcFmt(ach)} / 成長率 ${calcFmt(grw)}`);
     }
     if (kgi.feedback && kgi.feedback.trim()) {
-      lines.push(`- **💬 フィードバック**:`);
+      lines.push(`- **💬 FB**:`);
       kgi.feedback.split('\n').forEach(l => lines.push(`  > ${l}`));
     }
     lines.push(``);
@@ -7068,7 +7171,7 @@
         lines.push(`- **実績**: ${formatLiveValue(result.actual, g.unit)} / 達成率 ${calcFmt(ach)} / 成長率 ${calcFmt(grw)}`);
       }
       if (g.feedback && g.feedback.trim()) {
-        lines.push(`- **💬 フィードバック**:`);
+        lines.push(`- **💬 FB**:`);
         g.feedback.split('\n').forEach(l => lines.push(`  > ${l}`));
       }
       lines.push(``);
@@ -7102,7 +7205,7 @@
           lines.push(detail);
         }
         if (t.feedback && t.feedback.trim()) {
-          lines.push(`   💬 フィードバック:`);
+          lines.push(`   💬 FB:`);
           t.feedback.split('\n').forEach(l => lines.push(`   > ${l}`));
         }
         if (t.aiHistory && t.aiHistory.trim()) {
@@ -7157,7 +7260,7 @@
       }
       if (w.feedback && w.feedback.trim()) {
         lines.push(``);
-        lines.push(`**💬 フィードバック:**`);
+        lines.push(`**💬 FB:**`);
         lines.push(w.feedback);
       }
     });
@@ -7740,7 +7843,7 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
   // ===== Rich text expand modal =====
   // ctx: { type: 'week', wi, field, label }  OR  { type: 'todo', todoId, label }
   let richModalCtx = null;
-  // Show/hide the "✍ 新規フィードバックを追記" button and status selector based on whether the modal is showing a "feedback" field.
+  // Show/hide the "✍ 新規FBを追記" button and status selector based on whether the modal is showing a "feedback" field.
   function updateFeedbackAddBtn(field) {
     const btn = $('rich-modal-add-feedback');
     if (btn) btn.style.display = (field === 'feedback') ? '' : 'none';
@@ -7799,7 +7902,7 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
     const found = findTodoById(todoId);
     if (!found) return;
     const f = field || 'details';
-    const labelMap = { feedback: '💬 フィードバック', aiHistory: '🤖 AI相談履歴', details: '📝 詳細メモ' };
+    const labelMap = { feedback: '💬 FB', aiHistory: '🤖 AI相談履歴', details: '📝 詳細メモ' };
     const label = labelMap[f] || '📝 詳細メモ';
     richModalCtx = { type: 'todo', todoId, label, field: f };
     const val = found.todo[f] || '';
@@ -7872,7 +7975,7 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
         if (display) {
           const placeholders = {
             details: '具体的にやることや参考リンクを書く(例: 「○○さんに連絡 - https://example.com の資料を見てから提案」)。**太字** / *斜体* / URL自動リンク 対応',
-            feedback: 'フィードバック欄(クリックで編集／署名・日時自動付与)',
+            feedback: 'FB欄(クリックで編集／署名・日時自動付与)',
             aiHistory: 'AI相談結果を貼り付け(Markdownで自動整形・表/見出し/太字対応)',
           };
           const phText = placeholders[f] || 'クリックで全文表示・編集';
@@ -7955,7 +8058,7 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
   $('rich-modal').addEventListener('click', (e) => {
     if (e.target.id === 'rich-modal') closeRichModal();
   });
-  // 「✍ 新規フィードバックを追記」ボタン: 署名・日時付きの新規ブロックを末尾に追加
+  // 「✍ 新規FBを追記」ボタン: 署名・日時付きの新規ブロックを末尾に追加
   $('rich-modal-add-feedback').addEventListener('click', () => {
     const ta = $('rich-modal-textarea');
     if (!ta) return;
@@ -8129,6 +8232,15 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
         otherTodoCol.querySelectorAll('textarea').forEach(autoResize);
       }
     });
+  }
+  // 「その他の業務」は基本開いておく（初期表示で展開）
+  if (otherCard && !otherCard.classList.contains('show')) {
+    otherCard.classList.add('show');
+    if (otherCardToggle) otherCardToggle.textContent = '📁 その他の業務 ▲（クリックで閉じる）';
+  }
+  if (otherTodoCol && !otherTodoCol.classList.contains('show')) {
+    otherTodoCol.classList.add('show');
+    if (otherTodoToggle) otherTodoToggle.textContent = '📁 その他の業務のTodo ▲（クリックで閉じる）';
   }
 
   // ===== 使い方ガイド =====
