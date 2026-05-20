@@ -2825,6 +2825,89 @@
     white-space: nowrap;
     font-size: 13px;
   }
+  /* チェック後5秒猶予の表示 */
+  .todo-item-wrap.pending-complete .todo-item {
+    background: linear-gradient(90deg, #d1fae5, #a7f3d0) !important;
+    border-left-color: #10b981 !important;
+    animation: pendingPulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pendingPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+    50% { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0); }
+  }
+  .todo-pending-badge {
+    background: #10b981;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    line-height: 1.4;
+    margin-left: 4px;
+    letter-spacing: 0.02em;
+  }
+  /* インライン編集: 優先度ボタン */
+  .routine-list-table .kpi-priority-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .routine-list-table .kpi-priority-btn:hover {
+    background: #eff6ff;
+    border-color: #93c5fd;
+  }
+  /* インライン編集: 頻度ボタン */
+  .routine-list-table .rl-freq-btn {
+    background: linear-gradient(135deg, #fef3c7, #fed7aa);
+    border: 1px solid #f59e0b;
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    color: #92400e;
+    white-space: nowrap;
+    width: 100%;
+  }
+  .routine-list-table .rl-freq-btn:hover {
+    filter: brightness(0.95);
+  }
+  /* インライン編集: Todoテキストエリア */
+  .routine-list-table .rl-text-input {
+    width: 100%;
+    border: 1px solid transparent;
+    background: transparent;
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text);
+    resize: none;
+    line-height: 1.5;
+    min-height: 44px;
+    box-sizing: border-box;
+  }
+  .routine-list-table .rl-text-input:hover {
+    border-color: #d1d5db;
+    background: #f9fafb;
+  }
+  .routine-list-table .rl-text-input:focus {
+    border-color: var(--accent);
+    background: #fff;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+  }
   .routine-list-empty {
     padding: 24px;
     text-align: center;
@@ -3444,6 +3527,104 @@
         <div class="info">💡 <strong>1時間枠で固定</strong>：開始時刻を入れるだけで、終了時刻は自動で +1時間。終日設定はなくなり、シンプルに使えるようになりました。</div>
         <div class="tip">💡 <strong>初期日付の自動設定</strong>：今日がその週の範囲内ならその日付が自動で入ります。範囲外なら週の初日が入るので、必要に応じて変更できます。</div>
         <div class="tip">💡 <strong>1個ずつの登録</strong>：今までの「週単位で一括」ではなく、Todo毎に個別登録できるようになったので、優先順位の高いものだけカレンダーに入れたり、1日に複数のTodoを別時間で予定したりできます。</div>
+
+        <h4>🔁 ルーティンTodo＋週指定</h4>
+        <p>毎週／月初／月末／第N週など、繰り返しやる業務を簡単に管理。</p>
+        <h5>🎯 設定方法</h5>
+        <ol>
+          <li>各Todoの右側にある <strong>「🔁」ボタン</strong> を押して状態を切り替え</li>
+          <li>8段階で循環： <strong>OFF → 🔁毎(毎週) → 🔁1(第1週) → 🔁2 → 🔁3 → 🔁4 → 🔁初(月初) → 🔁末(月末) → OFF</strong></li>
+          <li>設定した瞬間、<strong>現在の期間内の該当週へ自動的にTodoがセット</strong> されます</li>
+        </ol>
+        <div class="info">⚡ <strong>例: 「🔁3」(第3週) に設定すると</strong>：3か月期間(4-6月)の場合、4月3週・5月3週・6月3週の3つの週に自動でTodoが追加されます。</div>
+        <div class="info">📅 <strong>期切替時の挙動</strong>：「📦 今期を保存して新期へ」を押すと、新期でも同じ設定で自動的に該当週にセットされるので、毎月作り直す必要なし。</div>
+
+        <h4>🔁 ルーティン一覧（オレンジバナー）</h4>
+        <p>「その他の業務のTodo」の下、または ツールバーの「🔁 ルーティン一覧」ボタンから開けます。</p>
+        <h5>📊 一覧でできること</h5>
+        <ul>
+          <li><strong>絞り込みフィルター</strong>：全部 / 毎週 / 第1〜4週 / 月初 / 月末 / KPI①②③ / その他</li>
+          <li><strong>3列テーブル表示</strong>：カテゴリ＋優先度 / Todo内容 / 頻度</li>
+          <li><strong>インライン編集</strong>：
+            <ul>
+              <li>Todo内容を直接書き換え可能</li>
+              <li>優先度ボタンをクリックして循環(大→中→小→なし)</li>
+              <li>頻度ボタンをクリックして循環(毎週→1〜4週→月初→月末→OFF)</li>
+              <li>変更は即座に保存＋現在期間の週にも自動反映</li>
+            </ul>
+          </li>
+          <li><strong>行クリック</strong>：該当のTodoまで自動スクロール＋黄色ハイライト。「その他」のTodoはアコーディオンも自動展開</li>
+        </ul>
+
+        <h4>💬 フィードバック機能（受講生＋管理者の双方向コミュニケーション）</h4>
+        <p>KGI / KPI / Todo / 週次行動目標のそれぞれに「💬 フィードバック」欄を配置。本人も管理者もコメントを書き込めます。</p>
+        <h5>✍ 使い方</h5>
+        <ol>
+          <li>各フィードバック欄をクリック → 拡大モーダル</li>
+          <li>緑色の <strong>「✍ 新規フィードバックを追記」</strong> ボタンを押すと、<strong>署名（名前）＋日時</strong> 付きの見出し（### マーク）が自動挿入</li>
+          <li>その下に本文を入力 → 自動保存</li>
+          <li>複数人のコメントが時系列で蓄積されます</li>
+        </ol>
+        <h5>📌 確認状態（3段階）</h5>
+        <ul>
+          <li>🔴 <strong>未確認</strong>：まだ目を通していない</li>
+          <li>🟡 <strong>確認済</strong>：読んだが対応未完</li>
+          <li>🟢 <strong>解決済</strong>：対応完了</li>
+        </ul>
+        <div class="info">💡 ラベル横にステータスバッジが表示されるので、未確認のフィードバックが一目で分かります。</div>
+
+        <h4>📝 リッチテキスト編集（Markdown対応）</h4>
+        <p>「自由メモ」「振り返り」「フィードバック」「Todo詳細」「AI相談履歴」など、すべての長文入力欄でMarkdownが使えます。</p>
+        <h5>🎨 使える書式</h5>
+        <ul>
+          <li><strong>見出し</strong>： <code># H1</code> ／ <code>## H2</code> ／ <code>### H3</code> 〜 <code>###### H6</code></li>
+          <li><strong>太字</strong>： <code>**重要**</code> → <strong>重要</strong></li>
+          <li><strong>斜体</strong>： <code>*強調*</code> → <em>強調</em></li>
+          <li><strong>箇条書き</strong>： <code>- 項目</code> ／ <code>* 項目</code> ／ <code>1. 項目</code> ／ <code>2. 項目</code></li>
+          <li><strong>引用</strong>： <code>&gt; これは引用</code></li>
+          <li><strong>コード</strong>： <code>`inline code`</code> ／ <code>```js〜```</code> でコードブロック</li>
+          <li><strong>水平線</strong>： <code>---</code></li>
+          <li><strong>テーブル</strong>：
+<pre style="background:#f3f4f6;padding:8px;border-radius:4px;font-size:11px;">| 項目 | 数値 | 改善策 |
+|---|---:|---|
+| 客数 | 100 | SNS強化 |</pre>
+          </li>
+          <li><strong>URL自動リンク</strong>： <code>https://〜</code> を貼ると自動でクリック可能なリンクに</li>
+        </ul>
+        <h5>📖 プレビュー／編集タブ</h5>
+        <p>モーダルを開くと <strong>「📖 プレビュー」「✏️ 編集」のタブ</strong> が表示されます。</p>
+        <ul>
+          <li>内容がある時はプレビューがデフォルト（読みやすさ優先）</li>
+          <li>空の時は編集タブから開始</li>
+          <li>編集中の内容はタブ切替でリアルタイムにプレビュー反映</li>
+        </ul>
+        <div class="tip">💡 <strong>4行プレビュー</strong>：インライン表示は4行までクランプ。長文の時はフェードアウト＋「クリックで全文＋編集」バッジが出ます。</div>
+
+        <h4>🤖 AI相談履歴（各Todoに記録）</h4>
+        <p>各Todoの詳細パネル内に「🤖 AI相談履歴」欄。ChatGPT/Claude/Geminiの回答をそのまま貼り付け → Markdownで自動整形。</p>
+        <ul>
+          <li>表・見出し・太字・コードブロックが正しくレンダリング</li>
+          <li>会議議事録 / KPI分析結果 / AI提案 などをきれいに保存</li>
+          <li>青系の色で他のフィールドと差別化</li>
+        </ul>
+
+        <h4>📋 全文コピー＆共有リンク</h4>
+        <h5>📋 GMシート全コピー</h5>
+        <p>ユーザーバーの「📋 GMシート全コピー」ボタンで、自分のシート全データをMarkdown形式でクリップボードへ。</p>
+        <ul>
+          <li>年間ゴール／KGI／KPI／Todo／週次／結果・フィードバック・AI相談履歴 すべて含まれる</li>
+          <li>そのままAIに貼って相談できる形式</li>
+          <li>管理者が他の受講生のシートを開いた時も、その受講生のデータをコピー可能</li>
+        </ul>
+        <h5>📋 個別セルの右クリックコピー</h5>
+        <p>任意のテキスト欄（KPI / Todo / フィードバック など）を <strong>右クリック</strong> すると、ポップアップメニュー：</p>
+        <ul>
+          <li><strong>📋 この内容をコピー</strong> — その欄の全テキストをコピー</li>
+          <li><strong>✂ 選択範囲だけコピー</strong> — マウスで選択した範囲だけ（選択時のみ表示）</li>
+        </ul>
+        <h5>🔗 公開リンクをコピー</h5>
+        <p>自分のシートのリンクを共有可能。リンクを開いた人は <strong>ログインなしで閲覧</strong> できます（読み取り専用）。</p>
+        <div class="info">⚠️ <strong>注意</strong>：公開リンクは誰でも開けます。共有先には注意してください。</div>
       </div>
 
       <!-- 講師（管理者）向け -->
@@ -4353,6 +4534,28 @@
     if (Array.isArray(routineWeeks)) return routineWeeks.includes(weekIdx % 4);
     return false;
   }
+  // Apply routine settings to the current period weeks immediately.
+  // - If routine ON & weeks match → ensure Todo is in that week's planTodoIds
+  // - If routine OFF or week doesn't match → remove from that week's planTodoIds (only if it was added by routine)
+  // This keeps the user's manual additions intact: we only auto-add when routine matches,
+  // and remove from non-matching weeks when routine state changes.
+  function applyRoutineToCurrentPeriod(todo) {
+    if (!todo || !todo.id) return;
+    const id = todo.id;
+    const isOn = !!todo.routine;
+    (state.weeks || []).forEach((w, wi) => {
+      const planIds = Array.isArray(w.planTodoIds) ? w.planTodoIds : [];
+      const has = planIds.includes(id);
+      const shouldHave = isOn && isRoutineApplicableToWeek(todo.routineWeeks, wi);
+      if (shouldHave && !has) {
+        w.planTodoIds = [...planIds, id];
+      } else if (!shouldHave && has && isOn) {
+        // OnだがこのwiはNG → 除外（routine設定変更時のクリーンアップ）
+        w.planTodoIds = planIds.filter(x => x !== id);
+      }
+      // routine OFF時はユーザーが手動追加した可能性があるので除外しない
+    });
+  }
   const PRIORITY_NEXT = { none: 'high', high: 'medium', medium: 'low', low: 'none' };
   const PRIORITY_ORDER = { high: 0, medium: 1, low: 2, none: 3 };
   const priorityRank = (p) => PRIORITY_ORDER[p || 'none'] ?? 3;
@@ -4580,8 +4783,10 @@
       : '';
     const isOpen = openTodoDetails.has(t.id);
     const hasDetails = !!(t.details && t.details.trim());
+    const isPending = !isHistory && t.done && _pendingComplete.has(t.id);
+    const pendingBadge = isPending ? `<span class="todo-pending-badge" title="5秒以内にチェックを外せば取消可">✓ 5秒以内に取消可</span>` : '';
     return `
-    <div class="todo-item-wrap ${isOpen ? 'open' : ''}" data-id="${t.id}">
+    <div class="todo-item-wrap ${isOpen ? 'open' : ''} ${isPending ? 'pending-complete' : ''}" data-id="${t.id}">
       <div class="todo-item ${t.done ? 'done' : ''} ${priClass} ${otherCls}" draggable="true" data-id="${t.id}" data-kpi="${k}">
         <span class="drag-handle" title="ドラッグで並び替え">⋮⋮</span>
         <input type="checkbox" data-id="${t.id}" data-act="check" ${t.done ? 'checked' : ''} />
@@ -4589,6 +4794,7 @@
         <button class="todo-detail-toggle ${hasDetails ? 'has-content' : ''}" data-id="${t.id}" data-act="toggle-detail" title="詳細・リンクを${isOpen ? '閉じる' : '開く'}（クリックで何をどうするか書ける）">${isOpen ? '▼' : '▶'}${hasDetails ? '📝' : '＋'}</button>
         <button class="priority-btn ${priClass}" data-id="${t.id}" data-act="cycle-priority" title="優先順位を切り替え（大/中/小/なし）">${PRIORITY_LABELS[p]}</button>
         <button class="routine-btn ${t.routine ? 'active' : ''}" data-id="${t.id}" data-act="cycle-routine" title="ルーティン: 期切替時に自動で次期へ復元される（クリックで状態切替: OFF→毎週→1週目→2週目→3週目→4週目→OFF）">${routineLabel(t)}</button>
+        ${pendingBadge}
         ${completedMeta}
         <button data-id="${t.id}" data-act="del" title="削除"
           style="border:none;background:transparent;cursor:pointer;color:var(--muted);font-size:14px;">×</button>
@@ -4611,13 +4817,36 @@
   `;
   }
 
+  // ===== Todoチェック後の5秒猶予 =====
+  // チェック時、todo.idを_pendingCompleteに登録 → 5秒の間は完了リストへ移動せず active 側に残す
+  // 5秒経過後、自動で renderTodos() し直して移動。途中で uncheck すれば即座に解除。
+  const _pendingComplete = new Map(); // id → timeoutId
+  const PENDING_COMPLETE_MS = 5000;
+  function startPendingComplete(id) {
+    // Clear existing timer
+    if (_pendingComplete.has(id)) clearTimeout(_pendingComplete.get(id));
+    const tid = setTimeout(() => {
+      _pendingComplete.delete(id);
+      renderTodos();
+      renderWeeks();
+    }, PENDING_COMPLETE_MS);
+    _pendingComplete.set(id, tid);
+  }
+  function cancelPendingComplete(id) {
+    if (_pendingComplete.has(id)) {
+      clearTimeout(_pendingComplete.get(id));
+      _pendingComplete.delete(id);
+    }
+  }
+
   function renderTodos() {
     let totalDone = 0, totalAll = 0;
     TODO_KEYS.forEach(k => {
       const list = state.todos[k] || [];
-      // Active todos: sort by priority (大→中→小→なし), stable within same priority (drag order preserved)
-      const active = sortByPriorityStable(list.filter(t => !t.done));
-      const done = list.filter(t => t.done);
+      // Pending(チェック後5秒以内)のTodoは active 側に残す
+      const isPending = (t) => _pendingComplete.has(t.id);
+      const active = sortByPriorityStable(list.filter(t => !t.done || isPending(t)));
+      const done = list.filter(t => t.done && !isPending(t));
       // Sort completed by completedAt desc (newest first)
       done.sort((a, b) => (b.completedAt || 0) - (a.completedAt || 0));
       totalDone += done.length; totalAll += list.length;
@@ -5368,16 +5597,30 @@
     if (t.dataset.act === 'check' && t.dataset.id) {
       const f = findTodoById(t.dataset.id);
       if (f) {
+        const wasDone = !!f.todo.done;
         f.todo.done = t.checked;
         f.todo.completedAt = t.checked ? Date.now() : null;
+        // チェックON → 5秒猶予を開始（誤チェック取消用）
+        if (t.checked && !wasDone) {
+          startPendingComplete(f.todo.id);
+        } else if (!t.checked) {
+          // 取消 → 猶予タイマーキャンセル
+          cancelPendingComplete(f.todo.id);
+        }
         save(); renderTodos(); renderWeeks();
       }
     } else if (t.dataset.act === 'chip-check' && t.dataset.todoid) {
       // Chip checkbox toggles the underlying Todo (synced with upper Todo list)
       const f = findTodoById(t.dataset.todoid);
       if (f) {
+        const wasDone = !!f.todo.done;
         f.todo.done = t.checked;
         f.todo.completedAt = t.checked ? Date.now() : null;
+        if (t.checked && !wasDone) {
+          startPendingComplete(f.todo.id);
+        } else if (!t.checked) {
+          cancelPendingComplete(f.todo.id);
+        }
         save(); renderTodos(); renderWeeks();
       }
     } else if (t.dataset.act === 'pick-check') {
@@ -5568,7 +5811,9 @@
       const found = findTodoById(t.dataset.id);
       if (found) {
         cycleRoutineState(found.todo);
-        save(); renderTodos();
+        // 自動: ルーティン設定に従って現在期間の週に反映
+        applyRoutineToCurrentPeriod(found.todo);
+        save(); renderTodos(); renderWeeks();
       }
     } else if (t.dataset.act === 'toggle-detail' && t.dataset.id) {
       e.stopPropagation();
@@ -5858,13 +6103,17 @@
       return;
     }
     const rows = filtered.map(it => `
-      <tr data-todoid="${it.todoId}">
+      <tr data-todoid="${it.todoId}" data-kpi="${it.kpiKey}">
         <td class="col-kpi">
           <div class="kpi-label">${it.kpiLabel}</div>
-          <div class="kpi-priority">${it.priority}</div>
+          <button class="kpi-priority-btn" data-act="rl-cycle-priority" data-todoid="${it.todoId}" title="クリックで優先度切替(大→中→小→なし)">${it.priority}</button>
         </td>
-        <td class="col-text">${esc(it.text)}</td>
-        <td class="col-freq">${it.freqLabel}</td>
+        <td class="col-text">
+          <textarea class="rl-text-input" data-act="rl-edit-text" data-todoid="${it.todoId}" rows="2">${esc(it.text)}</textarea>
+        </td>
+        <td class="col-freq">
+          <button class="rl-freq-btn" data-act="rl-cycle-freq" data-todoid="${it.todoId}" title="クリックで頻度切替(毎週→1週→2週→3週→4週→月初→月末→OFF)">${it.freqLabel}</button>
+        </td>
       </tr>
     `).join('');
     container.innerHTML = `
@@ -5940,17 +6189,74 @@
     document.querySelectorAll('.routine-filter-btn').forEach(b => b.classList.toggle('active', b === btn));
     renderRoutineList();
   });
-  // Click a row → close modal and scroll to that Todo
+  // ルーティン一覧 inline edit handlers
+  // Priority cycle from list
   document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-act="rl-cycle-priority"]');
+    if (!btn) return;
+    e.stopPropagation();
+    const found = findTodoById(btn.dataset.todoid);
+    if (!found) return;
+    const cur = found.todo.priority || 'none';
+    found.todo.priority = PRIORITY_NEXT[cur];
+    save();
+    renderRoutineList();
+    renderTodos();
+  });
+  // Frequency cycle from list
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-act="rl-cycle-freq"]');
+    if (!btn) return;
+    e.stopPropagation();
+    const found = findTodoById(btn.dataset.todoid);
+    if (!found) return;
+    cycleRoutineState(found.todo);
+    save();
+    // Auto-apply to current period weeks immediately
+    applyRoutineToCurrentPeriod(found.todo);
+    renderRoutineList();
+    renderTodos();
+    renderWeeks();
+  });
+  // Text inline edit
+  document.addEventListener('input', (e) => {
+    if (!e.target || e.target.dataset?.act !== 'rl-edit-text') return;
+    const found = findTodoById(e.target.dataset.todoid);
+    if (!found) return;
+    found.todo.text = e.target.value;
+    save();
+  });
+  document.addEventListener('focusout', (e) => {
+    if (!e.target || e.target.dataset?.act !== 'rl-edit-text') return;
+    // After editing text, refresh todos display once
+    renderTodos();
+    renderWeeks();
+  });
+
+  // Click a row → close modal, expand collapsed section (その他), scroll to Todo
+  document.addEventListener('click', (e) => {
+    // Ignore clicks on inline-edit controls
+    if (e.target.closest('[data-act^="rl-"]')) return;
     const tr = e.target.closest('.routine-list-table tbody tr');
     if (!tr) return;
     const todoId = tr.dataset.todoid;
+    const kpiKey = tr.dataset.kpi;
     $('routine-modal').classList.remove('show');
+    // Open その他 accordion if needed
+    if (kpiKey === 'other') {
+      const otherTodoCol = document.getElementById('other-todo-col');
+      const otherTodoToggle = document.getElementById('other-todo-toggle');
+      if (otherTodoCol && !otherTodoCol.classList.contains('show')) {
+        otherTodoCol.classList.add('show');
+        if (otherTodoToggle) otherTodoToggle.textContent = '📁 その他の業務のTodo ▲（クリックで閉じる）';
+        // Re-fit textareas
+        otherTodoCol.querySelectorAll('textarea').forEach(autoResize);
+      }
+    }
     setTimeout(() => {
       const targetWrap = document.querySelector(`.todo-item-wrap[data-id="${todoId}"]`);
       if (targetWrap) {
         targetWrap.scrollIntoView({behavior: 'smooth', block: 'center'});
-        // Briefly highlight
         targetWrap.style.transition = 'background 0.3s';
         targetWrap.style.background = '#fef3c7';
         setTimeout(() => { targetWrap.style.background = ''; }, 1500);
