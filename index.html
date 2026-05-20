@@ -4885,7 +4885,7 @@
         <textarea class="autosize todo-text" data-id="${t.id}" data-act="text" placeholder="Todoを入力" rows="1">${esc(t.text)}</textarea>
         <button class="todo-detail-toggle ${hasDetails ? 'has-content' : ''}" data-id="${t.id}" data-act="toggle-detail" title="詳細・リンクを${isOpen ? '閉じる' : '開く'}（クリックで何をどうするか書ける）">${isOpen ? '▼' : '▶'}${hasDetails ? '📝' : '＋'}</button>
         <button class="priority-btn ${priClass}" data-id="${t.id}" data-act="cycle-priority" title="優先順位を切り替え（大/中/小/なし）">${PRIORITY_LABELS[p]}</button>
-        <button class="routine-btn ${t.routine ? 'active' : ''}" data-id="${t.id}" data-act="cycle-routine" title="ルーティン: 期切替時に自動で次期へ復元される（クリックで状態切替: OFF→毎週→1週目→2週目→3週目→4週目→OFF）">${routineLabel(t)}</button>
+        <button class="routine-btn ${t.routine ? 'active' : ''}" data-id="${t.id}" data-act="cycle-routine" title="ルーティン: 期切替時に自動で次期へ復元される（クリックで状態切替: OFF→毎週→第1週→第2週→第3週→第4週→月初→月末→OFF）">${routineLabelLong(t)}</button>
         ${pendingBadge}
         ${completedMeta}
         <button data-id="${t.id}" data-act="del" title="削除"
@@ -5122,7 +5122,7 @@
               <span class="chip-text">${esc(todo.text || '(未入力)')}</span>
               <button class="chip-prio ${priClass}" data-todoid="${todo.id}" data-act="cycle-chip-priority" title="優先順位を切り替え（大/中/小/なし）">${PRIORITY_LABELS[p]}</button>
               <button class="chip-routine ${todo.routine ? 'active' : ''}" data-todoid="${todo.id}" data-act="cycle-chip-routine" title="ルーティン: 期切替時に自動で次期へ復元される（クリックで状態切替: OFF→毎週→1週目→2週目→3週目→4週目→月初→月末→OFF）">${routineLabelLong(todo)}</button>
-              <button class="chip-detail ${todo.details && todo.details.trim() ? 'has-content' : ''}" data-todoid="${todo.id}" data-act="chip-detail-open" title="このTodoの詳細メモ・リンクを開く（クリックで全文表示・編集）">${todo.details && todo.details.trim() ? '📝' : '＋'}</button>
+              <button class="chip-detail ${todo.details && todo.details.trim() ? 'has-content' : ''}" data-todoid="${todo.id}" data-act="chip-detail-open" title="このTodoの詳細メモ・リンクを開く（クリックで全文表示・編集）">▶${todo.details && todo.details.trim() ? '📝' : '＋'}</button>
               <button class="chip-cal" data-week="${wi}" data-todoid="${todo.id}" data-act="todo-calendar" title="このTodoをカレンダーに登録（1時間枠）">📅</button>
               <button class="chip-x" data-week="${wi}" data-todoid="${todo.id}" data-act="unpick" title="この週から外す">×</button>
             </div>
