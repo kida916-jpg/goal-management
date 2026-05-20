@@ -2601,6 +2601,212 @@
   body.public-view #ub-copy-link {
     display: none !important;
   }
+  /* 右クリックコピーメニュー */
+  .copy-context-menu {
+    position: fixed;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    padding: 4px;
+    min-width: 200px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .copy-context-menu button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--text);
+    font-size: inherit;
+    font-family: inherit;
+  }
+  .copy-context-menu button:hover {
+    background: var(--accent);
+    color: #fff;
+  }
+  .copy-context-menu .menu-divider {
+    border-top: 1px solid #e5e7eb;
+    margin: 4px 0;
+  }
+  /* コメント状態バッジ */
+  .feedback-status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .feedback-status-badge.unread { background: #fee2e2; color: #b91c1c; }
+  .feedback-status-badge.confirmed { background: #fef3c7; color: #b45309; }
+  .feedback-status-badge.resolved { background: #d1fae5; color: #047857; }
+  /* モーダル内のフィードバック状態セレクター */
+  .feedback-status-selector {
+    display: none;
+    margin: 8px 0 12px;
+    padding: 8px 12px;
+    background: #fef3c7;
+    border-radius: 6px;
+    border: 1px solid #fcd34d;
+    font-size: 13px;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .feedback-status-selector.show { display: flex; }
+  .feedback-status-selector label { font-weight: 700; color: #b45309; }
+  .feedback-status-selector .status-btn {
+    border: 1.5px solid #d1d5db;
+    background: #fff;
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .feedback-status-selector .status-btn.active.unread { background: #fee2e2; border-color: #fca5a5; color: #b91c1c; }
+  .feedback-status-selector .status-btn.active.confirmed { background: #fef3c7; border-color: #fcd34d; color: #b45309; }
+  .feedback-status-selector .status-btn.active.resolved { background: #d1fae5; border-color: #86efac; color: #047857; }
+  .feedback-status-selector .status-btn:hover { filter: brightness(0.95); }
+  /* ルーティン一覧ボタン: 目立つオレンジ系 */
+  #routine-list-btn {
+    background: linear-gradient(135deg, #f59e0b, #ea580c);
+    color: #fff;
+    border: 2px solid #d97706;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
+  }
+  #routine-list-btn:hover {
+    background: linear-gradient(135deg, #ea580c, #d97706);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.5);
+  }
+  /* ルーティン一覧 バナー (Todoエリア上) */
+  .routine-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    margin: 0 0 16px;
+    background: linear-gradient(135deg, #fef3c7, #fed7aa);
+    border: 2px solid #f59e0b;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .routine-banner:hover {
+    background: linear-gradient(135deg, #fed7aa, #fdba74);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  }
+  .routine-banner.empty {
+    background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+    border-color: #d1d5db;
+    box-shadow: none;
+  }
+  .routine-banner .icon {
+    font-size: 28px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .routine-banner .info {
+    flex: 1;
+    min-width: 0;
+  }
+  .routine-banner .label {
+    font-size: 14px;
+    font-weight: 800;
+    color: #92400e;
+    margin-bottom: 2px;
+  }
+  .routine-banner.empty .label { color: var(--muted); }
+  .routine-banner .sub {
+    font-size: 12px;
+    color: #b45309;
+    line-height: 1.4;
+  }
+  .routine-banner.empty .sub { color: var(--muted); }
+  .routine-banner .open-btn {
+    background: #fff;
+    color: #d97706;
+    border: 1.5px solid #f59e0b;
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .routine-banner:hover .open-btn {
+    background: #d97706;
+    color: #fff;
+    border-color: #d97706;
+  }
+  .routine-banner.empty .open-btn { color: var(--muted); border-color: #d1d5db; }
+  /* ルーティン一覧 */
+  .routine-filter-btn {
+    background: #fff;
+    border: 1.5px solid #d1d5db;
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .routine-filter-btn:hover { background: #eff6ff; border-color: #93c5fd; color: #1e40af; }
+  .routine-filter-btn.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+  .routine-list-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .routine-list-table th, .routine-list-table td {
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: middle;
+  }
+  .routine-list-table th {
+    background: #f3f4f6;
+    font-weight: 700;
+    color: var(--muted);
+    position: sticky; top: 0;
+    z-index: 1;
+  }
+  .routine-list-table tbody tr:hover { background: #eff6ff; cursor: pointer; }
+  .routine-list-table .col-kpi {
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .routine-list-table .col-text { word-break: break-word; }
+  .routine-list-table .col-freq {
+    text-align: center;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .routine-list-table .col-priority { text-align: center; white-space: nowrap; }
+  .routine-list-empty {
+    padding: 24px;
+    text-align: center;
+    color: var(--muted);
+    font-style: italic;
+  }
 </style>
 </head>
 <body>
@@ -2674,6 +2880,7 @@
   </div>
   <button id="archive-save" title="現在の期のデータをスナップショット保存">📦 今期を保存して新期へ</button>
   <button id="reset-btn">🗑 全リセット</button>
+  <button id="routine-list-btn" title="ルーティン化されたTodoの一覧を見る">🔁 ルーティン一覧</button>
   <select id="archive-select" class="archive-select" title="過去の期を選んで閲覧"><option value="">📂 過去の期を見る…</option></select>
   <button id="pdf-btn" class="primary">📄 PDFで保存</button>
 </div>
@@ -2734,7 +2941,7 @@
           </div>
         </div>
         <div class="kgi-feedback-wrap">
-          <div class="kgi-feedback-label">💬 フィードバック</div>
+          <div class="kgi-feedback-label">💬 フィードバック<span id="kgi-feedback-badge"></span></div>
           <div class="rich-field-wrap goal-rich-field feedback-field" data-goal="kgi" data-field="feedback" data-label="💬 KGIフィードバック" data-act="goal-text-expand">
             <div class="rich-display collapsed" id="kgi-feedback-display"><span class="rich-placeholder">受講生本人＋管理者の両方が記入できる(クリックで編集)</span><span class="rich-expand-hint">クリックで全文＋編集</span></div>
           </div>
@@ -2823,6 +3030,15 @@
         <button class="todo-add" data-kpi="other" data-act="add">＋ Todo追加</button>
         <div class="todo-progress" id="todo-other-prog">0 / 0 完了</div>
       </div>
+      <!-- ルーティン一覧バナー（その他の業務Todoの下） -->
+      <div id="routine-banner" class="routine-banner empty" data-act="open-routine-list" style="margin-top:16px;">
+        <div class="icon">🔁</div>
+        <div class="info">
+          <div class="label" id="routine-banner-label">ルーティン管理</div>
+          <div class="sub" id="routine-banner-sub">毎週／月初／月末などのルーティンTodoをまとめて確認・管理できます</div>
+        </div>
+        <button type="button" class="open-btn" data-act="open-routine-list">一覧を開く →</button>
+      </div>
     </div>
   </section>
 
@@ -2882,6 +3098,12 @@
         <button type="button" class="rich-tab active" data-rich-tab="preview" id="rich-tab-preview">📖 プレビュー</button>
         <button type="button" class="rich-tab" data-rich-tab="edit" id="rich-tab-edit">✏️ 編集</button>
       </div>
+      <div class="feedback-status-selector" id="rich-modal-status-selector">
+        <label>📌 確認状態：</label>
+        <button type="button" class="status-btn unread" data-status="unread">未確認</button>
+        <button type="button" class="status-btn confirmed" data-status="confirmed">確認済</button>
+        <button type="button" class="status-btn resolved" data-status="resolved">解決済</button>
+      </div>
       <div class="rich-modal-hint" id="rich-modal-edit-hint" style="display:none;">
         💡 <strong>使える書式</strong>： <code>**太字**</code> ／ <code>*斜体*</code> ／ <code>- 箇条書き</code> ／ <code>`コード`</code> ／ <code># 見出し</code> ／ <code>&gt; 引用</code> ／ <code>| 表 |</code> ／ URL自動リンク
       </div>
@@ -2891,6 +3113,36 @@
         <button id="rich-modal-add-feedback" style="display:none;background:linear-gradient(135deg,#16a34a,#059669);color:#fff;border:none;border-radius:6px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">✍ 新規フィードバックを追記（署名・日時付き）</button>
         <button id="rich-modal-done" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:8px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-left:auto;">閉じる（自動保存済み）</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ルーティン一覧 Modal -->
+<div class="modal-backdrop" id="routine-modal">
+  <div class="modal" style="max-width:920px;">
+    <div class="modal-head">
+      <h3>🔁 ルーティン一覧</h3>
+      <button class="modal-close" id="routine-modal-close">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="margin-bottom:12px;font-size:13px;color:var(--muted);">
+        ルーティン指定（🔁ON）したTodoを一覧表示。フィルターで絞り込み可能。
+      </div>
+      <div id="routine-filter-bar" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;padding:8px;background:#f3f4f6;border-radius:6px;">
+        <button class="routine-filter-btn active" data-filter="all">全部</button>
+        <button class="routine-filter-btn" data-filter="every">毎週</button>
+        <button class="routine-filter-btn" data-filter="w1">第1週</button>
+        <button class="routine-filter-btn" data-filter="w2">第2週</button>
+        <button class="routine-filter-btn" data-filter="w3">第3週</button>
+        <button class="routine-filter-btn" data-filter="w4">第4週</button>
+        <button class="routine-filter-btn" data-filter="first">月初</button>
+        <button class="routine-filter-btn" data-filter="last">月末</button>
+        <button class="routine-filter-btn" data-filter="kpi1">KPI①</button>
+        <button class="routine-filter-btn" data-filter="kpi2">KPI②</button>
+        <button class="routine-filter-btn" data-filter="kpi3">KPI③</button>
+        <button class="routine-filter-btn" data-filter="other">その他</button>
+      </div>
+      <div id="routine-list-content"></div>
     </div>
   </div>
 </div>
@@ -3780,6 +4032,7 @@
     currentValue: '',
     lowerIsBetter: false,
     feedback: '',
+    feedbackStatus: 'unread', // 'unread' | 'confirmed' | 'resolved'
     ...extra,
   });
   const defaultState = () => ({
@@ -3826,7 +4079,7 @@
       }
       if (old.todos) {
         [1,2,3].forEach(k => {
-          d.todos[k] = (old.todos[k] || []).map(t => ({ id: newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, routineWeeks: Array.isArray(t.routineWeeks) ? t.routineWeeks : null, details: t.details || '', feedback: t.feedback || '', aiHistory: t.aiHistory || '' }));
+          d.todos[k] = (old.todos[k] || []).map(t => ({ id: newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, routineWeeks: (t.routineWeeks === 'first' || t.routineWeeks === 'last' || Array.isArray(t.routineWeeks)) ? t.routineWeeks : null, details: t.details || '', feedback: t.feedback || '', feedbackStatus: t.feedbackStatus || 'unread', aiHistory: t.aiHistory || '' }));
         });
       }
       if (old.weeks) {
@@ -3856,6 +4109,7 @@
       currentValue: g.currentValue ?? '',
       lowerIsBetter: !!g.lowerIsBetter,
       feedback: g.feedback || '',
+      feedbackStatus: g.feedbackStatus || 'unread',
       ...(isKgi ? {} : { issue: g.issue || '', solution: g.solution || '' }),
     };
   }
@@ -3909,7 +4163,7 @@
         derivePeriodFields(merged, merged.period);
         // ensure todo ids
         TODO_KEYS.forEach(k => {
-          merged.todos[k] = (merged.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, routineWeeks: Array.isArray(t.routineWeeks) ? t.routineWeeks : null, details: t.details || '', feedback: t.feedback || '', aiHistory: t.aiHistory || '' }));
+          merged.todos[k] = (merged.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, routineWeeks: (t.routineWeeks === 'first' || t.routineWeeks === 'last' || Array.isArray(t.routineWeeks)) ? t.routineWeeks : null, details: t.details || '', feedback: t.feedback || '', feedbackStatus: t.feedbackStatus || 'unread', aiHistory: t.aiHistory || '' }));
         });
         // ensure week shape
         merged.weeks = merged.weeks.map((w, i) => ({
@@ -3992,7 +4246,7 @@
             </div>
           </div>
           <div class="kpi-row feedback-row">
-            <div class="lbl">💬 フィードバック</div>
+            <div class="lbl">💬 フィードバック${g.feedback ? feedbackStatusBadge(g.feedbackStatus) : ''}</div>
             <div class="rich-field-wrap goal-rich-field feedback-field" data-goal="${k}" data-field="feedback" data-label="💬 フィードバック" data-act="goal-text-expand">
               <div class="rich-display collapsed">${g.feedback ? renderRichText(g.feedback) : '<span class="rich-placeholder">受講生本人＋管理者の両方が記入できるフィードバック欄（クリックで編集／署名・日時自動付与）</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
             </div>
@@ -4027,48 +4281,53 @@
 
   // ===== Todos =====
   const PRIORITY_LABELS = { high: '大', medium: '中', low: '小', none: '—' };
-  // Routine button display logic.
-  // - routine:false → "🔁"（off, dimmed）
-  // - routine:true & routineWeeks:null/[] → "🔁毎"（all weeks）
-  // - routine:true & routineWeeks:[0] → "🔁1"  (only 1st)
-  // - routine:true & routineWeeks:[1] → "🔁2"
-  // - etc.
+  // Routine button display logic. routineWeeks can be:
+  //  - null/undefined → 毎週 ("🔁毎")
+  //  - [0..3] → 第N週のみ ("🔁1" "🔁2" "🔁3" "🔁4")
+  //  - 'first' → 月初(第1週) ("🔁初") — alias to [0] but visually distinct
+  //  - 'last' → 月末(第4週) ("🔁末") — alias to [3] but visually distinct
   function routineLabel(t) {
     if (!t.routine) return '🔁';
-    const rw = Array.isArray(t.routineWeeks) ? t.routineWeeks : null;
-    if (!rw || rw.length === 0) return '🔁毎';
+    const rw = t.routineWeeks;
+    if (rw === 'first') return '🔁初';
+    if (rw === 'last') return '🔁末';
+    if (!Array.isArray(rw) || rw.length === 0) return '🔁毎';
     if (rw.length === 1) return `🔁${rw[0] + 1}`;
-    // 複数指定: コンマ区切り
     return '🔁' + rw.map(i => i + 1).join(',');
   }
-  // Cycle: routine state advances through 6 stages
-  // off → 毎週(weeks=null) → 第1週 → 第2週 → 第3週 → 第4週 → off
+  // Cycle: off → 毎週 → 第1週 → 第2週 → 第3週 → 第4週 → 月初 → 月末 → off
   function cycleRoutineState(t) {
     if (!t.routine) {
-      t.routine = true;
-      t.routineWeeks = null; // 毎週
+      t.routine = true; t.routineWeeks = null; // 毎週
       return;
     }
-    const rw = Array.isArray(t.routineWeeks) ? t.routineWeeks : null;
-    if (rw === null || rw.length === 0) {
-      // 毎週 → 第1週
-      t.routineWeeks = [0];
-      return;
+    const rw = t.routineWeeks;
+    if (rw === null || rw === undefined || (Array.isArray(rw) && rw.length === 0)) {
+      t.routineWeeks = [0]; return; // 第1週
     }
-    if (rw.length === 1) {
+    if (Array.isArray(rw) && rw.length === 1) {
       const wi = rw[0];
-      if (wi < 3) {
-        t.routineWeeks = [wi + 1];
-        return;
-      }
-      // 第4週 → OFF
-      t.routine = false;
-      t.routineWeeks = null;
-      return;
+      if (wi < 3) { t.routineWeeks = [wi + 1]; return; } // 第2/3/4週
+      // 第4週 → 月初
+      t.routineWeeks = 'first'; return;
     }
-    // それ以外（複数指定など）はOFFに戻す
-    t.routine = false;
-    t.routineWeeks = null;
+    if (rw === 'first') {
+      t.routineWeeks = 'last'; return; // 月初 → 月末
+    }
+    if (rw === 'last') {
+      t.routine = false; t.routineWeeks = null; return; // 月末 → OFF
+    }
+    // それ以外
+    t.routine = false; t.routineWeeks = null;
+  }
+  // Determine which week indices (0-based across all weeks) this routine Todo should be in
+  function isRoutineApplicableToWeek(routineWeeks, weekIdx) {
+    // routineWeeks: null = every week, [N] = monthly Nth week (wi%4 === N), 'first'/'last' alias
+    if (routineWeeks === null || routineWeeks === undefined || (Array.isArray(routineWeeks) && routineWeeks.length === 0)) return true;
+    if (routineWeeks === 'first') return (weekIdx % 4) === 0;
+    if (routineWeeks === 'last') return (weekIdx % 4) === 3;
+    if (Array.isArray(routineWeeks)) return routineWeeks.includes(weekIdx % 4);
+    return false;
   }
   const PRIORITY_NEXT = { none: 'high', high: 'medium', medium: 'low', low: 'none' };
   const PRIORITY_ORDER = { high: 0, medium: 1, low: 2, none: 3 };
@@ -4315,7 +4574,7 @@
         <div class="rich-field-wrap todo-detail-field" data-todoid="${t.id}" data-field="details" data-act="todo-detail-expand">
           <div class="rich-display todo-detail-display collapsed">${t.details ? renderRichText(t.details) : '<span class="rich-placeholder">具体的にやることや参考リンクを書く（例: 「○○さんに連絡 - https://example.com の資料を見てから提案」）。**太字** / *斜体* / # 見出し / URL自動リンク 対応</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
         </div>
-        <div class="todo-detail-label" style="margin-top:10px;">💬 フィードバック（受講生・管理者の双方が記入可）</div>
+        <div class="todo-detail-label" style="margin-top:10px;">💬 フィードバック（受講生・管理者の双方が記入可）${t.feedback ? feedbackStatusBadge(t.feedbackStatus) : ''}</div>
         <div class="rich-field-wrap todo-detail-field feedback-field" data-todoid="${t.id}" data-field="feedback" data-act="todo-detail-expand">
           <div class="rich-display todo-detail-display collapsed">${t.feedback ? renderRichText(t.feedback) : '<span class="rich-placeholder">フィードバック欄(クリックで編集／署名・日時自動付与)</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
         </div>
@@ -4358,6 +4617,8 @@
     $('todo-summary').textContent = totalAll ? `全体 ${totalDone} / ${totalAll} 完了` : '—';
     // Refresh the overdue/today stats card
     renderOverdueStats();
+    // Refresh the routine banner counts
+    if (typeof updateRoutineBanner === 'function') updateRoutineBanner();
   }
 
   // Render the stats card showing completion of past+today weeks' Todos
@@ -4589,7 +4850,7 @@
               </div>
             </div>
             <div class="week-field">
-              <div class="week-field-label">💬 フィードバック（受講生・管理者の双方が記入可 — クリックで全文表示・編集）</div>
+              <div class="week-field-label">💬 フィードバック（受講生・管理者の双方が記入可 — クリックで全文表示・編集）${w.feedback ? feedbackStatusBadge(w.feedbackStatus) : ''}</div>
               <div class="rich-field-wrap feedback-field" data-week="${wi}" data-field="feedback" data-label="💬 フィードバック" data-act="rich-expand">
                 <div class="rich-display collapsed">${w.feedback ? renderRichText(w.feedback) : '<span class="rich-placeholder">フィードバック欄(クリックで編集／署名・日時自動付与)</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
               </div>
@@ -4783,6 +5044,10 @@
     if (kgiFbDisp) {
       kgiFbDisp.innerHTML = (g.feedback ? renderRichText(g.feedback) : '<span class="rich-placeholder">受講生本人＋管理者の両方が記入できる(クリックで編集)</span>') + '<span class="rich-expand-hint">クリックで全文＋編集</span>';
     }
+    const kgiFbBadge = $('kgi-feedback-badge');
+    if (kgiFbBadge) {
+      kgiFbBadge.innerHTML = g.feedback ? feedbackStatusBadge(g.feedbackStatus) : '';
+    }
     // Period auto-display
     const periodDisp = $('kgi-period-display');
     if (periodDisp) periodDisp.textContent = '期間：' + (formatPeriodDisplay(state.period) || '—');
@@ -4798,6 +5063,96 @@
   // Toggle input/textarea readonly attr based on body.readonly state.
   // CSSのpointer-eventsだけだとフォーカス可能になっているので、ここで readonly属性も付ける。
   // 結果: 文字選択(コピー)はできるが、編集はできない。
+  // ===== 右クリックコピーメニュー =====
+  // 各テキスト要素を右クリックすると「コピー」メニューが出る。
+  // 通常のブラウザの右クリックメニューはそのまま使えるので追加メニュー扱い。
+  let _copyMenuEl = null;
+  function closeCopyMenu() {
+    if (_copyMenuEl) { _copyMenuEl.remove(); _copyMenuEl = null; }
+  }
+  function getElementCopyText(el) {
+    // Get appropriate text content based on element type
+    if (!el) return '';
+    if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') return el.value || '';
+    // For rich-display: prefer the corresponding state value (preserve markdown)
+    const wrap = el.closest('.rich-field-wrap');
+    if (wrap) {
+      if (wrap.dataset.week !== undefined) {
+        const w = state.weeks[+wrap.dataset.week];
+        return (w && w[wrap.dataset.field]) || el.innerText || '';
+      } else if (wrap.dataset.todoid) {
+        const f = findTodoById(wrap.dataset.todoid);
+        return (f && f.todo[wrap.dataset.field]) || el.innerText || '';
+      } else if (wrap.dataset.goal) {
+        const g = state.goals[wrap.dataset.goal];
+        return (g && g[wrap.dataset.field]) || el.innerText || '';
+      }
+    }
+    return el.innerText || el.textContent || '';
+  }
+  document.addEventListener('contextmenu', (e) => {
+    // Find relevant element: text container or input
+    const el = e.target.closest('textarea, input[type="text"], .rich-display, .chip-text, .week-card-title, .annual-target-input, .kgi-target-input, .kpi-target-input2, .annual-current-input, .kgi-current-input, .done-auto-item .label, .name');
+    if (!el) return;
+    const text = getElementCopyText(el);
+    if (!text || !text.trim()) return; // 空ならスキップ → ブラウザ標準
+    e.preventDefault();
+    closeCopyMenu();
+    const menu = document.createElement('div');
+    menu.className = 'copy-context-menu';
+    // Position
+    menu.style.left = Math.min(e.clientX, window.innerWidth - 240) + 'px';
+    menu.style.top = Math.min(e.clientY, window.innerHeight - 100) + 'px';
+    // Buttons
+    const cBtn = document.createElement('button');
+    cBtn.textContent = '📋 この内容をコピー';
+    cBtn.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(text); } catch {}
+      closeCopyMenu();
+    });
+    menu.appendChild(cBtn);
+    // Selected text (if any) copy
+    const sel = window.getSelection();
+    const selText = sel ? String(sel) : '';
+    if (selText.trim()) {
+      const sBtn = document.createElement('button');
+      sBtn.textContent = '✂ 選択範囲だけコピー';
+      sBtn.addEventListener('click', async () => {
+        try { await navigator.clipboard.writeText(selText); } catch {}
+        closeCopyMenu();
+      });
+      menu.appendChild(sBtn);
+    }
+    // Divider + "ブラウザの右クリックメニューを使う" (cancel)
+    const div = document.createElement('div');
+    div.className = 'menu-divider';
+    menu.appendChild(div);
+    const xBtn = document.createElement('button');
+    xBtn.textContent = '✕ キャンセル';
+    xBtn.style.color = 'var(--muted)';
+    xBtn.addEventListener('click', closeCopyMenu);
+    menu.appendChild(xBtn);
+    document.body.appendChild(menu);
+    _copyMenuEl = menu;
+  });
+  // Close menu on outside click / scroll / Escape
+  document.addEventListener('click', (e) => {
+    if (_copyMenuEl && !_copyMenuEl.contains(e.target)) closeCopyMenu();
+  });
+  document.addEventListener('scroll', closeCopyMenu, true);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeCopyMenu(); });
+
+  // Render the feedback status badge inline
+  function feedbackStatusBadge(status) {
+    const map = {
+      unread: { cls: 'unread', label: '🔴 未確認' },
+      confirmed: { cls: 'confirmed', label: '🟡 確認済' },
+      resolved: { cls: 'resolved', label: '🟢 解決済' },
+    };
+    const s = map[status] || map.unread;
+    return `<span class="feedback-status-badge ${s.cls}">${s.label}</span>`;
+  }
+
   function applyReadonlyToInputs() {
     const isRO = document.body.classList.contains('readonly');
     document.querySelectorAll('main input, main textarea, main select').forEach(el => {
@@ -5160,7 +5515,7 @@
       const rawK = t.dataset.kpi;
       const k = (rawK === 'other') ? 'other' : +rawK;
       if (!state.todos[k]) state.todos[k] = [];
-      state.todos[k].push({ id: newId(), text: '', done: false, priority: 'none', completedAt: null, routine: false, routineWeeks: null, details: '', feedback: '', aiHistory: '' });
+      state.todos[k].push({ id: newId(), text: '', done: false, priority: 'none', completedAt: null, routine: false, routineWeeks: null, details: '', feedback: '', feedbackStatus: 'unread', aiHistory: '' });
       save(); renderTodos();
       setTimeout(() => {
         const containerId = (k === 'other') ? 'todo-other' : `todo-${k}`;
@@ -5432,6 +5787,152 @@
     }
   });
 
+  // ===== ルーティン一覧モーダル =====
+  let routineFilterMode = 'all';
+  function renderRoutineList() {
+    const container = $('routine-list-content');
+    if (!container) return;
+    const items = [];
+    TODO_KEYS.forEach(k => {
+      (state.todos[k] || []).forEach(t => {
+        if (!t.routine) return;
+        const kpiLabel = k === 'other' ? 'その他' : `KPI${['①','②','③'][k-1]}`;
+        const rw = t.routineWeeks;
+        let freqLabel = '毎週';
+        let freqKey = 'every';
+        if (rw === 'first') { freqLabel = '🗓 月初(第1週)'; freqKey = 'first'; }
+        else if (rw === 'last') { freqLabel = '🗓 月末(第4週)'; freqKey = 'last'; }
+        else if (Array.isArray(rw) && rw.length === 1) {
+          freqLabel = `第${rw[0]+1}週`;
+          freqKey = `w${rw[0]+1}`;
+        } else if (Array.isArray(rw) && rw.length > 1) {
+          freqLabel = '第' + rw.map(i => i+1).join('・') + '週';
+          freqKey = 'multi';
+        }
+        const pri = t.priority === 'high' ? '🔴大' : t.priority === 'medium' ? '🟠中' : t.priority === 'low' ? '🟢小' : '—';
+        items.push({
+          kpiKey: k, kpiLabel, text: t.text || '(未入力)', freqLabel, freqKey,
+          priority: pri, todoId: t.id, done: !!t.done
+        });
+      });
+    });
+    // フィルター適用
+    const filtered = items.filter(it => {
+      if (routineFilterMode === 'all') return true;
+      if (routineFilterMode === 'every') return it.freqKey === 'every';
+      if (routineFilterMode.startsWith('w')) return it.freqKey === routineFilterMode;
+      if (routineFilterMode === 'first') return it.freqKey === 'first';
+      if (routineFilterMode === 'last') return it.freqKey === 'last';
+      if (routineFilterMode === 'kpi1') return it.kpiKey === 1;
+      if (routineFilterMode === 'kpi2') return it.kpiKey === 2;
+      if (routineFilterMode === 'kpi3') return it.kpiKey === 3;
+      if (routineFilterMode === 'other') return it.kpiKey === 'other';
+      return true;
+    });
+    if (filtered.length === 0) {
+      container.innerHTML = `<div class="routine-list-empty">該当するルーティンTodoがありません。<br><small>(${items.length} 件のルーティンが登録されています)</small></div>`;
+      return;
+    }
+    const rows = filtered.map(it => `
+      <tr data-todoid="${it.todoId}">
+        <td class="col-kpi">${it.kpiLabel}</td>
+        <td class="col-text">${esc(it.text)}</td>
+        <td class="col-freq">${it.freqLabel}</td>
+        <td class="col-priority">${it.priority}</td>
+      </tr>
+    `).join('');
+    container.innerHTML = `
+      <table class="routine-list-table">
+        <thead><tr>
+          <th style="width:90px;">カテゴリ</th>
+          <th>Todo内容</th>
+          <th style="width:140px;">実施頻度</th>
+          <th style="width:60px;">優先度</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div style="margin-top:8px;font-size:11px;color:var(--muted);">${filtered.length} / ${items.length} 件表示中</div>
+    `;
+  }
+  function openRoutineListModal() {
+    routineFilterMode = 'all';
+    document.querySelectorAll('.routine-filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === 'all'));
+    renderRoutineList();
+    $('routine-modal').classList.add('show');
+  }
+  $('routine-list-btn').addEventListener('click', openRoutineListModal);
+  // バナーのクリック（バナー全体 or ボタン）→ モーダル
+  document.addEventListener('click', (e) => {
+    const trigger = e.target.closest('[data-act="open-routine-list"]');
+    if (trigger) openRoutineListModal();
+  });
+  // バナーの内容を動的に更新（renderAllから呼ばれる）
+  function updateRoutineBanner() {
+    const bn = document.getElementById('routine-banner');
+    if (!bn) return;
+    // Count routines and group by frequency
+    let count = 0;
+    const byFreq = { every: 0, w: [0,0,0,0], first: 0, last: 0, multi: 0 };
+    TODO_KEYS.forEach(k => {
+      (state.todos[k] || []).forEach(t => {
+        if (!t.routine) return;
+        count++;
+        const rw = t.routineWeeks;
+        if (rw === 'first') byFreq.first++;
+        else if (rw === 'last') byFreq.last++;
+        else if (Array.isArray(rw) && rw.length === 1) byFreq.w[rw[0]]++;
+        else if (Array.isArray(rw) && rw.length > 1) byFreq.multi++;
+        else byFreq.every++;
+      });
+    });
+    const label = bn.querySelector('#routine-banner-label');
+    const sub = bn.querySelector('#routine-banner-sub');
+    if (count === 0) {
+      bn.classList.add('empty');
+      if (label) label.textContent = '🔁 ルーティン管理';
+      if (sub) sub.textContent = 'まだルーティン指定のTodoがありません。各Todoの「🔁」ボタンを押すと、ここに集計表示されます。';
+      return;
+    }
+    bn.classList.remove('empty');
+    if (label) label.textContent = `🔁 ルーティンTodo ${count} 件 を管理中`;
+    const parts = [];
+    if (byFreq.every) parts.push(`毎週${byFreq.every}`);
+    byFreq.w.forEach((n, i) => { if (n) parts.push(`第${i+1}週${n}`); });
+    if (byFreq.first) parts.push(`月初${byFreq.first}`);
+    if (byFreq.last) parts.push(`月末${byFreq.last}`);
+    if (byFreq.multi) parts.push(`複数週${byFreq.multi}`);
+    if (sub) sub.textContent = parts.join(' / ') + ' — クリックして全件を一覧表示・絞り込み';
+  }
+  $('routine-modal-close').addEventListener('click', () => $('routine-modal').classList.remove('show'));
+  $('routine-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'routine-modal') $('routine-modal').classList.remove('show');
+  });
+  // Filter buttons
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.routine-filter-btn');
+    if (!btn) return;
+    routineFilterMode = btn.dataset.filter;
+    document.querySelectorAll('.routine-filter-btn').forEach(b => b.classList.toggle('active', b === btn));
+    renderRoutineList();
+  });
+  // Click a row → close modal and scroll to that Todo
+  document.addEventListener('click', (e) => {
+    const tr = e.target.closest('.routine-list-table tbody tr');
+    if (!tr) return;
+    const todoId = tr.dataset.todoid;
+    $('routine-modal').classList.remove('show');
+    setTimeout(() => {
+      const targetWrap = document.querySelector(`.todo-item-wrap[data-id="${todoId}"]`);
+      if (targetWrap) {
+        targetWrap.scrollIntoView({behavior: 'smooth', block: 'center'});
+        // Briefly highlight
+        targetWrap.style.transition = 'background 0.3s';
+        targetWrap.style.background = '#fef3c7';
+        setTimeout(() => { targetWrap.style.background = ''; }, 1500);
+      }
+    }, 200);
+  });
+
   // ===== Archive system =====
   let viewingArchiveId = null;  // archive being viewed (or null = current period)
   let savedStateBeforeArchive = null;  // backup when entering archive view
@@ -5531,18 +6032,9 @@
       w.review = '';
       w.planNote = '';
       w.feedback = '';
-      // 月内の何週目か (0-indexed): wi % 4
-      const weekOfMonth = wi % 4;
       const planIds = [];
       routineTodos.forEach(rt => {
-        const rw = Array.isArray(rt.routineWeeks) ? rt.routineWeeks : null;
-        if (!rw || rw.length === 0) {
-          // 毎週
-          planIds.push(rt.id);
-        } else if (rw.includes(weekOfMonth)) {
-          // 指定週のみ
-          planIds.push(rt.id);
-        }
+        if (isRoutineApplicableToWeek(rt.routineWeeks, wi)) planIds.push(rt.id);
       });
       w.planTodoIds = planIds;
     });
@@ -5887,7 +6379,7 @@
         };
         // normalize todos / weeks
         TODO_KEYS.forEach(k => {
-          state.todos[k] = (state.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, routineWeeks: Array.isArray(t.routineWeeks) ? t.routineWeeks : null, details: t.details || '', feedback: t.feedback || '', aiHistory: t.aiHistory || '' }));
+          state.todos[k] = (state.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, routineWeeks: (t.routineWeeks === 'first' || t.routineWeeks === 'last' || Array.isArray(t.routineWeeks)) ? t.routineWeeks : null, details: t.details || '', feedback: t.feedback || '', feedbackStatus: t.feedbackStatus || 'unread', aiHistory: t.aiHistory || '' }));
         });
         state.weeks = state.weeks.map((w, i) => ({
           week: w.week || DEFAULT_WEEKS[i] || `週${i+1}`,
@@ -5942,7 +6434,7 @@
         archives: Array.isArray(data.archives) ? data.archives : [],
       };
       TODO_KEYS.forEach(k => {
-        newState.todos[k] = (newState.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, routineWeeks: Array.isArray(t.routineWeeks) ? t.routineWeeks : null, details: t.details || '', feedback: t.feedback || '', aiHistory: t.aiHistory || '' }));
+        newState.todos[k] = (newState.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, routineWeeks: (t.routineWeeks === 'first' || t.routineWeeks === 'last' || Array.isArray(t.routineWeeks)) ? t.routineWeeks : null, details: t.details || '', feedback: t.feedback || '', feedbackStatus: t.feedbackStatus || 'unread', aiHistory: t.aiHistory || '' }));
       });
       newState.weeks = newState.weeks.map((w, i) => ({
         week: w.week || DEFAULT_WEEKS[i] || `週${i+1}`,
@@ -5952,6 +6444,7 @@
         done: w.done || '',
         review: w.review || '',
         feedback: w.feedback || '',
+        feedbackStatus: w.feedbackStatus || 'unread',
       }));
       // Only re-render if focus is not on an input (to avoid disrupting typing)
       const active = document.activeElement;
@@ -6144,7 +6637,7 @@
           archives: Array.isArray(data.archives) ? data.archives : [],
         };
         TODO_KEYS.forEach(k => {
-          state.todos[k] = (state.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, routineWeeks: Array.isArray(t.routineWeeks) ? t.routineWeeks : null, details: t.details || '', feedback: t.feedback || '', aiHistory: t.aiHistory || '' }));
+          state.todos[k] = (state.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, routineWeeks: (t.routineWeeks === 'first' || t.routineWeeks === 'last' || Array.isArray(t.routineWeeks)) ? t.routineWeeks : null, details: t.details || '', feedback: t.feedback || '', feedbackStatus: t.feedbackStatus || 'unread', aiHistory: t.aiHistory || '' }));
         });
         state.weeks = state.weeks.map((w, i) => ({
           week: w.week || DEFAULT_WEEKS[i] || `週${i+1}`,
@@ -6916,12 +7409,47 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
   // ===== Rich text expand modal =====
   // ctx: { type: 'week', wi, field, label }  OR  { type: 'todo', todoId, label }
   let richModalCtx = null;
-  // Show/hide the "✍ 新規フィードバックを追記" button based on whether the modal is showing a "feedback" field.
+  // Show/hide the "✍ 新規フィードバックを追記" button and status selector based on whether the modal is showing a "feedback" field.
   function updateFeedbackAddBtn(field) {
     const btn = $('rich-modal-add-feedback');
-    if (!btn) return;
-    btn.style.display = (field === 'feedback') ? '' : 'none';
+    if (btn) btn.style.display = (field === 'feedback') ? '' : 'none';
+    const sel = $('rich-modal-status-selector');
+    if (sel) sel.classList.toggle('show', field === 'feedback');
   }
+  // Sync the status selector active state from current ctx
+  function updateFeedbackStatusUI() {
+    if (!richModalCtx || richModalCtx.field !== 'feedback') return;
+    let obj = null;
+    if (richModalCtx.type === 'week') obj = state.weeks[richModalCtx.wi];
+    else if (richModalCtx.type === 'todo') {
+      const f = findTodoById(richModalCtx.todoId);
+      obj = f ? f.todo : null;
+    } else if (richModalCtx.type === 'goal') obj = state.goals[richModalCtx.goalKey];
+    const cur = (obj && obj.feedbackStatus) || 'unread';
+    document.querySelectorAll('.feedback-status-selector .status-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.status === cur);
+    });
+  }
+  // Wire status buttons
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.feedback-status-selector .status-btn');
+    if (!btn) return;
+    if (!richModalCtx || richModalCtx.field !== 'feedback') return;
+    const status = btn.dataset.status;
+    let obj = null;
+    if (richModalCtx.type === 'week') obj = state.weeks[richModalCtx.wi];
+    else if (richModalCtx.type === 'todo') {
+      const f = findTodoById(richModalCtx.todoId);
+      obj = f ? f.todo : null;
+    } else if (richModalCtx.type === 'goal') obj = state.goals[richModalCtx.goalKey];
+    if (obj) {
+      obj.feedbackStatus = status;
+      save();
+      updateFeedbackStatusUI();
+      // Also refresh inline display so the badge shows immediately
+      renderAll();
+    }
+  });
   function openRichModal(wi, field, label) {
     richModalCtx = { type: 'week', wi, field, label };
     const w = state.weeks[wi];
@@ -6933,6 +7461,7 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
     // Initial tab: 内容がある時はプレビュー / 空の時は編集
     const valToCheck = $('rich-modal-textarea').value || '';
     setRichModalTab(valToCheck.trim() ? 'preview' : 'edit');
+    updateFeedbackStatusUI();
     $('rich-modal').classList.add('show');
   }
   function openTodoDetailModal(todoId, field) {
@@ -6951,6 +7480,7 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
     // Initial tab: 内容がある時はプレビュー / 空の時は編集
     const valToCheck = $('rich-modal-textarea').value || '';
     setRichModalTab(valToCheck.trim() ? 'preview' : 'edit');
+    updateFeedbackStatusUI();
     $('rich-modal').classList.add('show');
   }
   // Open modal for a state.goals[goalKey][field] text field (現状 / 課題 / 解決策 / feedback etc.)
@@ -6966,6 +7496,7 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
     // Initial tab: 内容がある時はプレビュー / 空の時は編集
     const valToCheck = $('rich-modal-textarea').value || '';
     setRichModalTab(valToCheck.trim() ? 'preview' : 'edit');
+    updateFeedbackStatusUI();
     $('rich-modal').classList.add('show');
   }
   function closeRichModal() {
@@ -7381,7 +7912,7 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
         archives: Array.isArray(data.archives) ? data.archives : [],
       };
       TODO_KEYS.forEach(k => {
-        state.todos[k] = (state.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, routineWeeks: Array.isArray(t.routineWeeks) ? t.routineWeeks : null, details: t.details || '', feedback: t.feedback || '', aiHistory: t.aiHistory || '' }));
+        state.todos[k] = (state.todos[k] || []).map(t => ({ id: t.id || newId(), text: t.text || '', done: !!t.done, priority: t.priority || 'none', completedAt: t.completedAt || null, routine: !!t.routine, routineWeeks: (t.routineWeeks === 'first' || t.routineWeeks === 'last' || Array.isArray(t.routineWeeks)) ? t.routineWeeks : null, details: t.details || '', feedback: t.feedback || '', feedbackStatus: t.feedbackStatus || 'unread', aiHistory: t.aiHistory || '' }));
       });
       state.weeks = state.weeks.map((w, i) => ({
         week: w.week || DEFAULT_WEEKS[i] || `週${i+1}`,
@@ -7391,6 +7922,7 @@ TOP3から最も効果的な1つ＋実行プロンプト全文。
         done: w.done || '',
         review: w.review || '',
         feedback: w.feedback || '',
+        feedbackStatus: w.feedbackStatus || 'unread',
       }));
       // Hide login overlay; show a public-view banner
       hideLogin();
