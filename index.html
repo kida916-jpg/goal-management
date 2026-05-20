@@ -2412,11 +2412,33 @@
   }
   body.readonly input,
   body.readonly textarea,
-  body.readonly select { pointer-events: none; opacity: 0.85; }
-  body.readonly button:not(#ro-banner button):not(.modal-close):not(#picker-done):not(.ai-help-btn):not(.result-ai-btn-big):not([data-act^="ai-help"]):not(#ai-copy-btn):not(#ai-done):not([data-ai-service]) { pointer-events: none; opacity: 0.5; }
+  body.readonly select {
+    pointer-events: none;
+    opacity: 0.85;
+    user-select: text;
+    -webkit-user-select: text;
+  }
+  body.readonly,
+  body.readonly .rich-display,
+  body.readonly .done-auto-list,
+  body.readonly .week-card,
+  body.readonly .kpi-card,
+  body.readonly .annual-goal,
+  body.readonly .kgi-hero,
+  body.readonly main {
+    user-select: text !important;
+    -webkit-user-select: text !important;
+  }
+  body.readonly textarea, body.readonly input {
+    pointer-events: auto;
+    cursor: default;
+  }
+  body.readonly button:not(#ro-banner button):not(.modal-close):not(#picker-done):not(.ai-help-btn):not(.result-ai-btn-big):not([data-act^="ai-help"]):not(#ai-copy-btn):not(#ai-done):not([data-ai-service]):not(#ub-copy-gm):not(#ub-copy-link):not(.ub-name):not(#ub-name):not(#ub-guide):not([data-act="toggle-week"]):not([data-act="toggle-history"]):not([data-act="toggle-detail"]) { pointer-events: none; opacity: 0.5; }
   body.readonly .ai-help-btn,
   body.readonly .result-ai-btn-big,
-  body.readonly [data-act^="ai-help"] { pointer-events: auto !important; opacity: 1 !important; }
+  body.readonly [data-act^="ai-help"],
+  body.readonly #ub-copy-gm,
+  body.readonly #ub-copy-link { pointer-events: auto !important; opacity: 1 !important; }
 
   /* Primary admin editing another user — different banner color */
   #ro-banner.editing {
@@ -4448,6 +4470,27 @@
     renderResults();
     updateArchiveSelect();
     autoResizeAll();
+    applyReadonlyToInputs();
+  }
+
+  // readonly切替時にinput/textareaにreadonly属性を付与(コピー可、編集不可)
+  function applyReadonlyToInputs() {
+    const isRO = document.body.classList.contains('readonly');
+    document.querySelectorAll('main input, main textarea, main select').forEach(el => {
+      if (isRO) {
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+          el.setAttribute('readonly', 'readonly');
+        }
+        if (el.tagName === 'SELECT' || el.type === 'checkbox') {
+          el.setAttribute('disabled', 'disabled');
+        }
+      } else {
+        el.removeAttribute('readonly');
+        if (el.tagName === 'SELECT' || el.type === 'checkbox') {
+          el.removeAttribute('disabled');
+        }
+      }
+    });
   }
 
   // Auto-resize textareas to fit content
