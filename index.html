@@ -2775,6 +2775,7 @@
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
+    table-layout: fixed; /* colgroup の幅指定を確実に効かせる */
   }
   .routine-list-table th, .routine-list-table td {
     border: 1px solid var(--border);
@@ -2786,21 +2787,44 @@
     background: #f3f4f6;
     font-weight: 700;
     color: var(--muted);
+    font-size: 12px;
     position: sticky; top: 0;
     z-index: 1;
+    text-align: center;
   }
   .routine-list-table tbody tr:hover { background: #eff6ff; cursor: pointer; }
   .routine-list-table .col-kpi {
-    font-weight: 700;
+    text-align: center;
     white-space: nowrap;
+    overflow: hidden;
+    padding: 6px 4px;
   }
-  .routine-list-table .col-text { word-break: break-word; }
+  .routine-list-table .col-kpi .kpi-label {
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+  .routine-list-table .col-kpi .kpi-priority {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1;
+  }
+  .routine-list-table .col-text {
+    word-break: break-word;
+    line-height: 1.5;
+  }
   .routine-list-table .col-freq {
     text-align: center;
     font-weight: 700;
     white-space: nowrap;
+    font-size: 12px;
   }
-  .routine-list-table .col-priority { text-align: center; white-space: nowrap; }
+  .routine-list-table .col-priority {
+    text-align: center;
+    white-space: nowrap;
+    font-size: 13px;
+  }
   .routine-list-empty {
     padding: 24px;
     text-align: center;
@@ -5800,13 +5824,13 @@
         const rw = t.routineWeeks;
         let freqLabel = '毎週';
         let freqKey = 'every';
-        if (rw === 'first') { freqLabel = '🗓 月初(第1週)'; freqKey = 'first'; }
-        else if (rw === 'last') { freqLabel = '🗓 月末(第4週)'; freqKey = 'last'; }
+        if (rw === 'first') { freqLabel = '月初'; freqKey = 'first'; }
+        else if (rw === 'last') { freqLabel = '月末'; freqKey = 'last'; }
         else if (Array.isArray(rw) && rw.length === 1) {
           freqLabel = `第${rw[0]+1}週`;
           freqKey = `w${rw[0]+1}`;
         } else if (Array.isArray(rw) && rw.length > 1) {
-          freqLabel = '第' + rw.map(i => i+1).join('・') + '週';
+          freqLabel = rw.map(i => i+1).join('・') + '週';
           freqKey = 'multi';
         }
         const pri = t.priority === 'high' ? '🔴大' : t.priority === 'medium' ? '🟠中' : t.priority === 'low' ? '🟢小' : '—';
@@ -5835,19 +5859,20 @@
     }
     const rows = filtered.map(it => `
       <tr data-todoid="${it.todoId}">
-        <td class="col-kpi">${it.kpiLabel}</td>
+        <td class="col-kpi">
+          <div class="kpi-label">${it.kpiLabel}</div>
+          <div class="kpi-priority">${it.priority}</div>
+        </td>
         <td class="col-text">${esc(it.text)}</td>
         <td class="col-freq">${it.freqLabel}</td>
-        <td class="col-priority">${it.priority}</td>
       </tr>
     `).join('');
     container.innerHTML = `
       <table class="routine-list-table">
         <thead><tr>
-          <th style="width:90px;">カテゴリ</th>
-          <th>Todo内容</th>
-          <th style="width:140px;">実施頻度</th>
-          <th style="width:60px;">優先度</th>
+          <th style="width:64px;">カテゴリ<br><span style="font-weight:400;font-size:10px;">/優先</span></th>
+          <th style="width:auto;">Todo内容</th>
+          <th style="width:54px;">頻度</th>
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>
