@@ -1702,21 +1702,26 @@
     position: absolute;
     top: 4px;
     right: 4px;
-    z-index: 2;
-    border: 1px solid var(--border);
-    background: #f9fafb;
-    color: var(--muted);
+    z-index: 5;
+    border: 1px solid #f59e0b;
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    color: #92400e;
     border-radius: 4px;
-    padding: 3px 8px;
+    padding: 4px 10px;
     font-size: 11px;
+    font-weight: 700;
     cursor: pointer;
     font-family: inherit;
     line-height: 1.2;
+    box-shadow: 0 1px 3px rgba(245, 158, 11, 0.2);
+    transition: all 0.15s;
   }
   .rich-field-wrap .rich-expand-btn:hover {
-    background: var(--accent);
+    background: linear-gradient(135deg, #f59e0b, #d97706);
     color: #fff;
-    border-color: var(--accent);
+    border-color: #d97706;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.35);
   }
   .rich-display {
     min-height: 60px;
@@ -3129,6 +3134,7 @@
         <div class="kgi-feedback-wrap">
           <div class="kgi-feedback-label">💬 FB<span id="kgi-feedback-badge"></span></div>
           <div class="rich-field-wrap goal-rich-field feedback-field" data-goal="kgi" data-field="feedback" data-label="💬 KGIFB" data-act="goal-text-expand">
+            <button class="rich-expand-btn" type="button" title="クリックで編集">📝 編集</button>
             <div class="rich-display collapsed" id="kgi-feedback-display"><span class="rich-placeholder">受講生本人＋管理者の両方が記入できる(クリックで編集)</span><span class="rich-expand-hint">クリックで全文＋編集</span></div>
           </div>
         </div>
@@ -4535,6 +4541,7 @@
           <div class="kpi-row feedback-row">
             <div class="lbl">💬 FB${g.feedback ? feedbackStatusBadge(g.feedbackStatus) : ''}</div>
             <div class="rich-field-wrap goal-rich-field feedback-field" data-goal="${k}" data-field="feedback" data-label="💬 FB" data-act="goal-text-expand">
+              <button class="rich-expand-btn" type="button" title="クリックで編集">📝 編集</button>
               <div class="rich-display collapsed">${g.feedback ? renderRichText(g.feedback) : '<span class="rich-placeholder">受講生本人＋管理者の両方が記入できるFB欄（クリックで編集／署名・日時自動付与）</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
             </div>
           </div>
@@ -4898,6 +4905,7 @@
         </div>
         <div class="todo-detail-label" style="margin-top:10px;">💬 FB（受講生・管理者の双方が記入可）${t.feedback ? feedbackStatusBadge(t.feedbackStatus) : ''}</div>
         <div class="rich-field-wrap todo-detail-field feedback-field" data-todoid="${t.id}" data-field="feedback" data-act="todo-detail-expand">
+          <button class="rich-expand-btn" type="button" title="クリックで編集">📝 編集</button>
           <div class="rich-display todo-detail-display collapsed">${t.feedback ? renderRichText(t.feedback) : '<span class="rich-placeholder">FB欄(クリックで編集／署名・日時自動付与)</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
         </div>
         <div class="todo-detail-label" style="margin-top:10px;">🤖 AI相談履歴（ChatGPT/Claudeの回答を貼り付けて履歴化）</div>
@@ -5199,6 +5207,7 @@
             <div class="week-field">
               <div class="week-field-label">💬 FB（受講生・管理者の双方が記入可 — クリックで全文表示・編集）${w.feedback ? feedbackStatusBadge(w.feedbackStatus) : ''}</div>
               <div class="rich-field-wrap feedback-field" data-week="${wi}" data-field="feedback" data-label="💬 FB" data-act="rich-expand">
+                <button class="rich-expand-btn" type="button" title="クリックで編集">📝 編集</button>
                 <div class="rich-display collapsed">${w.feedback ? renderRichText(w.feedback) : '<span class="rich-placeholder">FB欄(クリックで編集／署名・日時自動付与)</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
               </div>
             </div>
