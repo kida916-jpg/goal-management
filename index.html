@@ -4477,9 +4477,9 @@
     return defaultState();
   }
   function save() {
-    // Don't overwrite local storage when primary admin is editing another user's data
-    const isPrimaryAdminEditingOther = (currentEmail === ADMIN_EMAIL) && viewingDocId && viewingDocId !== currentDocId;
-    if (!isPrimaryAdminEditingOther) {
+    // 管理者(主管理者 or isAdminUser)が他受講生のデータを編集中ならlocalStorageを汚さない
+    const isAdminEditingOther = (currentEmail === ADMIN_EMAIL || isAdminUser) && viewingDocId && viewingDocId !== currentDocId;
+    if (!isAdminEditingOther) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }
     saveToCloud();
@@ -6907,11 +6907,11 @@
 
   function saveToCloud() {
     if (!currentEmail || isReadOnly || suppressCloudSave) return;
-    // Allow primary admin (ADMIN_EMAIL) to save to another user's docId; other accounts only save to their own
-    const isPrimaryAdminEditing = (currentEmail === ADMIN_EMAIL) && viewingDocId && viewingDocId !== currentDocId;
-    if (!viewingDocId || (viewingDocId !== currentDocId && !isPrimaryAdminEditing)) return;
+    // 主管理者 + 管理者(isAdminUser)は他受講生のデータを保存可能。それ以外は自分のみ
+    const isAdminEditingOther = (currentEmail === ADMIN_EMAIL || isAdminUser) && viewingDocId && viewingDocId !== currentDocId;
+    if (!viewingDocId || (viewingDocId !== currentDocId && !isAdminEditingOther)) return;
     const targetDocId = viewingDocId;
-    const isEditingOther = isPrimaryAdminEditing;
+    const isEditingOther = isAdminEditingOther;
     setSyncStatus(isEditingOther ? '💾 受講生データ保存中...' : '💾 保存中...', 'saving');
     if (cloudSaveTimer) clearTimeout(cloudSaveTimer);
     cloudSaveTimer = setTimeout(async () => {
@@ -7052,16 +7052,18 @@
   $('admin-done').addEventListener('click', () => $('admin-modal').classList.remove('show'));
 
   async function enterReadOnlyMode(docId, email, displayName) {
-    // Primary admin gets full edit access on other users; regular admin gets read-only + AI
-    const isPrimaryAdminViewing = (currentEmail === ADMIN_EMAIL);
-    isReadOnly = !isPrimaryAdminViewing;
+    // 全管理者(主管理者 + _isAdmin)が他受講生を編集可能（FBや内容を書ける）
+    const canEdit = (currentEmail === ADMIN_EMAIL) || isAdminUser;
+    isReadOnly = !canEdit;
     viewingDocId = docId;
     viewingEmail = email;
-    document.body.classList.toggle('readonly', !isPrimaryAdminViewing);
+    document.body.classList.toggle('readonly', !canEdit);
     const banner = $('ro-banner');
-    banner.classList.toggle('editing', isPrimaryAdminViewing);
-    if (isPrimaryAdminViewing) {
+    banner.classList.toggle('editing', canEdit);
+    if (currentEmail === ADMIN_EMAIL) {
       $('ro-email').innerHTML = `✏️ **${esc(displayName || email)}**（${esc(email)}）の編集モード（主管理者として保存可）`;
+    } else if (isAdminUser) {
+      $('ro-email').innerHTML = `✏️ **${esc(displayName || email)}**（${esc(email)}）の編集モード（管理者として保存可）`;
     } else {
       $('ro-email').innerHTML = `📖 **${esc(displayName || email)}**（${esc(email)}）のデータを閲覧中（読み取り専用・AI分析のみ可）`;
     }
