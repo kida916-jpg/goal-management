@@ -146,7 +146,79 @@
   }
   textarea:focus, input:focus { outline: none; }
 
-  /* ===== 年間最終ゴール ブロック ===== */
+  /* ===== ビジネスゴール ブロック（最上段・基本固定） ===== */
+  .business-goal {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    border-radius: 14px;
+    padding: 18px 20px;
+    color: #fff;
+    margin-bottom: 14px;
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.45);
+    border: 2px solid #facc15;
+    position: relative;
+  }
+  .business-goal-label {
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    font-weight: 700;
+    color: #fde68a;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .business-goal-tag {
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    background: rgba(250, 204, 21, 0.18);
+    border: 1px solid rgba(250, 204, 21, 0.4);
+    color: #fde68a;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+  .business-goal-help {
+    font-size: 11px;
+    color: rgba(255,255,255,0.78);
+    margin-bottom: 12px;
+    line-height: 1.55;
+  }
+  .business-goal-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 760px) {
+    .business-goal-row { grid-template-columns: 1fr; }
+  }
+  .business-goal-sublabel {
+    font-size: 11px;
+    font-weight: 700;
+    color: #fde68a;
+    margin-bottom: 4px;
+    letter-spacing: 0.04em;
+  }
+  .business-goal-input {
+    width: 100%;
+    background: rgba(255,255,255,0.95);
+    color: var(--text);
+    border: 1px solid rgba(250, 204, 21, 0.55);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.6;
+    box-sizing: border-box;
+    resize: vertical;
+    min-height: 70px;
+  }
+  .business-goal-input:focus {
+    outline: 2px solid #facc15;
+    background: #fff;
+  }
+
+  /* ===== 年間ゴール ブロック ===== */
   .annual-goal {
     background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
     border-radius: 14px;
@@ -3154,20 +3226,55 @@
     <button type="button" data-jump="sec-results">📊 結果</button>
   </nav>
 
+  <!-- ビジネスゴール（最上段・基本固定） -->
+  <section id="sec-business">
+    <div class="sec-body">
+      <div class="business-goal">
+        <button class="ai-help-btn block-ai-btn" data-act="ai-help" data-ai-mode="business-goal-consult" title="ビジネスゴールの定性・定量の整合性チェック、想いの言語化、定量目標の妥当性を壁打ち（最終判断は本人）">🏔️ AIにビジネスゴール相談</button>
+        <div class="business-goal-label">🏔️ ビジネスゴール — BUSINESS GOAL <span class="business-goal-tag">基本固定（毎期は変更しない／必要時のみ修正）</span></div>
+        <div class="business-goal-help">最終的にどうなりたいか／家業or企業／現場を卒業／一人サロン／多店舗展開／EXIT戦略 など、人生・事業の方向性を定める最上位の指針です。</div>
+        <div class="business-goal-row">
+          <div class="business-goal-col">
+            <div class="business-goal-sublabel">💭 定性（想い・理想・目的）</div>
+            <textarea class="business-goal-input autosize" data-goal="businessGoal" data-field="qualitative" placeholder="最終的にどうなりたいか／事業のビジョン／提供価値／生き方など、文章で自由に" rows="3"></textarea>
+          </div>
+          <div class="business-goal-col">
+            <div class="business-goal-sublabel">📊 定量（店舗数・年商・利益など）</div>
+            <textarea class="business-goal-input autosize" data-goal="businessGoal" data-field="quantitative" placeholder="例) 10年後に5店舗／年商10億／利益率15%／自分の時間 週20h など" rows="3"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- 年間目標 -->
   <section id="sec-annual">
     <div class="sec-body">
-      <!-- 年間最終ゴール -->
+      <!-- 年間ゴール -->
       <div class="annual-goal">
-        <button class="ai-help-btn block-ai-btn" data-act="ai-help" data-ai-mode="annual-goal-consult" title="既に入力したKGI/KPIをもとに、年間最終ゴールの設定をAIにサポートしてもらう">🌟 AIに年間ゴール相談</button>
-        <div class="annual-goal-label">🎯 年間最終ゴール — ANNUAL GOAL</div>
+        <button class="ai-help-btn block-ai-btn" data-act="ai-help" data-ai-mode="annual-goal-consult" title="既に入力したKGI/KPIをもとに、年間ゴールの設定をAIにサポートしてもらう">🌟 AIに年間ゴール相談</button>
+        <div class="annual-goal-label">🎯 年間ゴール — ANNUAL GOAL</div>
         <div class="annual-target-wrap">
           <span class="icon">🌟</span>
-          <textarea class="annual-target-input autosize" data-goal="annualGoal" data-field="target" placeholder="1年間で達成したい最終ゴールを入力（文章）" rows="1"></textarea>
+          <textarea class="annual-target-input autosize" data-goal="annualGoal" data-field="target" placeholder="1年間で達成したいゴールを入力（文章）" rows="1"></textarea>
         </div>
         <div class="annual-current-wrap">
           <span class="clabel">現状</span>
           <textarea class="annual-current-input" data-goal="annualGoal" data-field="current" placeholder="今の状態（文章）"></textarea>
+        </div>
+        <div class="metric-block" id="annual-metric-block">
+          <div class="mlabel">
+            <span>📊 数値で測る（年間目標）</span>
+            <label class="lower-flag">
+              <input type="checkbox" data-goal="annualGoal" data-field="lowerIsBetter" />
+              下げたい指標（原価率など）
+            </label>
+          </div>
+          <div class="metric-row">
+            <select class="unit-select" data-goal="annualGoal" data-field="unit"></select>
+            <div class="field"><span class="field-label">現状:</span><input type="text" class="num-input" data-goal="annualGoal" data-field="currentValue" placeholder="0" inputmode="decimal" /></div>
+            <div class="field"><span class="field-label">目標:</span><input type="text" class="num-input" data-goal="annualGoal" data-field="targetValue" placeholder="0" inputmode="decimal" /></div>
+          </div>
         </div>
       </div>
 
@@ -3219,16 +3326,22 @@
           <button class="other-card-close" id="other-card-close" type="button">✕ 閉じる</button>
         </div>
         <div class="other-card-body">
+          <div class="info" style="background:#fffbeb;border:1px solid #fcd34d;color:#92400e;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;line-height:1.6;">
+            💡 <strong>「その他業務」とは？</strong><br>
+            年間ゴール達成のために <strong>必要だけど、今期(四半期)KGIには直結しない業務</strong> を書く欄です。<br>
+            例) 半年後／1年後に向けた仕込み・準備、土台作り、組織・採用、長期R&D、自分自身の学習など。<br>
+            <strong>今期KGIに直結するゴール = KPI①②③</strong>、<strong>長期ゴール準備の業務 = その他業務</strong>、と切り分けてください。
+          </div>
           <div class="kpi-row">
             <div class="lbl">目標</div>
-            <textarea class="autosize" data-goal="other" data-field="target" placeholder="その他の業務の目標（KPI①〜③に該当しない業務、定性的でもOK）" rows="2"></textarea>
+            <textarea class="autosize" data-goal="other" data-field="target" placeholder="年間ゴール達成に必要な「今期KGIに直結しない長期準備業務」の方向性（例: 半年後の○○に向けた仕込み）" rows="2"></textarea>
           </div>
           <div class="kpi-row">
             <div class="lbl">現状</div>
             <textarea class="autosize" data-goal="other" data-field="current" placeholder="現状（数字を入れなくても良い）" rows="2"></textarea>
           </div>
           <div style="text-align:right;margin-top:8px;">
-            <button class="ai-help-btn" data-act="ai-help-other" title="KPI①②③以外で優先してやるべきことをAIに分析依頼">🔬 AI分析</button>
+            <button class="ai-help-btn" data-act="ai-help-other" title="年間ゴール達成のため、今期KGIに直結しないがやるべき長期準備業務をAIに分析依頼">🔬 AI分析</button>
           </div>
         </div>
       </div>
@@ -3281,6 +3394,9 @@
       <!-- その他の業務 Todo（折りたたみ） -->
       <button class="other-todo-toggle" id="other-todo-toggle" type="button">📁 その他の業務のTodo ▼（クリックで開く）</button>
       <div class="other-todo-col" id="other-todo-col">
+        <div class="info" style="background:#fffbeb;border:1px solid #fcd34d;color:#92400e;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;line-height:1.6;">
+          💡 <strong>その他業務のTodo</strong>＝ <strong>年間ゴール達成のために必要だが、今期(四半期)KGIには直結しない長期準備業務のTodo</strong> を書きます。半年後／1年後に向けた仕込み、土台作り、組織・採用、長期学習など。
+        </div>
         <div class="todo-col-head">
           <div><span class="num">その他</span></div>
           <div class="name" id="kpi-other-name">その他の業務</div>
@@ -3483,10 +3599,25 @@
         </div>
 
         <h5>📌 ゴールマネジメントとは？</h5>
-        <p>年間の最終ゴールを期間ごとのKGI（最重要目標）に分解し、3つのKPIに落とし込んで、週次のアクションで目標達成までを見える化するアプリです。</p>
+        <p>ビジネスゴール（人生・事業の方向性）から年間ゴール → 四半期KGI → KPI → Todo に落とし込み、週次のアクションで目標達成までを見える化するアプリです。</p>
+        <div class="info" style="margin-bottom:10px;">
+          <strong>🏔️ シート思想（上から下への一貫した流れ）</strong><br>
+          ビジネスゴール（基本固定）<br>
+          ↓<br>
+          年間ゴール（1年の状態）<br>
+          ↓<br>
+          四半期KGI（今期の最重要目標）<br>
+          ↓<br>
+          KPI①②③（KGIを達成する行動軸）<br>
+          ↓<br>
+          Todo（具体的行動）<br>
+          ↓<br>
+          AIチェック（整合性・抜け漏れ・壁打ち）
+        </div>
         <p><strong>使う流れ：</strong></p>
         <ol>
-          <li>🎯 年間最終ゴールを決める</li>
+          <li>🏔️ <strong>ビジネスゴール</strong>を決める（基本固定／定性＋定量／毎期は変更しない）</li>
+          <li>🎯 年間ゴールを決める</li>
           <li>🏆 期間（四半期など）のKGIを決める</li>
           <li>📊 3つのKPIに分解する（必要なら「その他の業務」も）</li>
           <li>✅ 各KPIをTodoに落とし込む</li>
@@ -3495,6 +3626,20 @@
           <li>🤖 <strong>「AIに途中分析を依頼」</strong>で月単位の差分を分析・修正提案</li>
           <li>📈 結果を振り返る</li>
         </ol>
+
+        <div class="info" style="margin-top:10px; background: #fef3c7; border-color: #f59e0b;">
+          <strong>🤝 AIの役割と運用ルール（超重要）</strong><br>
+          AIは <strong>「意思決定」ではなく「整合性チェック・壁打ち・言語化」</strong> として活用します。<br><br>
+          <strong>✅ AIにやらせること</strong>：KGI/KPI/Todoの整合性確認／ボトルネック分析／行動量確認／抜け漏れ確認／提案／フィードバック文章化<br>
+          <strong>❌ AIにやらせないこと</strong>：ビジネスゴール変更／人生目的変更／最終意思決定<br><br>
+          <strong>🔁 運用ルール</strong>：<br>
+          ①自分で考える → ②AIに相談する → ③最終的に自分で決める<br>
+          AIを鵜呑みにせず、最終的に本人が「最善」と思った内容のみを記載してください。
+        </div>
+
+        <div class="tip" style="margin-top:8px;">
+          🛑 <strong>書かないとAIに聞けません</strong>：「ビジネスゴール／年間ゴール（定性or定量）」「KGIタイトル+現状」「（個別KPI相談時）そのKPIのタイトル+現状」「（Todo相談時）Todo1つ以上」が未入力だとAIボタンを押してもアラートで止まります。まず自分で考えてから相談してください。
+        </div>
 
         <div class="info" style="margin-top:10px;">
           <strong>🧭 店長育成OS — ゴールマネジメントの9ステップ</strong><br>
@@ -3521,13 +3666,13 @@
         </ol>
         <div class="tip">💡 数字は<strong>全角でも自動的に半角に変換</strong>されます。「２０２６」と入れても「2026」になります。</div>
 
-        <h4>🎯 ① 年間最終ゴール</h4>
+        <h4>🎯 ① 年間ゴール</h4>
         <p>1年通しての最終目標を入力する欄です。文章で記入できます。</p>
         <ul>
-          <li><strong>達成したい最終ゴール</strong>：年商10億達成 など</li>
+          <li><strong>達成したい年間ゴール</strong>：年商10億達成 など</li>
           <li><strong>現状</strong>：今の状態</li>
         </ul>
-        <p>※ 数値メトリクスは KGI 側で管理するため、年間最終ゴールには無し。</p>
+        <p>※ 数値メトリクスは KGI 側で管理するため、年間ゴールには無し。</p>
 
         <h4>🏆 ② KGI / KPI を入力する</h4>
 
@@ -3569,13 +3714,20 @@
         <div class="tip">💡 円なら入力後「1,000,000円」、人なら「20人」のように<strong>桁区切り＋単位</strong>が自動表示されます。</div>
         <div class="info">📉 <strong>「下げたい指標」</strong> にチェックを入れると、原価率など低い方が良い指標として達成率が逆計算されます。</div>
 
-        <h4>📁 ③ その他の業務（オプション）</h4>
-        <p>KPI①〜③に該当しない業務を別枠で管理したい場合に使います。</p>
+        <h4>📁 ③ その他業務（長期準備業務 — オプション）</h4>
+        <p>その他業務 = <strong>年間ゴール達成のために必要だが、今期(四半期)KGIには直結しない長期準備業務</strong> を扱うエリアです。</p>
+        <ul>
+          <li><strong>今期KGIに直結する目標</strong> → KPI①②③に書く</li>
+          <li><strong>半年後／1年後／数年後に効いてくる仕込み</strong> → ここ「その他業務」に書く</li>
+        </ul>
+        <p>例) 採用・組織作り／長期R&D／システム刷新／自分自身の学習・健康／取引先開拓の種まき／中期計画策定 など。</p>
         <ol>
           <li>KPI③の下の <strong>「📁 その他の業務 ▼」</strong> をクリックして展開</li>
-          <li>目標と現状を文章で入力（数字は不要、定性的でOK）</li>
+          <li>目標欄に「半年後／1年後に効く準備業務の方向性」を文章で入力</li>
+          <li>同様にTodoエリアの <strong>「📁 その他の業務のTodo ▼」</strong> も展開して、長期準備のTodoを追加</li>
         </ol>
-        <div class="info">💡 不要なら閉じたままでOK。表示はされません。</div>
+        <div class="info">💡 <strong>切り分け基準</strong>：「これは今期(四半期)で数値が動くか？」→ Yes なら KPI、No だが年間ゴールに必要 なら その他業務、年間ゴールにも紐づかない なら 不要。</div>
+        <div class="tip">💡 不要なら閉じたままでOK。表示はされません。</div>
 
         <h4>✅ ④ Todo を入力する</h4>
         <p>「KPIをTodoに落とし込む」セクションで、各KPIに必要な行動をリスト化します。</p>
@@ -3666,10 +3818,10 @@
 
         <h5>📍 ボタンの配置と用途</h5>
         <ul>
-          <li><strong>🌟 AIに年間ゴール相談</strong>（年間最終ゴール下） → 入力済みのKGI/KPIから年間最終ゴールの設定を3パターン提案</li>
-          <li><strong>🎯 AIにKGI設定+戦略を相談</strong>（年間最終ゴール下） → 今期KGIの設定と達成戦略を提案</li>
+          <li><strong>🌟 AIに年間ゴール相談</strong>（年間ゴール下） → 入力済みのKGI/KPIから年間ゴールの設定を3パターン提案</li>
+          <li><strong>🎯 AIにKGI設定+戦略を相談</strong>（年間ゴール下） → 今期KGIの設定と達成戦略を提案</li>
           <li><strong>🔬 AI分析</strong>（KPI①②③カード内 各1個） → そのKPIの課題・解決策・他KPIとの連動性・短期施策を分析</li>
-          <li><strong>🔬 AI分析</strong>（📁 その他の業務カード内） → KPI①②③以外で優先してやるべき業務を分析・Todo提案</li>
+          <li><strong>🔬 AI分析</strong>（📁 その他の業務カード内） → 年間ゴール達成のために今期KGIに直結しないがやるべき長期準備業務を分析・Todo提案（半年〜1年後の仕込み）</li>
           <li><strong>🤖 AIにTodo提案</strong>（Todoエリア下） → 各KPIを実行可能なTodoに分解する案を取得</li>
           <li><strong>🤖 AIに今週の相談（優先順位＋方向性）</strong>（各週カード内） → I×Eスコア順並び替え／追加・削除Todo提案／KGI/KPI方向性チェック／KGI問い直しを一括</li>
           <li><strong>🤖 AIに途中分析を依頼</strong>（月間成果カード内 各月1個） ★期中の修正サイクル用 → 月間成果から期目標とのギャップ判定（🔴/🟡/🟢/🚀）、上方/下方修正提案、差分を埋めるTodo</li>
@@ -3923,13 +4075,13 @@
           <li>4週: 22日〜月末（30日 or 31日）</li>
         </ul>
 
-        <h5>Q. 「年間最終ゴール」と「KGI」の違いは？</h5>
+        <h5>Q. 「年間ゴール」と「KGI」の違いは？</h5>
         <p>A.</p>
         <ul>
-          <li><strong>年間最終ゴール</strong>：1年間のビジョン・最終目標（文章のみ）</li>
+          <li><strong>年間ゴール</strong>：1年間のビジョン・最終目標（文章のみ）</li>
           <li><strong>KGI</strong>：期間（四半期など）ごとの最重要数値目標（数字あり）</li>
         </ul>
-        <p>年間最終ゴール → KGI → KPI → Todo の階層で目標を分解していくイメージです。</p>
+        <p>年間ゴール → KGI → KPI → Todo の階層で目標を分解していくイメージです。</p>
 
         <h5>Q. 「その他の業務」は何のため？</h5>
         <p>A. KPI①〜③に該当しない業務を管理する別枠です。定性的な業務や、数字で測れない仕事に使います。不要なら閉じたままでOK。</p>
@@ -4090,6 +4242,10 @@
     if (key === 'annualGoal') {
       if (!state.annualGoal) state.annualGoal = defaultGoal();
       return state.annualGoal;
+    }
+    if (key === 'businessGoal') {
+      if (!state.businessGoal) state.businessGoal = { qualitative: '', quantitative: '' };
+      return state.businessGoal;
     }
     if (key === 'other') {
       if (!state.goals.other) state.goals.other = { target: '', current: '' };
@@ -4438,6 +4594,7 @@
     periodYear: 2026,
     periodStartMonth: 4,
     periodEndMonth: 6,
+    businessGoal: { qualitative: '', quantitative: '' },  // 基本固定・人生/事業の方向性
     annualGoal: defaultGoal(),
     goals: {
       kgi:  defaultGoal(),
@@ -5477,14 +5634,10 @@
       state.weeks.push({ week: '', planTodoIds: [], kpiOrder: [1,2,3], planNote: '', done: '', review: '' });
       changed = true;
     }
-    // shrink only if extra rows are empty
+    // shrink: 末尾の余分な週を切り詰める（データ有無に関わらず期間に合わせる）
     if (state.weeks.length > newCount) {
-      const extras = state.weeks.slice(newCount);
-      const hasData = extras.some(w => (w.planTodoIds && w.planTodoIds.length) || w.planNote || w.done || w.review);
-      if (!hasData) {
-        state.weeks = state.weeks.slice(0, newCount);
-        changed = true;
-      }
+      state.weeks = state.weeks.slice(0, newCount);
+      changed = true;
     }
     // relabel within parsed range
     for (let i = 0; i < Math.min(state.weeks.length, newCount); i++) {
@@ -5505,6 +5658,12 @@
     if (ps) ps.value = state.periodStartMonth ?? '';
     if (pe) pe.value = state.periodEndMonth ?? '';
     updateHeaderPeriod();
+    // Business Goal (定性・定量)
+    if (!state.businessGoal) state.businessGoal = { qualitative: '', quantitative: '' };
+    const bgQual = document.querySelector('[data-goal="businessGoal"][data-field="qualitative"]');
+    const bgQuant = document.querySelector('[data-goal="businessGoal"][data-field="quantitative"]');
+    if (bgQual) { bgQual.value = state.businessGoal.qualitative || ''; autoResize(bgQual); }
+    if (bgQuant) { bgQuant.value = state.businessGoal.quantitative || ''; autoResize(bgQuant); }
     // Other goal (text only)
     const og = state.goals.other || { target: '', current: '' };
     const otT = document.querySelector('[data-goal="other"][data-field="target"]');
@@ -7286,9 +7445,9 @@
     lines.push(``);
     lines.push(`---`);
     lines.push(``);
-    // 年間最終ゴール
+    // 年間ゴール
     const ag = state.annualGoal || {};
-    lines.push(`## 🎯 年間最終ゴール`);
+    lines.push(`## 🎯 年間ゴール`);
     lines.push(`- **目標**: ${ag.target || '(未入力)'}`);
     lines.push(`- **現状**: ${ag.current || '(未入力)'}`);
     if (ag.targetValue || ag.currentValue) {
@@ -7495,12 +7654,21 @@
   }
 
   function buildKgiKpiContext() {
+    const bg = state.businessGoal || {};
     const ag = state.annualGoal || {};
     const kgi = state.goals.kgi || {};
     const lines = [];
-    // 年間最終ゴール
-    if (ag.target) lines.push(`【年間最終ゴール】${ag.target}`);
+    // ビジネスゴール（最上位・基本固定）
+    if (bg.qualitative || bg.quantitative) {
+      lines.push(`【🏔️ ビジネスゴール（最上位・基本固定／毎期は変更しない）】`);
+      if (bg.qualitative) lines.push(`  定性（想い・理想・目的）: ${bg.qualitative}`);
+      if (bg.quantitative) lines.push(`  定量（店舗数・年商・利益など）: ${bg.quantitative}`);
+    }
+    // 年間ゴール
+    if (ag.target) lines.push(`\n【年間ゴール】${ag.target}`);
     if (ag.current) lines.push(`【年間現状】${ag.current}`);
+    if (ag.targetValue) lines.push(`【年間目標値】${formatLiveValue(ag.targetValue, ag.unit)}${ag.lowerIsBetter ? '（↓低い方が良い指標）' : ''}`);
+    if (ag.currentValue) lines.push(`【年間現状値】${formatLiveValue(ag.currentValue, ag.unit)}`);
     // 今期KGI
     if (kgi.target) lines.push(`\n【今期KGI（${state.period || ''}）】${kgi.target}`);
     if (kgi.current) lines.push(`【KGI現状（文章）】${kgi.current}`);
@@ -7535,6 +7703,7 @@
   // Build context for AI analysis of result for a specific KPI key (kgi/kpi1/kpi2/kpi3)
   function buildResultAnalysisContext(k) {
     const lines = [];
+    const bg = state.businessGoal || {};
     const ag = state.annualGoal || {};
     const kgi = state.goals.kgi || {};
     const goal = state.goals[k] || {};
@@ -7543,7 +7712,10 @@
     const ach = calcAch(r), grw = calcGrw(r);
     // Header: 全体目標
     lines.push(`【期間】${state.period || ''}`);
-    if (ag.target) lines.push(`【年間最終ゴール】${ag.target}`);
+    if (bg.qualitative || bg.quantitative) {
+      lines.push(`【🏔️ ビジネスゴール】定性: ${bg.qualitative || '-'} / 定量: ${bg.quantitative || '-'}`);
+    }
+    if (ag.target) lines.push(`【年間ゴール】${ag.target}`);
     if (kgi.target && k !== 'kgi') lines.push(`【今期KGI】${kgi.target}`);
     // 分析対象の詳細
     lines.push(`\n【分析対象】${KPI_LABELS[k]}`);
@@ -7675,13 +7847,58 @@
   }
 
   // 店長育成フレームワーク（9ステップ）— 全プロンプト共通の思考軸
-  const GM_FRAMEWORK = `\n\n【🎯 店長育成OS — ゴールマネジメントの9ステップ(回答時に該当ステップを明示)】\n  ① ボトルネック発見：成長を止めている原因は何か(数値・症状で示す)\n  ② センターピン設定：ボトルネック解消の「最も効くピン」を1つ定める→目標に\n  ③ 定量化：目標・課題・現状をすべて数字で表す(計算式付き)\n  ④ 計画立案：その数字になる行動計画を立てる\n     → **しっかり計画を立てるから自信がつく(エフィカシー)**\n  ⑤ タスク分解：細かい単位のTodoにブレイクダウン\n  ⑥ スケジューリング：いつ・誰が・何時間でやるかカレンダー化\n  ⑦ 振り返りMTG(外圧)：締切と公開でやらざるを得ない環境を作る\n  ⑧ 実行→課題抽出：やって出た課題を観察・記録\n  ⑨ 改善ループ：課題に対する改善策を次サイクルに反映\n\n【⚠️ 受講生の典型的な壁(意識して言葉を選ぶ)】\n  - 「ゴールが描けない」→ ②センターピン提示で代替\n  - 「定量化が苦手」→ ③計算式テンプレを必ず示す\n  - 「因数分解できない」→ ④KGI=A×B×C 形式で分解例を示す\n  - 「タスクが思いつかない」→ ⑤Todo候補5〜10個を選択肢化\n\n【🧠 エフィカシー(自己効力感)を高める4ルート — 回答に意識的に織り込む】\n  (a) 成功体験 → 小さくても「これならできた」を積める粒度の提案\n  (b) 代理経験 → 同業/同役職の成功パターンを例示\n  (c) 言語的説得 → 「あなたならできる」「ここまで来てる」と励ます一言\n  (d) 情動的喚起 → ストレス低減/落ち着いて取り組む工夫を1行添える`;
+  const GM_FRAMEWORK = `\n\n【🏔️ シート思想 — 上から下への一貫した流れ】\n  ビジネスゴール(基本固定／人生・事業の方向性)\n    ↓\n  年間ゴール(1年間で達成すべき状態)\n    ↓\n  四半期KGI(今期の最重要目標)\n    ↓\n  KPI①②③(KGIを達成する3つの行動軸)\n    ↓\n  Todo(KPIを達成する具体的行動)\n    ↓\n  AIチェック(整合性・抜け漏れ・壁打ち)\n\n【🎯 店長育成OS — ゴールマネジメントの9ステップ(回答時に該当ステップを明示)】\n  ① ボトルネック発見：成長を止めている原因は何か(数値・症状で示す)\n  ② センターピン設定：ボトルネック解消の「最も効くピン」を1つ定める→目標に\n  ③ 定量化：目標・課題・現状をすべて数字で表す(計算式付き)\n  ④ 計画立案：その数字になる行動計画を立てる\n     → **しっかり計画を立てるから自信がつく(エフィカシー)**\n  ⑤ タスク分解：細かい単位のTodoにブレイクダウン\n  ⑥ スケジューリング：いつ・誰が・何時間でやるかカレンダー化\n  ⑦ 振り返りMTG(外圧)：締切と公開でやらざるを得ない環境を作る\n  ⑧ 実行→課題抽出：やって出た課題を観察・記録\n  ⑨ 改善ループ：課題に対する改善策を次サイクルに反映\n\n【⚠️ 受講生の典型的な壁(意識して言葉を選ぶ)】\n  - 「ゴールが描けない」→ ②センターピン提示で代替\n  - 「定量化が苦手」→ ③計算式テンプレを必ず示す\n  - 「因数分解できない」→ ④KGI=A×B×C 形式で分解例を示す\n  - 「タスクが思いつかない」→ ⑤Todo候補5〜10個を選択肢化\n\n【🧠 エフィカシー(自己効力感)を高める4ルート — 回答に意識的に織り込む】\n  (a) 成功体験 → 小さくても「これならできた」を積める粒度の提案\n  (b) 代理経験 → 同業/同役職の成功パターンを例示\n  (c) 言語的説得 → 「あなたならできる」「ここまで来てる」と励ます一言\n  (d) 情動的喚起 → ストレス低減/落ち着いて取り組む工夫を1行添える\n\n【🤝 AIの役割定義(超重要)】\n  AIは「意思決定」ではなく「整合性チェック・壁打ち・言語化」として活用される存在。\n  ✅ AIがやること：KGI/KPI/Todo整合性確認／ボトルネック分析／行動量確認／抜け漏れ確認／提案／フィードバック文章化\n  ❌ AIがやらないこと：ビジネスゴール変更／人生目的変更／最終意思決定\n  運用ルール：①自分で考える → ②AIに相談する → ③最終的に自分で決める\n  → 回答末尾に必ず「**最終的にこの判断は自分でしてください**」のような一言を添え、AIへの依存を防ぐ。`;
 
   // Common output instruction template (structured + step-by-step + concrete examples + grounded reasoning)
   const AI_OUTPUT_GUIDE = GM_FRAMEWORK + `\n\n【回答スタイル — 短く・定量で・コピペしやすく】\n\n■ 全体ボリューム：**長すぎNG**。読み返すのに30秒で済む量で。各項目は **2〜3文(合計100〜150字程度)** で十分。\n\n■ 構成(この順番で)：\n  1. **結論**(2行以内) — 何をすべきか1文で。\n  2. **定量(数字で見える化)** — 現状値／目標値／ギャップ／件数／時間配分などを **必ず計算式付き**で。\n  3. **観点・選択肢リスト** — ユーザーが自分で判断できる観点／選択肢を提示。各項目に「何を選ぶ・書くか／数値の目安／短い例」をセット。\n  4. **👏 ここを褒める**(必須・1行) — 入力内容から「ここまでできてる」「この判断が良い」と承認できる具体的な部分を1行で明示。受講生が自分の進捗を認知し、承認されたと感じられる粒度で。例: 「KPI①の課題を数値で書けてる時点で、半分は前進してます」「客数の現状を把握できてる店長は意外と少ない、ここはすでに強み」\n  5. **💡 次の一歩**(1行) — 今日／今週やる1つの行動。\n\n■ Todo提案・優先順位に関する出力ルール(必須)：\n  - 各Todoに「I(インパクト):1〜5 / E(簡単さ):1〜5 / 合計スコア」を必ず併記\n  - 4象限のどこに位置するか(大×簡単=最優先 / 大×難=計画的 / 小×簡単=スキマ / 小×難=やらない判断もアリ)を明示\n  - スコア順に並び替えて提示\n\n■ 表現：\n  - **太字**や絵文字で強調、マークダウン見出し(##・###)で階層化\n  - 数値は **必ず計算式付き**(例: 「100万 ÷ 4週 = 25万/週」「達成率 70/100 = 70%」)\n  - 専門用語は括弧で平易注釈\n\n■ 視点(重要)：\n  - **経営者視点だけでなく、店長／マネージャー視点も含める**。現場スタッフが「ああなるほど」と思えるレベルの具体性で。\n  - 回答冒頭または該当箇所で「これは 9ステップの ①〜⑨ のどこにあたる話か」を明示する。\n\n【NG事項】\n× 1項目で400字超えるような長文／定性的・抽象的な断言／数字なしで語る／一般論で終わる／「👏 ここを褒める」を省略する／Todo提案でI×Eスコアを省略する`;
 
+  // AI相談前の必須入力チェック（最低限の入力がないと相談不可）
+  function checkAIPrerequisites(mode) {
+    const missing = [];
+    const kgi = state.goals.kgi || {};
+    // ビジネスゴール相談: 定性 or 定量 のどちらかが入力されていれば可
+    if (mode === 'business-goal-consult') {
+      const bg = state.businessGoal || {};
+      if (!(bg.qualitative || '').trim() && !(bg.quantitative || '').trim()) {
+        missing.push('ビジネスゴールの「定性」または「定量」のどちらか');
+      }
+      return missing;
+    }
+    // 年間ゴール相談: 年間ゴールの目標 or 現状 のどちらかが入力されていれば可
+    if (mode === 'annual-goal-consult') {
+      const ag = state.annualGoal || {};
+      if (!(ag.target || '').trim() && !(ag.current || '').trim()) {
+        missing.push('年間ゴールの「目標」または「現状」のどちらか');
+      }
+      return missing;
+    }
+    // KGI: タイトル + 現状 が必須
+    if (!(kgi.target || '').trim()) missing.push('KGIのタイトル');
+    if (!(kgi.current || '').trim()) missing.push('KGIの現状');
+    // KPI個別分析やTodo提案系：そのKPIのタイトル+現状が必須
+    if (mode && (mode.startsWith('kpi-analysis-') || mode.startsWith('todo-suggest-kpi-'))) {
+      const n = +mode.split('-').pop();
+      const kpi = state.goals['kpi' + n] || {};
+      if (!(kpi.target || '').trim()) missing.push(`KPI${['①','②','③'][n-1]}のタイトル`);
+      if (!(kpi.current || '').trim()) missing.push(`KPI${['①','②','③'][n-1]}の現状`);
+    }
+    // Todo提案・週次相談系：Todoが1つ以上必要
+    const requireTodo = (mode === 'todo-suggest') || (mode && mode.startsWith('todo-suggest-kpi-')) || (mode === 'week-coach') || (mode === 'week-priority') || (mode === 'week-focus') || (mode === 'monthly-review');
+    if (requireTodo) {
+      const totalTodos = [1,2,3,'other'].reduce((sum, k) => sum + ((state.todos[k] || []).length), 0);
+      if (totalTodos === 0) missing.push('Todoを1つ以上');
+    }
+    return missing;
+  }
+
   function openAIModal(mode, ctx, opts) {
     opts = opts || {};
+    // 必須入力チェック
+    const missing = checkAIPrerequisites(mode);
+    if (missing.length > 0) {
+      alert(`🛑 以下を書かないとAIに聞けません:\n\n・${missing.join('\n・')}\n\nまず自分で考えて入力してから、AIに相談してください。\n\n💡 運用ルール: ①自分で考える → ②AIに相談する → ③最終的に自分で決める`);
+      return;
+    }
     const titleEl = $('ai-modal-title');
     const promptBox = $('ai-prompt-box');
     let title = '🤖 AIサポート';
@@ -7745,9 +7962,9 @@ ${monthLabel}の振り返りを踏まえ、来月絶対やる3つの約束を文
       // Build mode-specific instruction
       let kgiPart = '';
       if (kgiFilled) {
-        kgiPart = `■ Part 1: 既に入力されている KGI の精度向上\n（既に「${(kgi.target || '').slice(0, 60)}」というKGIが入力されています）\n1. 入力済みのKGIが「年間最終ゴールから逆算して妥当か」評価\n2. **より具体的・測定可能・期限付きにする修正案** を提示（SMART原則を意識）\n3. 数値目標が曖昧 or 抽象的な場合、定量化できる修正案を3つ提示\n4. 「このままでもOK」と判断できる場合はその理由を明示`;
+        kgiPart = `■ Part 1: 既に入力されている KGI の精度向上\n（既に「${(kgi.target || '').slice(0, 60)}」というKGIが入力されています）\n1. 入力済みのKGIが「年間ゴールから逆算して妥当か」評価\n2. **より具体的・測定可能・期限付きにする修正案** を提示（SMART原則を意識）\n3. 数値目標が曖昧 or 抽象的な場合、定量化できる修正案を3つ提示\n4. 「このままでもOK」と判断できる場合はその理由を明示`;
       } else {
-        kgiPart = `■ Part 1: KGI（最重要目標）の提案 — まだ未入力なので3パターン提案\n（KGIは現在空欄です）\n1. 年間最終ゴールから逆算して、対象期間「${periodLabel}」に達成すべきKGI候補を **3パターン** で提示\n   - 【保守プラン】着実に達成可能な数値\n   - 【標準プラン】適度なストレッチを含む現実的な数値\n   - 【挑戦プラン】成長加速を狙う拡張的な数値\n2. 各プランに数値根拠（年間ゴールに対する割合・段階・季節性 等）を明示\n3. 推奨プランを1つ選び、選定理由を述べる\n4. KGIテキストの書き方の例（"いつまでに何をどれだけ"形式）を3例提示`;
+        kgiPart = `■ Part 1: KGI（最重要目標）の提案 — まだ未入力なので3パターン提案\n（KGIは現在空欄です）\n1. 年間ゴールから逆算して、対象期間「${periodLabel}」に達成すべきKGI候補を **3パターン** で提示\n   - 【保守プラン】着実に達成可能な数値\n   - 【標準プラン】適度なストレッチを含む現実的な数値\n   - 【挑戦プラン】成長加速を狙う拡張的な数値\n2. 各プランに数値根拠（年間ゴールに対する割合・段階・季節性 等）を明示\n3. 推奨プランを1つ選び、選定理由を述べる\n4. KGIテキストの書き方の例（"いつまでに何をどれだけ"形式）を3例提示`;
       }
       // KPI part: depends on KPI fill state
       let kpiPart = '';
@@ -7769,7 +7986,7 @@ ${ctx}
 何をKGIにし、KPIをどう設計するか1文ずつ。
 
 ## 2. 定量で見える化(数字だけ・計算式付き)
-年間最終ゴールから逆算した「期間内の達成すべき数値」(例: 「年商10億 ÷ 4期 = 2.5億/期」「客数2万 ÷ 3ヶ月 = 6,700人/月」)。
+年間ゴールから逆算した「期間内の達成すべき数値」(例: 「年商10億 ÷ 4期 = 2.5億/期」「客数2万 ÷ 3ヶ月 = 6,700人/月」)。
 
 ## 3. KGIの選択肢(3パターン)★最重要
 ${kgiFilled ? '入力済KGIの精度向上+ストレッチ／保守の代替案も提示' : '未入力なので3つ提案'}
@@ -7792,9 +8009,52 @@ KPI①②③を全て達成するとKGIが論理的に達成される計算式�
 今日決めること1つ。
 
 【重要】KGI＋KPIをセットで／経営者+店長/マネージャー両視点／数値は必ず計算式付き${AI_OUTPUT_GUIDE}`;
+    } else if (mode === 'business-goal-consult') {
+      title = '🏔️ AIにビジネスゴール相談';
+      prompt = `あなたは経営者の伴走コーチ＋人生設計のメンターです。受講生のビジネスゴール（人生・事業の方向性／最上位の指針）について、**意思決定は本人に委ね、整合性チェック・壁打ち・言語化のサポート** を行ってください。
+
+【⚠️ AIの役割（必ず守る）】
+- AIは「ビジネスゴール自体を変更すること」「人生目的を決めること」「最終意思決定」をしてはいけない
+- AIの役割は「整合性チェック・抜け漏れ確認・言語化サポート・選択肢提示」のみ
+- 必ず「最終的にこの判断は自分でしてください」と回答末尾に添える
+
+${ctx}
+
+## 1. 受け取った内容の言語化サポート(2〜3行)
+受講生の「定性」「定量」入力を、より明確で第三者にも伝わる文章に整える例を提示（あくまで「例」として）。
+
+## 2. 定性と定量の整合性チェック ★最重要
+  - 定性（想い・理想・目的）と定量（店舗数・年商・利益など）が **矛盾していないか**
+  - 例: 「現場を卒業したい」←→「年商10億で多店舗展開」: 整合 or 矛盾しうるか観点で
+  - 例: 「一人サロンで丁寧にやりたい」←→「年商5億」: 矛盾の可能性指摘
+  - 矛盾あれば「どちらかを変えるか、両立する道があるか」を **問いかけ形式** で投げる
+
+## 3. 抜け漏れチェック（5観点）
+以下の観点から「ここを定義するともっと明確になる」と思う部分を1〜3個指摘：
+  - **時間軸**: いつまでに（5年後／10年後／死ぬまで）
+  - **役割定義**: 自分は何をする人/何をしない人になりたいか
+  - **撤退ライン**: 何が起きたらゴールを変えるか（EXIT条件）
+  - **誰のため**: 家族／顧客／自分／仲間／後継者
+  - **代償**: ゴール達成に伴う犠牲を覚悟できているか
+
+## 4. 定量の妥当性チェック
+入力された定量目標について：
+  - 現状（年間ゴール・KGI）から逆算して **達成可能性** の概観
+  - 「保守／標準／挑戦」の3スケール例を計算式付きで提示
+  - ただし「これがあなたの正解です」とは言わず、「あなたが選ぶ材料」として提示
+
+## 5. このビジネスゴールに沿った年間ゴール・KGIの方向性
+ビジネスゴール（特に定性）と整合する年間ゴール・四半期KGIの方向性を1〜2例で示唆（断定せず、選択肢として）。
+
+## 6. 💡 自分で考えるための問い 3つ
+AIが答えを出すのではなく、受講生が自分で考えるための **問い** を3つ：
+  例) 「3年後の自分から手紙が来たら、何と書かれていてほしい？」「今のゴールは『誰の期待』に応えるもの？」
+
+## ⚠️ 最終確認
+**このビジネスゴールを書き換える／確定するのは、AIではなくあなた自身です。今日は壁打ちまで。一晩寝かせて、本当に「これだ」と思える状態で確定してください。**${AI_OUTPUT_GUIDE}`;
     } else if (mode === 'annual-goal-consult') {
       title = '🌟 AIに年間ゴール相談';
-      prompt = `あなたは経営戦略のコンサルタント＋店長/マネージャーです。入力済みのKGI/KPI／**月間成果メモ(途中報告)** をもとに、年間最終ゴールの設定および現実とのズレ修正をサポートしてください。月間成果メモがあれば、実績ベースで年間ゴールの妥当性を再評価する材料として使ってください。
+      prompt = `あなたは経営戦略のコンサルタント＋店長/マネージャーです。入力済みのKGI/KPI／**月間成果メモ(途中報告)** をもとに、年間ゴールの設定および現実とのズレ修正をサポートしてください。月間成果メモがあれば、実績ベースで年間ゴールの妥当性を再評価する材料として使ってください。
 
 ${ctx}
 
@@ -7960,8 +8220,50 @@ ${ctx}
 
 【重要】精神論NG／入力から具体引用／数値は必ず計算式付き／経営者+店長/マネージャー両視点${AI_OUTPUT_GUIDE}`;
     } else if (mode === 'other-analysis') {
-      title = '🔬 AIに「その他の業務」分析を相談';
-      prompt = `あなたは経営戦略のコンサルタントです。以下のKGI/KPI/その他の業務の入力情報を踏まえて、「KPI①②③以外で優先してやるべきこと」を分析・提案してください。\n\n${ctx}\n\n【分析対象】\n「その他の業務」エリア — KPI①②③に該当しないが、事業継続・成長のために必要な業務領域\n\n【お願い（必ず以下の順序で回答）】\n\n■ Part 1: KPI①②③のスコープ確認\n1. 既に入力されているKPI①②③が「事業の成長ドライバー」として何をカバーしているか整理\n2. 逆に「KPI①②③ではカバーされていない領域」を3〜5領域で具体的に列挙\n   例: バックオフィス／組織づくり／採用／法務・コンプライアンス／資金繰り／長期R&D／自分自身の学習・健康 など\n\n■ Part 2: 「その他の業務」で優先すべきテーマの特定\n1. KGI達成・年間最終ゴール達成に「間接的だが必要不可欠」な業務テーマを3つ提示\n2. 各テーマについて「なぜ優先すべきか」の根拠（リスク回避／土台作り／レバレッジ など）を必ず添える\n3. 「やらないと半年〜1年後にKGI達成を阻害する」という観点で重要度を判定\n\n■ Part 3: 具体的なTodo提案（5〜8個）\n1. 「その他の業務」エリアに追加すべきTodoを5〜8個、動詞で始まる具体的な行動形式で提案\n2. 各Todoに「優先順位（大/中/小）」と「想定所要時間（週あたり何時間）」を付ける\n3. 「ルーティン化すべきもの」と「スポット対応で良いもの」を分けて明示\n\n■ Part 4: 既に入力されている「その他の業務」内容の評価\n1. 現在入力されている「その他の業務」の目標・現状テキストが妥当か評価\n2. 過剰なら削減、不足なら追加の具体提案\n3. KPI①②③とのバランス（時間配分の目安: 例 KPI:その他 = 7:3 など）を提示\n\n【重要】\n- 「KPI①②③に集中すべき」という結論は避ける（その他の業務にも必ず重要なものがある前提で分析）\n- ユーザーが見落としがちな「土台業務」「リスク管理業務」を特に意識して提案\n- 数値や具体例（時間配分%、頻度、優先順位）を必ず添える${AI_OUTPUT_GUIDE}`;
+      title = '🔬 AIに「その他業務（長期準備業務）」分析を相談';
+      prompt = `あなたは経営戦略のコンサルタントです。「その他業務」は **年間ゴール達成のために必要だが、今期(四半期)KGIには直結しない長期準備業務** を扱うエリアです。今期KGI = KPI①②③ で追う指標、長期準備 = その他業務、と切り分けて分析してください。
+
+${ctx}
+
+【分析対象】
+「その他業務」 — 年間ゴール達成のため、半年後／1年後に効いてくる仕込み・準備・土台作り業務(今期KGIには直結しない)。
+例: 採用・組織作り／長期R&D／システム刷新／自分自身の学習・健康／取引先開拓の種まき／中期計画策定 など。
+
+## 1. 結論(2行)
+今期に「種まき」しておくべき長期準備業務テーマ1つ＋やらないと半年〜1年後に効くリスク1つ。
+
+## 2. 定量で見える化
+  - 今期KGI(KPI①②③)に費やす時間の目安と、「その他業務(長期準備)」に費やす時間の目安を比率で(例: 7:3／8:2)
+  - 「その他業務」を全くやらない場合、半年後・1年後の年間ゴール達成にどう響くか
+
+## 3. KGI(今期)とその他業務(長期)の切り分けチェック ★最重要
+入力済みの「その他業務」テキストが本当に **今期KGIに直結しない長期準備** になっているか評価：
+  - 🟢 適切: 半年〜1年後の年間ゴール達成に効く準備
+  - 🟡 KPI①②③に移動すべき: 今期KGIに直結している
+  - 🔴 不要: 年間ゴールにも紐づかない
+判定とその理由を1行ずつ。
+
+## 4. 長期準備テーマ候補(5〜6個)
+年間ゴール達成のために「今期に種まきしておくべき」テーマを5〜6個提示：
+  - テーマ名(動詞含む)
+  - なぜ今期にやるか(半年〜1年後の年間ゴール達成への効き目)
+  - 期日(半年後 / 1年後 / 数年後)
+
+## 5. Todo提案 5〜8個(I×Eスコア順)
+「その他業務」に追加すべきTodo。各Todoに：
+  - 動詞始まりのTodoタイトル
+  - I×Eスコア(I:1〜5 / E:1〜5 / 合計) + 4象限位置
+  - 週あたり所要時間(今期KGIを邪魔しないボリュームで)
+  - 🔁 ルーティン化 or スポット
+  - 期待効果(半年後〜1年後の数値変化)
+
+## 6. KPI①②③との切り分けバランス
+今期の総時間を100%として、KPI:その他業務 の理想配分(例: 80:20 / 70:30)＋根拠。
+
+## 7. 💡 次の一歩
+今週まず仕込む長期準備1つ(15〜30分でできるレベル)。
+
+【重要】「今期KGIに集中せよ」という結論はNG／長期準備にも必ず重要なものがある前提で分析／数値で語る／受講生のエフィカシーを削がない${AI_OUTPUT_GUIDE}`;
     } else if (mode === 'week-coach' || mode === 'week-priority' || mode === 'week-focus') {
       // 統合プロンプト：優先順位整理 + 何を相談すべきか の壁打ち + KGI/KPI方向性チェック
       title = '🤖 AIに今週の相談（優先順位＋方向性）';
@@ -8030,7 +8332,7 @@ ${ctx}
     if (e.target.id === 'ai-modal') $('ai-modal').classList.remove('show');
   });
 
-  // ===== Section navigation (jump links above 年間最終ゴール) =====
+  // ===== Section navigation (jump links above 年間ゴール) =====
   document.addEventListener('click', (e) => {
     const navBtn = e.target.closest('.section-nav button[data-jump]');
     if (!navBtn) return;
@@ -8461,15 +8763,7 @@ ${ctx}
       }
     });
   }
-  // 「その他の業務」は基本開いておく（初期表示で展開）
-  if (otherCard && !otherCard.classList.contains('show')) {
-    otherCard.classList.add('show');
-    if (otherCardToggle) otherCardToggle.textContent = '📁 その他の業務 ▲（クリックで閉じる）';
-  }
-  if (otherTodoCol && !otherTodoCol.classList.contains('show')) {
-    otherTodoCol.classList.add('show');
-    if (otherTodoToggle) otherTodoToggle.textContent = '📁 その他の業務のTodo ▲（クリックで閉じる）';
-  }
+  // 「その他の業務」は基本閉じる（初期表示は折りたたみ）— 必要時のみユーザーが開く
 
   // ===== 使い方ガイド =====
   $('ub-guide').addEventListener('click', () => $('guide-modal').classList.add('show'));
