@@ -1402,6 +1402,29 @@
   .week-card.open .week-card-body { display: block; }
   .week-field { margin-bottom: 14px; }
   .week-field:last-child { margin-bottom: 0; }
+  /* Good / More / Next 3カラムグリッド */
+  .gmn-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  @media (max-width: 760px) {
+    .gmn-grid { grid-template-columns: 1fr; }
+  }
+  .gmn-cell { display: flex; flex-direction: column; gap: 4px; }
+  .gmn-label {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+  .gmn-good .gmn-label { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+  .gmn-more .gmn-label { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+  .gmn-next .gmn-label { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+  .gmn-good .rich-field-wrap { border-color: #86efac; background: #f0fdf4; }
+  .gmn-more .rich-field-wrap { border-color: #fcd34d; background: #fffbeb; }
+  .gmn-next .rich-field-wrap { border-color: #93c5fd; background: #eff6ff; }
   .week-field-label {
     font-size: 12px;
     font-weight: 700;
@@ -4604,7 +4627,7 @@
       other: { target: '', current: '' },  // simpler: text only
     },
     todos: { 1: [], 2: [], 3: [], other: [] },
-    weeks: DEFAULT_WEEKS.map(w => ({ week: w, planTodoIds: [], kpiOrder: [1,2,3], planNote: '', done: '', review: '' })),
+    weeks: DEFAULT_WEEKS.map(w => ({ week: w, planTodoIds: [], kpiOrder: [1,2,3], planNote: '', done: '', review: '', good: '', more: '', next: '' })),
     results: {
       kgi:  { actual: '' },
       kpi1: { actual: '' },
@@ -4729,6 +4752,9 @@
           planNote: w.planNote ?? (w.plan || ''),
           done: w.done || '',
           review: w.review || '',
+          good: w.good || '',
+          more: w.more || '',
+          next: w.next || '',
           feedback: w.feedback || '',
         }));
         return merged;
@@ -5338,7 +5364,8 @@
       return f && f.todo.done;
     });
     return (w.planTodoIds && w.planTodoIds.length > 0) ||
-           !!w.planNote || hasDoneAuto || !!w.review;
+           !!w.planNote || hasDoneAuto || !!w.review ||
+           !!w.good || !!w.more || !!w.next;
   }
 
   function getDoneTodosForWeek(w) {
@@ -5464,6 +5491,29 @@
               <div class="week-field-label">💭 振り返り（理由・改善案・気付き — クリックで全文表示・編集）</div>
               <div class="rich-field-wrap" data-week="${wi}" data-field="review" data-label="振り返り" data-act="rich-expand">
                 <div class="rich-display collapsed">${w.review ? renderRichText(w.review) : '<span class="rich-placeholder">振り返り — クリックして全文表示・編集。**太字** / # 見出し / URL自動リンクなど対応</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
+              </div>
+            </div>
+            <div class="week-field">
+              <div class="week-field-label">🌟 Good / More / Next — 今週の学びを次週へ</div>
+              <div class="gmn-grid">
+                <div class="gmn-cell gmn-good">
+                  <div class="gmn-label">✅ Good</div>
+                  <div class="rich-field-wrap" data-week="${wi}" data-field="good" data-label="Good" data-act="rich-expand">
+                    <div class="rich-display collapsed">${w.good ? renderRichText(w.good) : '<span class="rich-placeholder">今週うまくいったこと・成果・継続したいこと</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
+                  </div>
+                </div>
+                <div class="gmn-cell gmn-more">
+                  <div class="gmn-label">🔧 More</div>
+                  <div class="rich-field-wrap" data-week="${wi}" data-field="more" data-label="More" data-act="rich-expand">
+                    <div class="rich-display collapsed">${w.more ? renderRichText(w.more) : '<span class="rich-placeholder">もっと良くできたこと・改善余地・気づき</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
+                  </div>
+                </div>
+                <div class="gmn-cell gmn-next">
+                  <div class="gmn-label">🚀 Next</div>
+                  <div class="rich-field-wrap" data-week="${wi}" data-field="next" data-label="Next" data-act="rich-expand">
+                    <div class="rich-display collapsed">${w.next ? renderRichText(w.next) : '<span class="rich-placeholder">来週実行する具体的アクション</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="week-field">
@@ -6784,6 +6834,9 @@
     state.weeks.forEach((w, wi) => {
       w.done = '';
       w.review = '';
+      w.good = '';
+      w.more = '';
+      w.next = '';
       w.planNote = '';
       w.feedback = '';
       const planIds = [];
@@ -7142,6 +7195,9 @@
           planNote: w.planNote ?? (w.plan || ''),
           done: w.done || '',
           review: w.review || '',
+          good: w.good || '',
+          more: w.more || '',
+          next: w.next || '',
           feedback: w.feedback || '',
         }));
         suppressCloudSave = true;
@@ -7197,6 +7253,9 @@
         planNote: w.planNote ?? (w.plan || ''),
         done: w.done || '',
         review: w.review || '',
+        good: w.good || '',
+        more: w.more || '',
+        next: w.next || '',
         feedback: w.feedback || '',
         feedbackStatus: w.feedbackStatus || 'unread',
       }));
@@ -7402,6 +7461,9 @@
           planNote: w.planNote ?? (w.plan || ''),
           done: w.done || '',
           review: w.review || '',
+          good: w.good || '',
+          more: w.more || '',
+          next: w.next || '',
           feedback: w.feedback || '',
         }));
         renderAll();
@@ -7579,6 +7641,13 @@
         lines.push(``);
         lines.push(`**💭 振り返り:**`);
         lines.push(w.review);
+      }
+      if (w.good || w.more || w.next) {
+        lines.push(``);
+        lines.push(`**🌟 Good / More / Next:**`);
+        if (w.good) { lines.push(`- ✅ Good: ${w.good}`); }
+        if (w.more) { lines.push(`- 🔧 More: ${w.more}`); }
+        if (w.next) { lines.push(`- 🚀 Next: ${w.next}`); }
       }
       if (w.feedback && w.feedback.trim()) {
         lines.push(``);
@@ -7793,6 +7862,9 @@
         });
       }
       if (w.review) block.push(`    振り返り: ${w.review}`);
+      if (w.good) block.push(`    ✅ Good: ${w.good}`);
+      if (w.more) block.push(`    🔧 More: ${w.more}`);
+      if (w.next) block.push(`    🚀 Next: ${w.next}`);
       weekEntries.push(block.join('\n'));
     });
     if (weekEntries.length > 0) {
@@ -8480,9 +8552,14 @@ ${ctx}
         const display = wrap.querySelector('.rich-display');
         const inlineTa = wrap.querySelector('.rich-input');
         if (display) {
-          const placeholder = field === 'planNote'
-            ? '自由メモ（任意） — クリックして入力。**太字** / *斜体* / URLが使えます'
-            : '振り返り — クリックして入力。**太字** / *斜体* / URLが使えます';
+          const placeholderMap = {
+            planNote: '自由メモ（任意） — クリックして入力。**太字** / *斜体* / URLが使えます',
+            review: '振り返り — クリックして入力。**太字** / *斜体* / URLが使えます',
+            good: '今週うまくいったこと・成果・継続したいこと',
+            more: 'もっと良くできたこと・改善余地・気づき',
+            next: '来週実行する具体的アクション',
+          };
+          const placeholder = placeholderMap[field] || 'クリックして入力';
           display.innerHTML = val ? renderRichText(val) : `<span class="rich-placeholder">${placeholder}</span>`;
         }
         if (inlineTa) inlineTa.value = val;
@@ -8886,6 +8963,9 @@ ${ctx}
         planNote: w.planNote ?? (w.plan || ''),
         done: w.done || '',
         review: w.review || '',
+        good: w.good || '',
+        more: w.more || '',
+        next: w.next || '',
         feedback: w.feedback || '',
         feedbackStatus: w.feedbackStatus || 'unread',
       }));
