@@ -2955,7 +2955,7 @@
   body.readonly #ub-copy-link,
   body.readonly #archive-banner button,
   body.readonly #archive-exit { pointer-events: auto !important; opacity: 1 !important; cursor: pointer !important; }
-  /* 講師権限（FBのみ編集可）: FB欄関連は触れるようにする */
+  /* 上長権限（FBのみ編集可）: FB欄関連は触れるようにする */
   body.feedback-editor .rich-field-wrap.feedback-field,
   body.feedback-editor .rich-field-wrap.feedback-field *,
   body.feedback-editor .rich-field-wrap.feedback-field .rich-expand-btn,
@@ -3371,7 +3371,7 @@
     <button id="ub-edit-name">✏️ 名前</button>
     <button id="ub-layer-btn" title="自分の役職を設定（AI回答が役職に合わせて分かりやすくなります）">🎚 役職: <span id="ub-layer-label">未設定</span></button>
     <button id="ub-email-toggle" title="毎週日曜に応援メールを受信するか切り替え">📧 メール</button>
-    <button id="ub-admin" style="display:none;">👥 受講生一覧</button>
+    <button id="ub-admin" style="display:none;">👥 スタッフ一覧</button>
     <button id="ub-logout">ログアウト</button>
   </div>
 </div>
@@ -3414,15 +3414,15 @@
       <div class="business-goal">
         <button class="ai-help-btn block-ai-btn" data-act="ai-help" data-ai-mode="business-goal-consult" title="ビジネスゴールの定性・定量の整合性チェック、想いの言語化、定量目標の妥当性を壁打ち（最終判断は本人）">🏔️ AIにビジネスゴール相談</button>
         <div class="business-goal-label">🏔️ ビジネスゴール — BUSINESS GOAL <span class="business-goal-tag">基本固定（毎期は変更しない／必要時のみ修正）</span></div>
-        <div class="business-goal-help">最終的にどうなりたいか／家業or企業／現場を卒業／一人サロン／多店舗展開／EXIT戦略 など、人生・事業の方向性を定める最上位の指針です。</div>
+        <div class="business-goal-help">最終的にどうなりたいか／どんな美容師・リーダーになりたいか／得意分野／店長・教育係などのキャリア／働き方 など、仕事と人生の方向性を定める最上位の指針です。</div>
         <div class="business-goal-row">
           <div class="business-goal-col">
             <div class="business-goal-sublabel">💭 定性（想い・理想・目的）</div>
-            <textarea class="business-goal-input autosize" data-goal="businessGoal" data-field="qualitative" placeholder="最終的にどうなりたいか／事業のビジョン／提供価値／生き方など、文章で自由に" rows="3"></textarea>
+            <textarea class="business-goal-input autosize" data-goal="businessGoal" data-field="qualitative" placeholder="最終的にどうなりたいか／お客様にどんな価値を届けたいか／生き方など、文章で自由に" rows="3"></textarea>
           </div>
           <div class="business-goal-col">
-            <div class="business-goal-sublabel">📊 定量（店舗数・年商・利益など）</div>
-            <textarea class="business-goal-input autosize" data-goal="businessGoal" data-field="quantitative" placeholder="例) 10年後に5店舗／年商10億／利益率15%／自分の時間 週20h など" rows="3"></textarea>
+            <div class="business-goal-sublabel">📊 定量（売上・指名数・役職・時期など）</div>
+            <textarea class="business-goal-input autosize" data-goal="businessGoal" data-field="quantitative" placeholder="例) 3年後に店長／月の個人売上150万／指名客200人／週休2日を確保 など" rows="3"></textarea>
           </div>
         </div>
       </div>
@@ -3491,7 +3491,7 @@
           <div class="kgi-feedback-label">💬 FB<span id="kgi-feedback-badge"></span></div>
           <div class="rich-field-wrap goal-rich-field feedback-field" data-goal="kgi" data-field="feedback" data-label="💬 KGIFB" data-act="goal-text-expand">
             <button class="rich-expand-btn" type="button" title="クリックで編集">📝 編集</button>
-            <div class="rich-display collapsed" id="kgi-feedback-display"><span class="rich-placeholder">受講生本人＋管理者の両方が記入できる(クリックで編集)</span><span class="rich-expand-hint">クリックで全文＋編集</span></div>
+            <div class="rich-display collapsed" id="kgi-feedback-display"><span class="rich-placeholder">スタッフ本人＋管理者の両方が記入できる(クリックで編集)</span><span class="rich-expand-hint">クリックで全文＋編集</span></div>
           </div>
         </div>
       </div>
@@ -3763,12 +3763,12 @@
       <button class="modal-close" id="guide-close">×</button>
     </div>
     <div class="guide-tabs">
-      <button class="guide-tab active" data-guide-tab="user">🎯 受講生向け</button>
-      <button class="guide-tab" data-guide-tab="admin">👨‍🏫 講師（管理者）向け</button>
+      <button class="guide-tab active" data-guide-tab="user">🎯 スタッフ向け</button>
+      <button class="guide-tab" data-guide-tab="admin">👔 上長（管理者）向け</button>
       <button class="guide-tab" data-guide-tab="faq">❓ よくある質問</button>
     </div>
     <div class="modal-body">
-      <!-- 受講生向け -->
+      <!-- スタッフ向け -->
       <div class="guide-section active" data-guide-section="user">
         <h4>🚀 まずはこれから</h4>
 
@@ -3850,7 +3850,7 @@
         <h4>🎯 ① 年間ゴール</h4>
         <p>1年通しての最終目標を入力する欄です。文章で記入できます。</p>
         <ul>
-          <li><strong>達成したい年間ゴール</strong>：年商10億達成 など</li>
+          <li><strong>達成したい年間ゴール</strong>：年間個人売上1,500万達成 など</li>
           <li><strong>現状</strong>：今の状態</li>
         </ul>
         <p>※ 数値メトリクスは KGI 側で管理するため、年間ゴールには無し。</p>
@@ -3859,17 +3859,17 @@
 
         <h5>📖 まずは用語の理解から</h5>
         <ul>
-          <li><strong>KGI（Key Goal Indicator）= 最重要目標</strong><br>例: 年商3億円、利益率10%</li>
+          <li><strong>KGI（Key Goal Indicator）= 最重要目標</strong><br>例: 今期の個人売上450万円、新規再来率70%</li>
           <li><strong>KPI（Key Performance Indicator）= 重要中間指標</strong><br>KGIを達成するための「3つの行動軸」に分解したもの</li>
         </ul>
 
         <h5>🌳 KGIをKPIに分解する考え方</h5>
-        <p>KGI「年商3億円」を達成するには、何が必要か？</p>
+        <p>KGI「今期の個人売上450万円」を達成するには、何が必要か？</p>
         <p>例: <strong>売上 = 客数 × 客単価 × 来店回数</strong></p>
         <ul>
-          <li>KPI①: 客数を月100人増やす</li>
-          <li>KPI②: 客単価を5,000円→7,000円に</li>
-          <li>KPI③: リピート率を30%→50%に</li>
+          <li>KPI①: 新規客を月20人に増やす</li>
+          <li>KPI②: 客単価を8,000円→9,500円に</li>
+          <li>KPI③: 新規再来率を50%→70%に</li>
         </ul>
         <p>つまり、KGI達成のために <strong>「コントロールできる3つの数値」</strong> を選びます。</p>
 
@@ -4020,7 +4020,7 @@
           <ul style="margin-top:6px;">
             <li>ゴールマネジメントの<strong>9ステップ</strong>（ボトルネック→センターピン→定量化→計画→タスク分解→スケジューリング→振り返りMTG→実行→改善）に沿って回答</li>
             <li>Todo提案には必ず <strong>インパクト×実行しやすさスコア</strong> と <strong>4象限位置</strong>、<strong>いつやる</strong>（曜日・時間帯）を添付</li>
-            <li>各回答に必ず <strong>「👏 ここを褒める」</strong> 一言が入り、受講生のエフィカシー（自信）を高める</li>
+            <li>各回答に必ず <strong>「👏 ここを褒める」</strong> 一言が入り、スタッフのエフィカシー（自信）を高める</li>
             <li>記入済みの <strong>月間成果メモ</strong> および <strong>週次 Good/More/Next 履歴</strong> は全AIプロンプトに自動で渡され、判断材料に</li>
           </ul>
         </div>
@@ -4033,7 +4033,7 @@
           <li><strong>Part 3</strong>: 期の途中で気付けていれば取れた代替シナリオを3パターン提示</li>
           <li><strong>Part 4</strong>: 次の期に向けた具体改善案（目標値見直し／課題・解決策修正／追加Todo／削除Todo／週次運用の改善／早期警告サイン）</li>
         </ol>
-        <div class="info">📈 <strong>結果分析AIの特徴</strong>：受講生が入力した<strong>すべての情報</strong>（数値・文章・Todo・週次の実行状況・Good/More/Next履歴・月間成果メモ）を読み取って分析。「なんとなく頑張りましょう」のような精神論は禁止し、必ず数値計算式と具体引用で論理展開する設計。</div>
+        <div class="info">📈 <strong>結果分析AIの特徴</strong>：スタッフが入力した<strong>すべての情報</strong>（数値・文章・Todo・週次の実行状況・Good/More/Next履歴・月間成果メモ）を読み取って分析。「なんとなく頑張りましょう」のような精神論は禁止し、必ず数値計算式と具体引用で論理展開する設計。</div>
 
         <h5>🛠 共通の使い方</h5>
         <ol>
@@ -4090,7 +4090,7 @@
           <li><strong>行クリック</strong>：該当のTodoまで自動スクロール＋黄色ハイライト。「その他」のTodoはアコーディオンも自動展開</li>
         </ul>
 
-        <h4>💬 FB機能（受講生＋管理者の双方向コミュニケーション）</h4>
+        <h4>💬 FB機能（スタッフ＋管理者の双方向コミュニケーション）</h4>
         <p>KGI / KPI / Todo / 週次行動目標のそれぞれに「💬 FB」欄を配置。本人も管理者もコメントを書き込めます。</p>
         <h5>✍ 使い方</h5>
         <ol>
@@ -4148,7 +4148,7 @@
         <ul>
           <li>年間ゴール／KGI／KPI／Todo／週次／結果・FB・AI相談履歴 すべて含まれる</li>
           <li>そのままAIに貼って相談できる形式</li>
-          <li>管理者が他の受講生のシートを開いた時も、その受講生のデータをコピー可能</li>
+          <li>管理者が他のスタッフのシートを開いた時も、そのスタッフのデータをコピー可能</li>
         </ul>
         <h5>📋 個別セルの右クリックコピー</h5>
         <p>任意のテキスト欄（KPI / Todo / FB など）を <strong>右クリック</strong> すると、ポップアップメニュー：</p>
@@ -4161,10 +4161,10 @@
         <div class="info">⚠️ <strong>注意</strong>：公開リンクは誰でも開けます。共有先には注意してください。</div>
       </div>
 
-      <!-- 講師（管理者）向け -->
+      <!-- 上長（管理者）向け -->
       <div class="guide-section" data-guide-section="admin">
-        <h4>👨‍🏫 講師の役割</h4>
-        <p>講師は「管理者」として、受講生のゴール管理状況を閲覧・サポートできます。<strong>権限は2段階</strong>に分かれています。</p>
+        <h4>👔 上長の役割</h4>
+        <p>上長は「管理者」として、スタッフのゴール管理状況を閲覧・サポートできます。<strong>権限は2段階</strong>に分かれています。</p>
 
         <h5>🆚 権限レベルの比較</h5>
         <table style="width:100%;border-collapse:collapse;font-size:13px;margin:8px 0;">
@@ -4176,60 +4176,60 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td style="border:1px solid #e5e7eb;padding:6px;">受講生一覧の閲覧</td><td style="border:1px solid #e5e7eb;padding:6px;text-align:center;">✅</td><td style="border:1px solid #e5e7eb;padding:6px;text-align:center;">✅</td></tr>
-            <tr><td style="border:1px solid #e5e7eb;padding:6px;">受講生のデータ閲覧</td><td style="border:1px solid #e5e7eb;padding:6px;text-align:center;">✅</td><td style="border:1px solid #e5e7eb;padding:6px;text-align:center;">✅</td></tr>
-            <tr><td style="border:1px solid #e5e7eb;padding:6px;"><strong>受講生のデータ編集</strong></td><td style="border:1px solid #e5e7eb;padding:6px;text-align:center;color:#16a34a;font-weight:700;">✅ 全項目編集可</td><td style="border:1px solid #e5e7eb;padding:6px;text-align:center;color:#dc2626;">✕ 読み取り専用</td></tr>
-            <tr><td style="border:1px solid #e5e7eb;padding:6px;"><strong>AI分析の使用</strong>（受講生データに対して）</td><td style="border:1px solid #e5e7eb;padding:6px;text-align:center;color:#16a34a;font-weight:700;">✅</td><td style="border:1px solid #e5e7eb;padding:6px;text-align:center;color:#16a34a;font-weight:700;">✅</td></tr>
+            <tr><td style="border:1px solid #e5e7eb;padding:6px;">スタッフ一覧の閲覧</td><td style="border:1px solid #e5e7eb;padding:6px;text-align:center;">✅</td><td style="border:1px solid #e5e7eb;padding:6px;text-align:center;">✅</td></tr>
+            <tr><td style="border:1px solid #e5e7eb;padding:6px;">スタッフのデータ閲覧</td><td style="border:1px solid #e5e7eb;padding:6px;text-align:center;">✅</td><td style="border:1px solid #e5e7eb;padding:6px;text-align:center;">✅</td></tr>
+            <tr><td style="border:1px solid #e5e7eb;padding:6px;"><strong>スタッフのデータ編集</strong></td><td style="border:1px solid #e5e7eb;padding:6px;text-align:center;color:#16a34a;font-weight:700;">✅ 全項目編集可</td><td style="border:1px solid #e5e7eb;padding:6px;text-align:center;color:#dc2626;">✕ 読み取り専用</td></tr>
+            <tr><td style="border:1px solid #e5e7eb;padding:6px;"><strong>AI分析の使用</strong>（スタッフデータに対して）</td><td style="border:1px solid #e5e7eb;padding:6px;text-align:center;color:#16a34a;font-weight:700;">✅</td><td style="border:1px solid #e5e7eb;padding:6px;text-align:center;color:#16a34a;font-weight:700;">✅</td></tr>
             <tr><td style="border:1px solid #e5e7eb;padding:6px;">管理者権限の付与/解除</td><td style="border:1px solid #e5e7eb;padding:6px;text-align:center;">✅</td><td style="border:1px solid #e5e7eb;padding:6px;text-align:center;">✅</td></tr>
           </tbody>
         </table>
 
-        <div class="info">👑 <strong>主管理者</strong>（コード固定: 当アプリでは <code>kida916@gmail.com</code>）は、受講生全員のデータを<strong>直接編集</strong>できます。受講生が入力途中の内容を講師が代行入力したり、ミス入力を直接修正できます。</div>
-        <div class="info">📖 <strong>管理者</strong>（主管理者から権限付与された講師）は、受講生のデータは<strong>読み取り専用</strong>ですが、<strong>「🔬 AI分析」「🤖 AI相談」ボタンは使用可能</strong>。受講生のKGI/KPI/Todo/週次データをAIに渡して、コーチング材料として活用できます。</div>
+        <div class="info">👑 <strong>主管理者</strong>（コード固定: 当アプリでは <code>kida916@gmail.com</code>）は、スタッフ全員のデータを<strong>直接編集</strong>できます。スタッフが入力途中の内容を上長が代行入力したり、ミス入力を直接修正できます。</div>
+        <div class="info">📖 <strong>管理者</strong>（主管理者から権限付与された上長）は、スタッフのデータは<strong>読み取り専用</strong>ですが、<strong>「🔬 AI分析」「🤖 AI相談」ボタンは使用可能</strong>。スタッフのKGI/KPI/Todo/週次データをAIに渡して、コーチング材料として活用できます。</div>
 
-        <h4>👥 受講生一覧の使い方</h4>
+        <h4>👥 スタッフ一覧の使い方</h4>
         <ol>
-          <li>ヘッダーの <strong>「👥 受講生一覧」</strong> をクリック</li>
-          <li>登録されている受講生がリスト表示されます（最終更新日順）</li>
-          <li>各行をクリックすると、その受講生のゴール管理画面が開きます
+          <li>ヘッダーの <strong>「👥 スタッフ一覧」</strong> をクリック</li>
+          <li>登録されているスタッフがリスト表示されます（最終更新日順）</li>
+          <li>各行をクリックすると、そのスタッフのゴール管理画面が開きます
             <ul>
-              <li>👑 <strong>主管理者</strong>として開いた場合：<strong>青色のバナー</strong>「✏️ <受講生名>の編集モード（主管理者として保存可）」 → そのまま編集できる、変更は受講生のクラウドに即保存</li>
-              <li>🛡 <strong>管理者</strong>として開いた場合：<strong>オレンジ色のバナー</strong>「📖 <受講生名>のデータを閲覧中（読み取り専用・AI分析のみ可）」 → 編集はできないがAIボタンは押せる</li>
+              <li>👑 <strong>主管理者</strong>として開いた場合：<strong>青色のバナー</strong>「✏️ <スタッフ名>の編集モード（主管理者として保存可）」 → そのまま編集できる、変更はスタッフのクラウドに即保存</li>
+              <li>🛡 <strong>管理者</strong>として開いた場合：<strong>オレンジ色のバナー</strong>「📖 <スタッフ名>のデータを閲覧中（読み取り専用・AI分析のみ可）」 → 編集はできないがAIボタンは押せる</li>
             </ul>
           </li>
           <li>バナーの <strong>「自分のデータに戻る」</strong> ボタンで戻る</li>
         </ol>
-        <div class="info">📌 受講生が「お名前」を設定していれば一覧に表示されます。未設定の場合は「名前未設定」と灰色で表示されます。</div>
-        <div class="tip">💡 <strong>主管理者の使い道</strong>：受講生がスマホで入力しづらい長文を代行入力／期末の実績入力を漏れなく代行／受講生のKGI/KPI設計が甘ければ即修正、など。</div>
-        <div class="tip">💡 <strong>管理者の使い道</strong>：複数の受講生のデータを巡回しながら「🔬 期末AI分析」を実行し、各受講生に合わせた次期改善案をクライアント別に作成。</div>
+        <div class="info">📌 スタッフが「お名前」を設定していれば一覧に表示されます。未設定の場合は「名前未設定」と灰色で表示されます。</div>
+        <div class="tip">💡 <strong>主管理者の使い道</strong>：スタッフがスマホで入力しづらい長文を代行入力／期末の実績入力を漏れなく代行／スタッフのKGI/KPI設計が甘ければ即修正、など。</div>
+        <div class="tip">💡 <strong>管理者の使い道</strong>：複数のスタッフのデータを巡回しながら「🔬 期末AI分析」を実行し、各スタッフに合わせた次期改善案をクライアント別に作成。</div>
 
         <h4>👑 管理者権限の付与・解除</h4>
-        <p>共同で運営する講師に管理者権限を渡せます。</p>
+        <p>共同で運営する上長に管理者権限を渡せます。</p>
         <ol>
-          <li>「👥 受講生一覧」を開く</li>
+          <li>「👥 スタッフ一覧」を開く</li>
           <li>対象ユーザーの右側に <strong>「＋ 管理者にする」</strong> ボタンが表示される</li>
           <li>クリックして確認 → 即座に管理者として動作開始（読み取り専用 + AI分析）</li>
           <li>解除する場合は <strong>「✕ 管理者解除」</strong> ボタン</li>
         </ol>
         <h5>🔒 制限事項</h5>
         <ul>
-          <li>「👑 主管理者」（コードに固定された講師）は降格できません</li>
+          <li>「👑 主管理者」（コードに固定された上長）は降格できません</li>
           <li>自分自身の権限は解除できません（ロックアウト防止）</li>
-          <li>権限を付与しても <strong>編集権限は付与されません</strong>（編集は主管理者のみ）。これによって、受講生データを誤って書き換えるリスクを最小限に抑えています。</li>
+          <li>権限を付与しても <strong>編集権限は付与されません</strong>（編集は主管理者のみ）。これによって、スタッフデータを誤って書き換えるリスクを最小限に抑えています。</li>
         </ul>
 
         <h4>📧 メール配信の管理</h4>
-        <p>受講生宛の応援メール配信について：</p>
+        <p>スタッフ宛の応援メール配信について：</p>
         <ul>
           <li><strong>毎週日曜・木曜</strong>に自動配信</li>
-          <li>受講生は自分の画面の「📧 メール」ボタンでON/OFF切替可能</li>
-          <li>講師側からは個別にON/OFFする機能はありません（受講生本人の判断）</li>
+          <li>スタッフは自分の画面の「📧 メール」ボタンでON/OFF切替可能</li>
+          <li>上長側からは個別にON/OFFする機能はありません（スタッフ本人の判断）</li>
         </ul>
 
-        <h4>📝 受講生サポートの流れ（推奨）</h4>
+        <h4>📝 スタッフサポートの流れ（推奨）</h4>
         <ol>
-          <li>毎週月曜に「👥 受講生一覧」を開いて、各受講生の進捗を確認</li>
-          <li>更新が止まっている受講生にDMで声がけ</li>
+          <li>毎週月曜に「👥 スタッフ一覧」を開いて、各スタッフの進捗を確認</li>
+          <li>更新が止まっているスタッフにDMで声がけ</li>
           <li>達成率が低いKPIには、Todoの細分化を提案</li>
           <li>四半期ごとに「過去の期を見る」で振り返りミーティング</li>
         </ol>
@@ -4302,7 +4302,7 @@
         </ol>
 
         <h5>Q. 困ったら？</h5>
-        <p>A. 講師（管理者）にご相談ください。データ復旧などは講師から運営者への連絡で対応可能です。</p>
+        <p>A. 上長（管理者）にご相談ください。データ復旧などは上長から運営者への連絡で対応可能です。</p>
       </div>
     </div>
     <div class="modal-foot">
@@ -4315,7 +4315,7 @@
 <div class="modal-backdrop" id="admin-modal">
   <div class="modal">
     <div class="modal-head">
-      <h3>👥 受講生一覧</h3>
+      <h3>👥 スタッフ一覧</h3>
       <button class="modal-close" id="admin-close">×</button>
     </div>
     <div class="modal-body">
@@ -4952,14 +4952,14 @@
     return defaultState();
   }
   function save() {
-    // 管理者(主管理者 or isAdminUser)が他受講生のデータを編集中ならlocalStorageを汚さない
+    // 管理者(主管理者 or isAdminUser)が他スタッフのデータを編集中ならlocalStorageを汚さない
     const isPrimary = (currentEmail === ADMIN_EMAIL);
     const isFeedbackEditor = document.body.classList.contains('feedback-editor');
     const isAdminEditingOther = (isPrimary || isAdminUser) && viewingDocId && viewingDocId !== currentDocId;
     if (!isAdminEditingOther) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }
-    // FB編集者(講師)はFB欄経由のsave以外はクラウド保存しない
+    // FB編集者(上長)はFB欄経由のsave以外はクラウド保存しない
     // → 各input handlerでFB欄外の編集をブロックするのが理想だが、簡易対応として
     //    FB編集者で readonly のときは saveToCloud をスキップ（FB編集モーダルからの保存だけ通す: そちらは別ルート確認）
     if (isFeedbackEditor && isReadOnly) {
@@ -5023,7 +5023,7 @@
             <div class="lbl">💬 FB${g.feedback ? feedbackStatusBadge(g.feedbackStatus) : ''}</div>
             <div class="rich-field-wrap goal-rich-field feedback-field" data-goal="${k}" data-field="feedback" data-label="💬 FB" data-act="goal-text-expand">
               <button class="rich-expand-btn" type="button" title="クリックで編集">📝 編集</button>
-              <div class="rich-display collapsed">${g.feedback ? renderRichText(g.feedback) : '<span class="rich-placeholder">受講生本人＋管理者の両方が記入できるFB欄（クリックで編集／署名・日時自動付与）</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
+              <div class="rich-display collapsed">${g.feedback ? renderRichText(g.feedback) : '<span class="rich-placeholder">スタッフ本人＋管理者の両方が記入できるFB欄（クリックで編集／署名・日時自動付与）</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
             </div>
           </div>
           <div class="metric-block">
@@ -5402,7 +5402,7 @@
         <div class="rich-field-wrap todo-detail-field" data-todoid="${t.id}" data-field="details" data-act="todo-detail-expand">
           <div class="rich-display todo-detail-display collapsed">${t.details ? renderRichText(t.details) : '<span class="rich-placeholder">具体的にやることや参考リンクを書く（例: 「○○さんに連絡 - https://example.com の資料を見てから提案」）。**太字** / *斜体* / # 見出し / URL自動リンク 対応</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
         </div>
-        <div class="todo-detail-label" style="margin-top:10px;">💬 FB（受講生・管理者の双方が記入可）${t.feedback ? feedbackStatusBadge(t.feedbackStatus) : ''}</div>
+        <div class="todo-detail-label" style="margin-top:10px;">💬 FB（スタッフ・管理者の双方が記入可）${t.feedback ? feedbackStatusBadge(t.feedbackStatus) : ''}</div>
         <div class="rich-field-wrap todo-detail-field feedback-field" data-todoid="${t.id}" data-field="feedback" data-act="todo-detail-expand">
           <button class="rich-expand-btn" type="button" title="クリックで編集">📝 編集</button>
           <div class="rich-display todo-detail-display collapsed">${t.feedback ? renderRichText(t.feedback) : '<span class="rich-placeholder">FB欄(クリックで編集／署名・日時自動付与)</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
@@ -5789,7 +5789,7 @@
               </div>
             </div>
             <div class="week-field">
-              <div class="week-field-label">💬 FB（受講生・管理者の双方が記入可 — クリックで全文表示・編集）${w.feedback ? feedbackStatusBadge(w.feedbackStatus) : ''}</div>
+              <div class="week-field-label">💬 FB（スタッフ・管理者の双方が記入可 — クリックで全文表示・編集）${w.feedback ? feedbackStatusBadge(w.feedbackStatus) : ''}</div>
               <div class="rich-field-wrap feedback-field" data-week="${wi}" data-field="feedback" data-label="💬 FB" data-act="rich-expand">
                 <button class="rich-expand-btn" type="button" title="クリックで編集">📝 編集</button>
                 <div class="rich-display collapsed">${w.feedback ? renderRichText(w.feedback) : '<span class="rich-placeholder">FB欄(クリックで編集／署名・日時自動付与)</span>'}<span class="rich-expand-hint">クリックで全文＋編集</span></div>
@@ -6049,7 +6049,7 @@
     // KGI feedback display
     const kgiFbDisp = $('kgi-feedback-display');
     if (kgiFbDisp) {
-      kgiFbDisp.innerHTML = (g.feedback ? renderRichText(g.feedback) : '<span class="rich-placeholder">受講生本人＋管理者の両方が記入できる(クリックで編集)</span>') + '<span class="rich-expand-hint">クリックで全文＋編集</span>';
+      kgiFbDisp.innerHTML = (g.feedback ? renderRichText(g.feedback) : '<span class="rich-placeholder">スタッフ本人＋管理者の両方が記入できる(クリックで編集)</span>') + '<span class="rich-expand-hint">クリックで全文＋編集</span>';
     }
     const kgiFbBadge = $('kgi-feedback-badge');
     if (kgiFbBadge) {
@@ -7237,7 +7237,7 @@
     if (currentDocId && !viewingDocId) {
       loadFromCloud(currentDocId);
     } else if (viewingDocId && viewingDocId !== currentDocId) {
-      // 他受講生編集中なら再取得
+      // 他スタッフ編集中なら再取得
       enterReadOnlyMode(viewingDocId, viewingEmail || '', '');
     }
   }
@@ -7377,13 +7377,13 @@
   function updateSectionNavOwner() {
     const el = document.getElementById('section-nav-owner');
     if (!el) return;
-    // 他受講生閲覧中: 名前を優先表示（無ければemail）
+    // 他スタッフ閲覧中: 名前を優先表示（無ければemail）
     const isOther = viewingDocId && viewingDocId !== currentDocId;
     const topBtn = `<button type="button" class="section-nav-back-btn" data-act="section-nav-top" title="ページの一番上に戻る">⬆ TOP</button>`;
     if (isOther) {
       const nameDisplay = (viewingDisplayName || '').trim() || viewingEmail || '(他ユーザー)';
       el.innerHTML = `👀 閲覧中: <strong style="margin-left:2px;">${esc(nameDisplay)}</strong> ${topBtn}`;
-      el.title = `他受講生「${nameDisplay}」のシートを閲覧中`;
+      el.title = `他スタッフ「${nameDisplay}」のシートを閲覧中`;
     } else {
       const target = currentDisplayName || currentEmail || '—';
       el.innerHTML = `👤 <strong style="margin-left:2px;">${esc(target)}</strong> ${topBtn}`;
@@ -7422,7 +7422,7 @@
   }
 
   async function promptDisplayName() {
-    const next = window.prompt('表示名（受講生一覧などに表示されます）', currentDisplayName || '');
+    const next = window.prompt('表示名（スタッフ一覧などに表示されます）', currentDisplayName || '');
     if (next === null) return;
     const name = next.trim().slice(0, 50);
     currentDisplayName = name;
@@ -7494,7 +7494,7 @@
     if (!currentDisplayName && email !== ADMIN_EMAIL) {
       setTimeout(() => {
         if (!currentDisplayName) {
-          const name = window.prompt('お名前を入力してください（受講生一覧などに表示されます）', '');
+          const name = window.prompt('お名前を入力してください（スタッフ一覧などに表示されます）', '');
           if (name && name.trim()) {
             currentDisplayName = name.trim().slice(0, 50);
             userBarUpdate(currentEmail);
@@ -7520,7 +7520,7 @@
       const ref = doc(db, 'users', viewDocId);
       const snap = await getDoc(ref);
       if (!snap.exists()) {
-        alert('⚠️ 指定された受講生のデータが見つかりません。リンクが古い／削除されている可能性があります。');
+        alert('⚠️ 指定されたスタッフのデータが見つかりません。リンクが古い／削除されている可能性があります。');
         window.history.replaceState({}, '', window.location.pathname);
         return;
       }
@@ -7686,12 +7686,12 @@
     const isFeedbackEditor = document.body.classList.contains('feedback-editor');
     // isReadOnly でも 主管理者 or FB編集者 はOK（後者はFB欄しか書けない仕様）
     if (isReadOnly && !isPrimary && !isFeedbackEditor) return;
-    // 主管理者 + 管理者(isAdminUser)は他受講生のデータを保存可能
+    // 主管理者 + 管理者(isAdminUser)は他スタッフのデータを保存可能
     const isAdminEditingOther = (isPrimary || isAdminUser) && viewingDocId && viewingDocId !== currentDocId;
     if (!viewingDocId || (viewingDocId !== currentDocId && !isAdminEditingOther)) return;
     const targetDocId = viewingDocId;
     const isEditingOther = isAdminEditingOther;
-    setSyncStatus(isEditingOther ? '💾 受講生データ保存中...' : '💾 保存中...', 'saving');
+    setSyncStatus(isEditingOther ? '💾 スタッフデータ保存中...' : '💾 保存中...', 'saving');
     if (cloudSaveTimer) clearTimeout(cloudSaveTimer);
     cloudSaveTimer = setTimeout(async () => {
       try {
@@ -7712,7 +7712,7 @@
             _updatedAt: Date.now(),
           });
         }
-        setSyncStatus(isEditingOther ? '✅ 受講生データ保存済み' : '✅ 同期済み');
+        setSyncStatus(isEditingOther ? '✅ スタッフデータ保存済み' : '✅ 同期済み');
       } catch (err) {
         console.error('saveToCloud error', err);
         setSyncStatus('⚠️ 同期エラー', 'error');
@@ -7741,7 +7741,7 @@
       });
       rows.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
       if (!rows.length) {
-        $('admin-list').innerHTML = '<div class="pick-empty">受講生がまだいません</div>';
+        $('admin-list').innerHTML = '<div class="pick-empty">スタッフがまだいません</div>';
         return;
       }
       $('admin-list').innerHTML = rows.map(r => {
@@ -7797,7 +7797,7 @@
       const wasAdmin = toggleBtn.dataset.isadmin === 'true';
       const next = !wasAdmin;
       const msg = next
-        ? `${targetEmail} を管理者に追加しますか？\n\n管理者は受講生一覧の閲覧、他のユーザーの管理者権限の付与・解除ができます。`
+        ? `${targetEmail} を管理者に追加しますか？\n\n管理者はスタッフ一覧の閲覧、他のユーザーの管理者権限の付与・解除ができます。`
         : `${targetEmail} の管理者権限を解除しますか？`;
       if (!confirm(msg)) return;
       try {
@@ -7845,7 +7845,7 @@
     if (isPrimary) {
       $('ro-email').innerHTML = `✏️ **${esc(displayName || email)}**（${esc(email)}）の編集モード（主管理者として全項目保存可）`;
     } else if (isAdminUser) {
-      $('ro-email').innerHTML = `📝 **${esc(displayName || email)}**（${esc(email)}）を閲覧中（講師権限：💬 FB欄のみ編集・保存可／他項目は読み取り専用）`;
+      $('ro-email').innerHTML = `📝 **${esc(displayName || email)}**（${esc(email)}）を閲覧中（上長権限：💬 FB欄のみ編集・保存可／他項目は読み取り専用）`;
     } else {
       $('ro-email').innerHTML = `📖 **${esc(displayName || email)}**（${esc(email)}）のデータを閲覧中（読み取り専用・AI分析のみ可）`;
     }
@@ -7925,7 +7925,7 @@
   function buildFullGmDump() {
     const lines = [];
     const owner = viewingEmail || currentEmail || '(不明)';
-    const ownerName = (viewingEmail && viewingEmail !== currentEmail) ? '（閲覧中の受講生）' : '（自分）';
+    const ownerName = (viewingEmail && viewingEmail !== currentEmail) ? '（閲覧中のスタッフ）' : '（自分）';
     lines.push(`# 📊 ゴールマネジメントシート — 全データ`);
     lines.push(``);
     lines.push(`**対象**: ${owner} ${ownerName}`);
@@ -8157,7 +8157,7 @@
     if (bg.qualitative || bg.quantitative) {
       lines.push(`【🏔️ ビジネスゴール（最上位・基本固定／毎期は変更しない）】`);
       if (bg.qualitative) lines.push(`  定性（想い・理想・目的）: ${bg.qualitative}`);
-      if (bg.quantitative) lines.push(`  定量（店舗数・年商・利益など）: ${bg.quantitative}`);
+      if (bg.quantitative) lines.push(`  定量（売上・指名数・役職・時期など）: ${bg.quantitative}`);
     }
     // 年間ゴール
     if (ag.target) lines.push(`\n【年間ゴール】${ag.target}`);
@@ -8367,7 +8367,7 @@
   }
 
   // ゴールマネジメントのフレームワーク（9ステップ）— 全プロンプト共通の思考軸
-  const GM_FRAMEWORK = `\n\n【🏔️ シート思想 — 上から下への一貫した流れ】\n  ビジネスゴール(基本固定／人生・事業の方向性)\n    ↓\n  年間ゴール(1年間で達成すべき状態)\n    ↓\n  四半期KGI(今期の最重要目標)\n    ↓\n  KPI①②③(KGIを達成する3つの行動軸)\n    ↓\n  Todo(KPIを達成する具体的行動)\n    ↓\n  AIチェック(整合性・抜け漏れ・壁打ち)\n\n【🎯 ゴールマネジメントの9ステップ(回答時に該当ステップを明示)】\n  ① ボトルネック発見：成長を止めている原因は何か(数値・症状で示す)\n  ② センターピン設定：ボトルネック解消の「最も効くピン」を1つ定める→目標に\n  ③ 定量化：目標・課題・現状をすべて数字で表す(計算式付き)\n  ④ 計画立案：その数字になる行動計画を立てる\n     → **しっかり計画を立てるから自信がつく(エフィカシー)**\n  ⑤ タスク分解：細かい単位のTodoにブレイクダウン\n  ⑥ スケジューリング：いつ・誰が・何時間でやるかカレンダー化\n  ⑦ 振り返りMTG(外圧)：締切と公開でやらざるを得ない環境を作る\n  ⑧ 実行→課題抽出：やって出た課題を観察・記録\n  ⑨ 改善ループ：課題に対する改善策を次サイクルに反映\n\n【⚠️ 受講生の典型的な壁(意識して言葉を選ぶ)】\n  - 「ゴールが描けない」→ ②センターピン提示で代替\n  - 「定量化が苦手」→ ③計算式テンプレを必ず示す\n  - 「因数分解できない」→ ④KGI=A×B×C 形式で分解例を示す\n  - 「タスクが思いつかない」→ ⑤Todo候補5〜10個を選択肢化\n\n【🧠 エフィカシー(自己効力感)を高める4ルート — 回答に意識的に織り込む】\n  (a) 成功体験 → 小さくても「これならできた」を積める粒度の提案\n  (b) 代理経験 → 同業/同役職の成功パターンを例示\n  (c) 言語的説得 → 「あなたならできる」「ここまで来てる」と励ます一言\n  (d) 情動的喚起 → ストレス低減/落ち着いて取り組む工夫を1行添える\n\n【🤝 AIの役割定義(超重要)】\n  AIは「意思決定」ではなく「整合性チェック・壁打ち・言語化」として活用される存在。\n  ✅ AIがやること：KGI/KPI/Todo整合性確認／ボトルネック分析／行動量確認／抜け漏れ確認／提案／フィードバック文章化\n  ❌ AIがやらないこと：ビジネスゴール変更／人生目的変更／最終意思決定\n  運用ルール：①自分で考える → ②AIに相談する → ③最終的に自分で決める\n  → 回答末尾に必ず「**最終的にこの判断は自分でしてください**」のような一言を添え、AIへの依存を防ぐ。`;
+  const GM_FRAMEWORK = `\n\n【🏔️ シート思想 — 上から下への一貫した流れ】\n  ビジネスゴール(基本固定／人生・事業の方向性)\n    ↓\n  年間ゴール(1年間で達成すべき状態)\n    ↓\n  四半期KGI(今期の最重要目標)\n    ↓\n  KPI①②③(KGIを達成する3つの行動軸)\n    ↓\n  Todo(KPIを達成する具体的行動)\n    ↓\n  AIチェック(整合性・抜け漏れ・壁打ち)\n\n【🎯 ゴールマネジメントの9ステップ(回答時に該当ステップを明示)】\n  ① ボトルネック発見：成長を止めている原因は何か(数値・症状で示す)\n  ② センターピン設定：ボトルネック解消の「最も効くピン」を1つ定める→目標に\n  ③ 定量化：目標・課題・現状をすべて数字で表す(計算式付き)\n  ④ 計画立案：その数字になる行動計画を立てる\n     → **しっかり計画を立てるから自信がつく(エフィカシー)**\n  ⑤ タスク分解：細かい単位のTodoにブレイクダウン\n  ⑥ スケジューリング：いつ・誰が・何時間でやるかカレンダー化\n  ⑦ 振り返りMTG(外圧)：締切と公開でやらざるを得ない環境を作る\n  ⑧ 実行→課題抽出：やって出た課題を観察・記録\n  ⑨ 改善ループ：課題に対する改善策を次サイクルに反映\n\n【⚠️ スタッフの典型的な壁(意識して言葉を選ぶ)】\n  - 「ゴールが描けない」→ ②センターピン提示で代替\n  - 「定量化が苦手」→ ③計算式テンプレを必ず示す\n  - 「因数分解できない」→ ④KGI=A×B×C 形式で分解例を示す\n  - 「タスクが思いつかない」→ ⑤Todo候補5〜10個を選択肢化\n\n【🧠 エフィカシー(自己効力感)を高める4ルート — 回答に意識的に織り込む】\n  (a) 成功体験 → 小さくても「これならできた」を積める粒度の提案\n  (b) 代理経験 → 同業/同役職の成功パターンを例示\n  (c) 言語的説得 → 「あなたならできる」「ここまで来てる」と励ます一言\n  (d) 情動的喚起 → ストレス低減/落ち着いて取り組む工夫を1行添える\n\n【🤝 AIの役割定義(超重要)】\n  AIは「意思決定」ではなく「整合性チェック・壁打ち・言語化」として活用される存在。\n  ✅ AIがやること：KGI/KPI/Todo整合性確認／ボトルネック分析／行動量確認／抜け漏れ確認／提案／フィードバック文章化\n  ❌ AIがやらないこと：ビジネスゴール変更／人生目的変更／最終意思決定\n  運用ルール：①自分で考える → ②AIに相談する → ③最終的に自分で決める\n  → 回答末尾に必ず「**最終的にこの判断は自分でしてください**」のような一言を添え、AIへの依存を防ぐ。`;
 
   // ===== 役職レイヤー定義 =====
   // 社内スタッフ向け: 管理職 / 店長 / スタイリスト / ジュニアスタイリスト
@@ -8424,7 +8424,7 @@
   // ※レイヤーガイドを動的に注入するためgetter関数化
   function getAIOutputGuide() {
     const layerGuide = buildLayerGuide(getCurrentLayer());
-    return GM_FRAMEWORK + layerGuide + `\n\n【回答スタイル — 短く・定量で・コピペしやすく】\n\n■ 全体ボリューム：**長すぎNG**。読み返すのに30秒で済む量で。各項目は **2〜3文(合計100〜150字程度)** で十分。\n\n■ 構成(この順番で)：\n  1. **結論**(2行以内) — 何をすべきか1文で。\n  2. **定量(数字で見える化)** — 現状値／目標値／ギャップ／件数／時間配分などを **必ず計算式付き**で。\n  3. **観点・選択肢リスト** — ユーザーが自分で判断できる観点／選択肢を提示。各項目に「何を選ぶ・書くか／数値の目安／短い例」をセット。\n  4. **👏 ここを褒める**(必須・1行) — 入力内容から「ここまでできてる」「この判断が良い」と承認できる具体的な部分を1行で明示。受講生が自分の進捗を認知し、承認されたと感じられる粒度で。\n  5. **💡 次の一歩**(1行) — 今日／今週やる1つの行動。\n\n■ Todo提案・優先順位に関する出力ルール(必須)：\n  - 各Todoに「インパクト(1〜5) / 実行しやすさ(1〜5) / 合計スコア」を必ず併記\n  - 4象限のどこに位置するか(大×やりやすい=最優先 / 大×難=計画的 / 小×やりやすい=スキマ / 小×難=やらない判断もアリ)を明示\n  - スコア順に並び替えて提示\n\n■ 表現：\n  - **太字**や絵文字で強調、マークダウン見出し(##・###)で階層化\n  - 数値は **必ず計算式付き**(例: 「100万 ÷ 4週 = 25万/週」「達成率 70/100 = 70%」)\n  - 専門用語は括弧で平易注釈\n\n■ 視点(重要)：\n  - 上記【🎚 スタッフの役職】の指示に従って、**用語・例え話・Todoの粒度を必ず調整**する。\n  - 回答冒頭または該当箇所で「これは 9ステップの ①〜⑨ のどこにあたる話か」を明示する。\n\n【NG事項】\n× 1項目で400字超えるような長文／定性的・抽象的な断言／数字なしで語る／一般論で終わる／「👏 ここを褒める」を省略する／Todo提案でインパクト×実行しやすさスコアを省略する／**役職レイヤーに合わない難しい用語を使う**`;
+    return GM_FRAMEWORK + layerGuide + `\n\n【回答スタイル — 短く・定量で・コピペしやすく】\n\n■ 全体ボリューム：**長すぎNG**。読み返すのに30秒で済む量で。各項目は **2〜3文(合計100〜150字程度)** で十分。\n\n■ 構成(この順番で)：\n  1. **結論**(2行以内) — 何をすべきか1文で。\n  2. **定量(数字で見える化)** — 現状値／目標値／ギャップ／件数／時間配分などを **必ず計算式付き**で。\n  3. **観点・選択肢リスト** — ユーザーが自分で判断できる観点／選択肢を提示。各項目に「何を選ぶ・書くか／数値の目安／短い例」をセット。\n  4. **👏 ここを褒める**(必須・1行) — 入力内容から「ここまでできてる」「この判断が良い」と承認できる具体的な部分を1行で明示。スタッフが自分の進捗を認知し、承認されたと感じられる粒度で。\n  5. **💡 次の一歩**(1行) — 今日／今週やる1つの行動。\n\n■ Todo提案・優先順位に関する出力ルール(必須)：\n  - 各Todoに「インパクト(1〜5) / 実行しやすさ(1〜5) / 合計スコア」を必ず併記\n  - 4象限のどこに位置するか(大×やりやすい=最優先 / 大×難=計画的 / 小×やりやすい=スキマ / 小×難=やらない判断もアリ)を明示\n  - スコア順に並び替えて提示\n\n■ 表現：\n  - **太字**や絵文字で強調、マークダウン見出し(##・###)で階層化\n  - 数値は **必ず計算式付き**(例: 「100万 ÷ 4週 = 25万/週」「達成率 70/100 = 70%」)\n  - 専門用語は括弧で平易注釈\n\n■ 視点(重要)：\n  - 上記【🎚 スタッフの役職】の指示に従って、**用語・例え話・Todoの粒度を必ず調整**する。\n  - 回答冒頭または該当箇所で「これは 9ステップの ①〜⑨ のどこにあたる話か」を明示する。\n\n【NG事項】\n× 1項目で400字超えるような長文／定性的・抽象的な断言／数字なしで語る／一般論で終わる／「👏 ここを褒める」を省略する／Todo提案でインパクト×実行しやすさスコアを省略する／**役職レイヤーに合わない難しい用語を使う**`;
   }
 
   // AI相談前の必須入力チェック（最低限の入力がないと相談不可）
@@ -8469,12 +8469,28 @@
   // ===== 実データ（売上・評価制度）をTODO系プロンプトに添付 =====
   // _salonData は毎朝 GAS（スプシ連携）が users/{id} に書き込む「本人＋所属店舗」の数字
   const SALON_DATA_MODES = /^(monthly-review|todo-suggest|review|kpi-analysis-|result-analysis|other-analysis|week-)/;
+  // ゴールを決める相談：実データは「目標の根拠」として使う（TODO精査はしない）
+  const SALON_GOAL_MODES = /^(kgi-consult|annual-goal-consult|business-goal-consult)$/;
   function appendSalonData(mode, prompt) {
-    if (_isPublicView || !mode || !SALON_DATA_MODES.test(mode)) return prompt;
+    if (_isPublicView || !mode) return prompt;
+    const isGoal = SALON_GOAL_MODES.test(mode);
+    if (!isGoal && !SALON_DATA_MODES.test(mode)) return prompt;
     const text = String((state && state._salonData) || '').trim();
     if (!text) return prompt;
     const at = state._salonDataAt ? new Date(Number(state._salonDataAt)) : null;
     const asOf = at && !isNaN(at) ? `${at.getFullYear()}/${at.getMonth() + 1}/${at.getDate()}時点` : '毎朝更新';
+    if (isGoal) return prompt + `
+
+---
+【📊 実データ（売上データ・評価制度より自動取得／${asOf}）】
+${text}
+
+【🔍 実データを目標の根拠に使う（必須）】
+1. 目標の数値は「実データの月別実績」を出発点にする。直近の月平均を出し、保守・標準・挑戦の各案が「月平均の何％増か」を計算式付きで示す（例: 月平均146万 → 標準 +10% = 160万/月、期間3か月で480万）
+2. 率の目標（再来率・次回予約率など）は「会社のKPI基準」と比べ、基準との差を埋める案にする（例: 新規再来率 45% → 基準 70% まで3期で +8pt ずつ）
+3. 所属店舗の実績と比べ、本人の目標が店舗全体の中でどのくらいの割合を占めるかを示す（店長・管理職は店舗・全店の数字から逆算する）
+4. 実データに無い数字は作らない。データが無い指標は「データなし」と書き、アプリに入力された現状値で考える
+5. 決めるのは本人。AIは数字の根拠と選択肢を出すところまで`;
     return prompt + `
 
 ---
@@ -8548,7 +8564,7 @@ ${monthLabel}時点の達成見込みと、最重要の打ち手1つ。
   - **下方修正案**(大きく未達の場合)：実現可能な新目標値＋計算根拠
   - **上方修正案**(超過達成の場合)：伸ばす新目標値＋計算根拠
   - **据置の場合**：そのまま継続する理由
-受講生が「自分にもできそう」と感じる粒度で。
+スタッフが「自分にもできそう」と感じる粒度で。
 
 ## 6. 次月への具体的な約束(3つ)
 ${monthLabel}の振り返りを踏まえ、来月絶対やる3つの約束を文章で。
@@ -8556,7 +8572,7 @@ ${monthLabel}の振り返りを踏まえ、来月絶対やる3つの約束を文
 ## 7. 💡 次の一歩
 明日まずやる1つ。
 
-【重要】月間成果メモを最優先で読み解く／数値で語る／「👏 ここを褒める」一言で受講生の自信を削がない言葉選び${getAIOutputGuide()}`;
+【重要】月間成果メモを最優先で読み解く／数値で語る／「👏 ここを褒める」一言でスタッフの自信を削がない言葉選び${getAIOutputGuide()}`;
     } else if (mode === 'kgi-consult') {
       title = '🎯 AIにKGI設定+戦略を相談';
       const periodLabel = state.period || '今期';
@@ -8592,7 +8608,7 @@ ${ctx}
 何をKGIにし、KPIをどう設計するか1文ずつ。
 
 ## 2. 定量で見える化(数字だけ・計算式付き)
-年間ゴールから逆算した「期間内の達成すべき数値」(例: 「年商10億 ÷ 4期 = 2.5億/期」「客数2万 ÷ 3ヶ月 = 6,700人/月」)。
+年間ゴールから逆算した「期間内の達成すべき数値」(例: 「年間個人売上1,200万 ÷ 4期 = 300万/期」「新規客60人 ÷ 3ヶ月 = 20人/月」)。
 
 ## 3. KGIの選択肢(3パターン)★最重要
 ${kgiFilled ? '入力済KGIの精度向上+ストレッチ／保守の代替案も提示' : '未入力なので3つ提案'}
@@ -8617,7 +8633,7 @@ KPI①②③を全て達成するとKGIが論理的に達成される計算式�
 【重要】KGI＋KPIをセットで／役職に合った視点／数値は必ず計算式付き${getAIOutputGuide()}`;
     } else if (mode === 'business-goal-consult') {
       title = '🏔️ AIにビジネスゴール相談';
-      prompt = `あなたはサロンスタッフの伴走コーチ＋キャリア・人生設計のメンターです。受講生のビジネスゴール（人生・事業の方向性／最上位の指針）について、**意思決定は本人に委ね、整合性チェック・壁打ち・言語化のサポート** を行ってください。
+      prompt = `あなたはサロンスタッフの伴走コーチ＋キャリア・人生設計のメンターです。スタッフのビジネスゴール（人生・事業の方向性／最上位の指針）について、**意思決定は本人に委ね、整合性チェック・壁打ち・言語化のサポート** を行ってください。
 
 【⚠️ AIの役割（必ず守る）】
 - AIは「ビジネスゴール自体を変更すること」「人生目的を決めること」「最終意思決定」をしてはいけない
@@ -8627,19 +8643,19 @@ KPI①②③を全て達成するとKGIが論理的に達成される計算式�
 ${ctx}
 
 ## 1. 受け取った内容の言語化サポート(2〜3行)
-受講生の「定性」「定量」入力を、より明確で第三者にも伝わる文章に整える例を提示（あくまで「例」として）。
+スタッフの「定性」「定量」入力を、より明確で第三者にも伝わる文章に整える例を提示（あくまで「例」として）。
 
 ## 2. 定性と定量の整合性チェック ★最重要
-  - 定性（想い・理想・目的）と定量（店舗数・年商・利益など）が **矛盾していないか**
-  - 例: 「現場を卒業したい」←→「年商10億で多店舗展開」: 整合 or 矛盾しうるか観点で
-  - 例: 「一人サロンで丁寧にやりたい」←→「年商5億」: 矛盾の可能性指摘
+  - 定性（想い・理想・目的）と定量（売上・指名数・役職・時期など）が **矛盾していないか**
+  - 例: 「お客様一人ひとりと長く付き合いたい」←→「新規客を月50人担当」: 整合 or 矛盾しうるか観点で
+  - 例: 「店長になって後輩を育てたい」←→「目標が個人売上だけ」: 矛盾の可能性指摘
   - 矛盾あれば「どちらかを変えるか、両立する道があるか」を **問いかけ形式** で投げる
 
 ## 3. 抜け漏れチェック（5観点）
 以下の観点から「ここを定義するともっと明確になる」と思う部分を1〜3個指摘：
   - **時間軸**: いつまでに（5年後／10年後／死ぬまで）
   - **役割定義**: 自分は何をする人/何をしない人になりたいか
-  - **撤退ライン**: 何が起きたらゴールを変えるか（EXIT条件）
+  - **見直しライン**: 何が起きたらゴールを変えるか
   - **誰のため**: 家族／顧客／自分／仲間／後継者
   - **代償**: ゴール達成に伴う犠牲を覚悟できているか
 
@@ -8653,7 +8669,7 @@ ${ctx}
 ビジネスゴール（特に定性）と整合する年間ゴール・四半期KGIの方向性を1〜2例で示唆（断定せず、選択肢として）。
 
 ## 6. 💡 自分で考えるための問い 3つ
-AIが答えを出すのではなく、受講生が自分で考えるための **問い** を3つ：
+AIが答えを出すのではなく、スタッフが自分で考えるための **問い** を3つ：
   例) 「3年後の自分から手紙が来たら、何と書かれていてほしい？」「今のゴールは『誰の期待』に応えるもの？」
 
 ## ⚠️ 最終確認
@@ -8751,7 +8767,7 @@ A(効果大)/B(普通)/C(外す)で1行ずつ。
       const kpiNum = +mode.split('-').pop();
       const kpiLabel = ['①','②','③'][kpiNum - 1];
       title = `🔬 AIにKPI${kpiLabel}分析を相談`;
-      prompt = `あなたはサロンスタッフの目標達成に伴走するパートナーです。KPI${kpiLabel}の **方向性を決める** ためのアドバイスを。受講生が「現状・課題」「解決策」を書き込めるようサポートします。**月間成果メモ(途中報告)** があれば、そこから読み取れる傾向を踏まえて分析してください。
+      prompt = `あなたはサロンスタッフの目標達成に伴走するパートナーです。KPI${kpiLabel}の **方向性を決める** ためのアドバイスを。スタッフが「現状・課題」「解決策」を書き込めるようサポートします。**月間成果メモ(途中報告)** があれば、そこから読み取れる傾向を踏まえて分析してください。
 
 ${ctx}
 
@@ -8762,13 +8778,13 @@ ${ctx}
 現状値・目標値・ギャップを計算式で。「KGIに○%寄与」も明示。
 
 ## 3. 現状・課題の書き方ヒント★最重要
-受講生が「現状・課題」欄(1欄に統合)に書くべき内容の具体例：
+スタッフが「現状・課題」欄(1欄に統合)に書くべき内容の具体例：
   例) 「現状○○件/月。前期比+/-N%。達成を阻む課題: A原因が主、B原因が次点」
 事実(現状の数値・状況)と、それを阻む課題(5〜6個候補)をセットで提示。各課題に：
   - 課題タイトル(1行)
   - なぜ課題か(数値や状況で)
   - 深刻度(大/中/小)
-受講生が選んで書き込めるレベルで。
+スタッフが選んで書き込めるレベルで。
 
 ## 4. 解決策の書き方ヒント★最重要
 上記課題に対する **解決策候補を5〜6個**：
@@ -8817,7 +8833,7 @@ ${ctx}
 ## 💡 次期初日に決めて実行する1つ
 最も効果的な1アクション。
 
-【重要】KGIとKPI①②③を**横断的に**分析／精神論NG／入力から具体引用／数値は必ず計算式付き／受講生のエフィカシーを削がない${getAIOutputGuide()}`;
+【重要】KGIとKPI①②③を**横断的に**分析／精神論NG／入力から具体引用／数値は必ず計算式付き／スタッフのエフィカシーを削がない${getAIOutputGuide()}`;
     } else if (mode && mode.startsWith('result-analysis-')) {
       const key = mode.split('result-analysis-')[1];  // 'kgi'|'kpi1'|'kpi2'|'kpi3'
       const label = (key === 'kgi') ? 'KGI' : (key === 'kpi1' ? 'KPI①' : key === 'kpi2' ? 'KPI②' : 'KPI③');
@@ -8857,7 +8873,7 @@ ${ctx}
 【重要】精神論NG／入力から具体引用／数値は必ず計算式付き／役職に合った視点${getAIOutputGuide()}`;
     } else if (mode === 'other-analysis') {
       title = '🔬 AIに「その他業務（長期準備業務）」分析を相談';
-      prompt = `あなたは経営戦略のコンサルタントです。「その他業務」は **年間ゴール達成のために必要だが、今期(四半期)KGIには直結しない長期準備業務** を扱うエリアです。今期KGI = KPI①②③ で追う指標、長期準備 = その他業務、と切り分けて分析してください。
+      prompt = `あなたはサロンスタッフの目標達成コーチです。「その他業務」は **年間ゴール達成のために必要だが、今期(四半期)KGIには直結しない長期準備業務** を扱うエリアです。今期KGI = KPI①②③ で追う指標、長期準備 = その他業務、と切り分けて分析してください。
 
 ${ctx}
 
@@ -8899,7 +8915,7 @@ ${ctx}
 ## 7. 💡 次の一歩
 今週まず仕込む長期準備1つ(15〜30分でできるレベル)。
 
-【重要】「今期KGIに集中せよ」という結論はNG／長期準備にも必ず重要なものがある前提で分析／数値で語る／受講生のエフィカシーを削がない${getAIOutputGuide()}`;
+【重要】「今期KGIに集中せよ」という結論はNG／長期準備にも必ず重要なものがある前提で分析／数値で語る／スタッフのエフィカシーを削がない${getAIOutputGuide()}`;
     } else if (mode === 'week-coach' || mode === 'week-priority' || mode === 'week-focus') {
       // 統合プロンプト：優先順位整理 + 何を相談すべきか の壁打ち + KGI/KPI方向性チェック
       title = '🤖 AIに今週の相談（優先順位＋方向性）';
@@ -8943,7 +8959,7 @@ ${ctx}
 なければ「現在のKGI/KPIは適切」1行で。
 
 ## 7. 今週相談すべきテーマ TOP3(壁打ち用)
-受講生が「何を相談したらいいかパッと思いつかない」場合に備え、以下から状況に合わせて3つ提示：
+スタッフが「何を相談したらいいかパッと思いつかない」場合に備え、以下から状況に合わせて3つ提示：
   - 優先順位の見直し  - Todoの粒度見直し  - KPIへの貢献度確認
   - つまづき解消  - 次の一手  - KGI/KPI自体の見直し
 
@@ -9196,7 +9212,7 @@ ${ctx}
     // 名前を決定: 表示名 > メール
     const writerName = (currentDisplayName && currentDisplayName.trim())
       || (currentEmail || '匿名');
-    const role = (currentEmail === ADMIN_EMAIL) ? '主管理者' : (isAdminUser ? '管理者' : '受講生本人');
+    const role = (currentEmail === ADMIN_EMAIL) ? '主管理者' : (isAdminUser ? '管理者' : 'スタッフ本人');
     const ts = new Date();
     const pad = n => String(n).padStart(2, '0');
     const stamp = `${ts.getFullYear()}/${pad(ts.getMonth()+1)}/${pad(ts.getDate())} ${pad(ts.getHours())}:${pad(ts.getMinutes())}`;
