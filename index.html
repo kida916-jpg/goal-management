@@ -4969,6 +4969,7 @@
           more: w.more || '',
           next: w.next || '',
           feedback: w.feedback || '',
+          _routineFilled: !!w._routineFilled,
         }));
         return merged;
       }
@@ -5992,15 +5993,42 @@
   }
 
   // Regenerate week labels from period input. Returns true if labels changed.
+  // ルーティンTodoを、その週に当てはまるものだけ planTodoIds に足す（既にあるものはそのまま）
+  function fillRoutinesForWeek(w, wi) {
+    const ids = Array.isArray(w.planTodoIds) ? w.planTodoIds.slice() : [];
+    TODO_KEYS.forEach(k => (state.todos[k] || []).forEach(t => {
+      if (t && t.routine && t.id && isRoutineApplicableToWeek(t.routineWeeks, wi) && !ids.includes(t.id)) ids.push(t.id);
+    }));
+    w.planTodoIds = ids;
+    w._routineFilled = true;
+  }
+  // 期間を後から延ばした時に、ルーティンが入らないまま増えた週の救済（今週以降で、Todoが空の週だけ・1回限り）
+  function fillRoutinesIntoEmptyUpcomingWeeks() {
+    if (_isPublicView) return false;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    let changed = false;
+    (state.weeks || []).forEach((w, wi) => {
+      if (w._routineFilled) return;
+      if (Array.isArray(w.planTodoIds) && w.planTodoIds.length) return;
+      const p = parseWeekLabel(w.week);
+      if (!p) return;
+      if (getWeekEndDate(yearForMonth(p.month), p.month, p.weekIdx) < today) return;
+      fillRoutinesForWeek(w, wi);
+      if (w.planTodoIds.length) changed = true;
+    });
+    return changed;
+  }
   function syncWeeksWithPeriod() {
     const parsed = parsePeriod(state.period);
     if (!parsed) return false;
     const labels = generateWeekLabels(parsed.year, parsed.months);
     const newCount = labels.length;
     let changed = false;
-    // grow
+    // grow（増えた週にはルーティンTodoを入れる）
     while (state.weeks.length < newCount) {
-      state.weeks.push({ week: '', planTodoIds: [], kpiOrder: [1,2,3], planNote: '', done: '', review: '' });
+      const w = { week: '', planTodoIds: [], kpiOrder: [1,2,3], planNote: '', done: '', review: '' };
+      state.weeks.push(w);
+      fillRoutinesForWeek(w, state.weeks.length - 1);
       changed = true;
     }
     // shrink: 末尾の余分な週を切り詰める（データ有無に関わらず期間に合わせる）
@@ -6084,6 +6112,7 @@
     if (periodDisp) periodDisp.textContent = '期間：' + (formatPeriodDisplay(state.period) || '—');
     renderKpiCards();
     renderTodos();
+    fillRoutinesIntoEmptyUpcomingWeeks();
     renderWeeks();
     renderResults();
     updateArchiveSelect();
@@ -7619,6 +7648,7 @@
           more: w.more || '',
           next: w.next || '',
           feedback: w.feedback || '',
+          _routineFilled: !!w._routineFilled,
         }));
         suppressCloudSave = true;
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
@@ -7688,6 +7718,7 @@
         next: w.next || '',
         feedback: w.feedback || '',
         feedbackStatus: w.feedbackStatus || 'unread',
+        _routineFilled: !!w._routineFilled,
       }));
       // Only re-render if focus is not on an input (to avoid disrupting typing)
       const active = document.activeElement;
@@ -7903,6 +7934,7 @@
           more: w.more || '',
           next: w.next || '',
           feedback: w.feedback || '',
+          _routineFilled: !!w._routineFilled,
         }));
         renderAll();
       }
@@ -9569,6 +9601,7 @@ ${ctx}
         next: w.next || '',
         feedback: w.feedback || '',
         feedbackStatus: w.feedbackStatus || 'unread',
+        _routineFilled: !!w._routineFilled,
       }));
       // Hide login overlay; show a public-view banner
       hideLogin();
