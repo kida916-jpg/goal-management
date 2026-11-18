@@ -4253,7 +4253,7 @@
         <p>A. はい、同じメールアドレスでログインすれば自動同期されます。リアルタイムで反映されます。</p>
 
         <h5>Q. 期間（例: 2026年4-6月）の入力</h5>
-        <p>A. ヘッダーの3つのフィールドに「年・開始月・終了月」をそれぞれ数字で入れます。全角でもOK、自動で半角になります。</p>
+        <p>A. ヘッダーの3つのフィールドに「年・開始月・終了月」をそれぞれ数字で入れます。全角でもOK、自動で半角になります。年をまたぐ期間（例: 2026年11月〜2027年1月）は、年に<strong>開始月の年（2026）</strong>、開始月 11、終了月 1 と入れればOKです。</p>
 
         <h5>Q. 週ラベルが「4月1週 - 4/1〜4/7」になっているけど、どう計算してるの？</h5>
         <p>A. 月の1日起点で4分割しています：</p>
@@ -4479,7 +4479,22 @@
     const p = parsePeriod(period);
     if (!p) return period || '';
     if (p.months.length === 1) return `${p.year}年${p.months[0]}月`;
-    return `${p.year}年${p.months[0]}月〜${p.months[p.months.length-1]}月`;
+    const last = p.months[p.months.length-1];
+    // 年をまたぐ期間（例: 11月〜翌1月）は終了側にも年を付ける
+    if (last < p.months[0]) return `${p.year}年${p.months[0]}月〜${p.year + 1}年${last}月`;
+    return `${p.year}年${p.months[0]}月〜${last}月`;
+  }
+
+  // 期間内の月 → その月の西暦（年をまたぐ期間では開始月より小さい月を翌年とみなす）
+  function periodBaseYear() {
+    if (state.periodYear) return state.periodYear;
+    const m = String(state.period || '').match(/(\d{4})/);
+    return m ? +m[1] : new Date().getFullYear();
+  }
+  function yearForMonth(month) {
+    const base = periodBaseYear();
+    const start = state.periodStartMonth || (parsePeriod(state.period) || { months: [] }).months[0];
+    return (start && month < start) ? base + 1 : base;
   }
 
   // True if today >= last day of periodEndMonth (i.e., the period has reached its final day)
@@ -4488,7 +4503,7 @@
     const em = state.periodEndMonth;
     if (!y || !em) return false;
     // last day of (y, em) month
-    const lastDay = new Date(y, em, 0); // day=0 → previous month's last day
+    const lastDay = new Date(yearForMonth(em), em, 0); // day=0 → previous month's last day（年またぎは翌年）
     lastDay.setHours(23, 59, 59, 999);
     return Date.now() >= lastDay.getTime();
   }
@@ -4497,12 +4512,21 @@
     if (!s) return null;
     const t = String(s);
     // Range form: "2026年4-6月" / "2026年4月-6月" / "2026年4月〜6月" / "2026年4月から6月"
-    let m = t.match(/(\d{4})\s*年\s*(\d{1,2})\s*月?\s*[-－〜～~ー]+\s*(\d{1,2})\s*月/);
+    // Cross-year form: "2026年11月-2027年1月" / "2026年11月〜2027年1月"
+    const cy = t.match(/(\d{4})\s*年\s*(\d{1,2})\s*月?\s*(?:[-－〜～~ー]+|から)\s*(\d{4})\s*年\s*(\d{1,2})\s*月/);
+    let m = cy ? [cy[0], cy[1], cy[2], cy[4]] : null;
+    if (!m) m = t.match(/(\d{4})\s*年\s*(\d{1,2})\s*月?\s*[-－〜～~ー]+\s*(\d{1,2})\s*月/);
     if (!m) m = t.match(/(\d{4})\s*年\s*(\d{1,2})\s*月?\s*から\s*(\d{1,2})\s*月/);
     if (m) {
       const year = +m[1], start = +m[2], end = +m[3];
-      if (start >= 1 && start <= 12 && end >= start && end <= 12) {
-        const months = []; for (let i = start; i <= end; i++) months.push(i);
+      if (start >= 1 && start <= 12 && end >= 1 && end <= 12) {
+        // 終了月が開始月より小さければ年をまたぐ（例: 11→1 は 11,12,1）
+        const months = [];
+        for (let i = start, k = 0; k < 12; k++) {
+          months.push(i);
+          if (i === end) break;
+          i = i === 12 ? 1 : i + 1;
+        }
         return { year, months };
       }
     }
@@ -4521,6 +4545,7 @@
     const e = parseInt(end, 10);
     if (!y || !s) return '';
     if (!e || e === s) return `${y}年${s}月`;
+    if (e < s) return `${y}年${s}月-${y + 1}年${e}月`;  // 年をまたぐ期間
     return `${y}年${s}-${e}月`;
   }
 
@@ -4550,7 +4575,8 @@
   function generateWeekLabels(year, months) {
     const labels = [];
     for (const mo of months) {
-      for (let w = 0; w < 4; w++) labels.push(buildWeekLabel(year, mo, w));
+      const y = mo < months[0] ? year + 1 : year;  // 年をまたいだ月は翌年
+      for (let w = 0; w < 4; w++) labels.push(buildWeekLabel(y, mo, w));
     }
     return labels;
   }
@@ -4578,7 +4604,7 @@
     const ids = w.planTodoIds || [];
     if (ids.length === 0) return '';
     const parsed = parseWeekLabel(w.week);
-    const year = state.periodYear || new Date().getFullYear();
+    const year = parsed ? yearForMonth(parsed.month) : periodBaseYear();
     let weekStart, weekEnd;
     if (parsed) {
       weekStart = getWeekStartDate(year, parsed.month, parsed.weekIdx);
@@ -4648,7 +4674,7 @@
     const summary = `[${kpiLabel}] ${todo.text || '(未入力)'}`;
     // Compute default date: today if today falls within this week's range, else week start, else today
     const parsed = parseWeekLabel(w.week);
-    const year = state.periodYear || new Date().getFullYear();
+    const year = parsed ? yearForMonth(parsed.month) : periodBaseYear();
     let defaultDate = new Date();
     if (parsed) {
       const wkStart = getWeekStartDate(year, parsed.month, parsed.weekIdx);
@@ -5521,7 +5547,7 @@
     (state.weeks || []).forEach((w) => {
       const parsed = parseWeekLabel(w.week);
       if (!parsed) return;
-      const wkStart = getWeekStartDate(year, parsed.month, parsed.weekIdx);
+      const wkStart = getWeekStartDate(yearForMonth(parsed.month), parsed.month, parsed.weekIdx);
       // Only count weeks that have started (week start <= today)
       if (wkStart.getTime() > today.getTime()) return;
       const ids = w.planTodoIds || [];
@@ -5803,10 +5829,8 @@
     const monthlyKeyFor = (w) => {
       const p = parseWeekLabel(w.week);
       if (!p) return null;
-      // 期間の年を取得（state.periodの先頭4桁、なければ現在年）
-      const periodYearMatch = String(state.period || '').match(/(\d{4})/);
-      const year = periodYearMatch ? +periodYearMatch[1] : new Date().getFullYear();
-      return `${year}-${p.month}`;
+      // その月の西暦（年をまたぐ期間では 1月 → 翌年）
+      return `${yearForMonth(p.month)}-${p.month}`;
     };
     if (!state.monthlyResults) state.monthlyResults = {};
     const parts = [];
