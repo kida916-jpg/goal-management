@@ -5857,7 +5857,7 @@
         }
         const isOpenMonthly = openMonthlyResults.has(curKey);
         // 「記入済」判定: テンプレ以上に何か書かれているか
-        const trimmed = val.replace(/^# 📊 .+の月間成果\s*/m, '').replace(/##\s*[✅🔧🚀]\s*\w+/g, '').replace(/\s+/g, '');
+        const trimmed = val.replace(/^# 📊 .+の月間成果\s*/m, '').replace(/##\s*[✅🔧🚀]\s*\w+/gu, '').replace(/\s+/g, '');
         const hasContent = trimmed.length > 0;
         const summaryBadge = hasContent ? '<span class="monthly-result-badge filled">記入済</span>' : '<span class="monthly-result-badge empty">未記入</span>';
         // プレースホルダー用（実際の中身がある場合は使われない）
