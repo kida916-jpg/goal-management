@@ -6004,7 +6004,10 @@
   }
   // 期間を後から延ばした時に、ルーティンが入らないまま増えた週の救済（今週以降で、Todoが空の週だけ・1回限り）
   function fillRoutinesIntoEmptyUpcomingWeeks() {
-    if (_isPublicView) return false;
+    // _isPublicView は後で宣言されるので、起動直後の renderAll では参照できない（その時は公開ビューではない扱い）
+    let publicView = false;
+    try { publicView = _isPublicView; } catch (e) { /* 宣言前 */ }
+    if (publicView) return false;
     const today = new Date(); today.setHours(0, 0, 0, 0);
     let changed = false;
     (state.weeks || []).forEach((w, wi) => {
